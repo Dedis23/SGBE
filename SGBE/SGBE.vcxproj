@@ -150,12 +150,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CPU\registers.cpp" />
+    <ClCompile Include="CPU\gb_registers.cpp" />
+    <ClCompile Include="Generic\registers.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CPU\cpu.h" />
-    <ClInclude Include="CPU\registers.h" />
+    <ClInclude Include="CPU\gb_cpu.h" />
+    <ClInclude Include="CPU\gb_registers.h" />
+    <ClInclude Include="Generic\registers.h" />
     <ClInclude Include="utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

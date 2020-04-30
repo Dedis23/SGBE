@@ -1,6 +1,5 @@
 #include "SDL.h"
 #include "utility.h"
-#include "CPU/registers.h"
 
 int main(int argc, char* argv[])
 {

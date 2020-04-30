@@ -16,23 +16,32 @@
     <Filter Include="CPU">
       <UniqueIdentifier>{7f8db396-5688-4b01-a8b5-167a487c61a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Generic">
+      <UniqueIdentifier>{eae75e57-28db-4aee-8e16-d9f97e563a6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CPU\registers.cpp">
+    <ClCompile Include="CPU\gb_registers.cpp">
       <Filter>CPU</Filter>
+    </ClCompile>
+    <ClCompile Include="Generic\registers.cpp">
+      <Filter>Generic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CPU\cpu.h">
+    <ClInclude Include="CPU\gb_registers.h">
       <Filter>CPU</Filter>
     </ClInclude>
-    <ClInclude Include="CPU\registers.h">
+    <ClInclude Include="Generic\registers.h">
+      <Filter>Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="CPU\gb_cpu.h">
       <Filter>CPU</Filter>
     </ClInclude>
   </ItemGroup>
