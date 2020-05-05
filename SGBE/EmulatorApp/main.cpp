@@ -1,5 +1,5 @@
 #include "SDL.h"
-#include "utility.h"
+#include "../Generic/registers.h"
 
 int main(int argc, char* argv[])
 {
@@ -57,6 +57,38 @@ int main(int argc, char* argv[])
 	//	std::cout << flagRegisterTest.GetBit(i);
 	//}
 	//std::cout << std::endl;
+
+	//WordRegister a(60000);
+	//std::cout << a.GetValue() << std::endl;
+	//
+	//for (int i = 16; i > 0; i--)
+	//{
+	//	std::cout << a.GetBit(i);
+	//}
+	//std::cout << std::endl;
+	//
+	//a.SetBit(1, true);
+	//a.SetBit(3, true);
+	//
+	//for (int i = 16; i > 0; i--)
+	//{
+	//	std::cout << a.GetBit(i);
+	//}
+	//std::cout << std::endl;
+	//
+	//std::cout << a.GetValue() << std::endl;
+	//
+	//a.Decrement();
+	//
+	//std::cout << a.GetValue() << std::endl;
+	//
+	//a.Clear();
+	//
+	//std::cout << a.GetValue() << std::endl;
+	//
+	//a.Decrement();
+	//
+	//std::cout << a.GetValue() << std::endl;
 
 	return 0;
 }

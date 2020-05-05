@@ -41,21 +41,3 @@ bool FlagRegister::GetCFlag() const
 {
 	return GetBit(5);
 }
-
-//WordRegister::WordRegister(uint16_t i_Value) : m_Value(i_Value) {}
-//
-//void WordRegister::SetBit(uint8_t i_BitNumber, bool i_IsRaise)
-//{
-//	if (i_IsRaise)	m_Value |= 1 << (i_BitNumber - 1);
-//	else m_Value &= ~(1 << (i_BitNumber - 1));
-//}
-//
-//bool WordRegister::GetBit(uint8_t i_BitNumber) const
-//{
-//	return (m_Value & (1 << (i_BitNumber - 1))) > 0 ? true : false;
-//}
-//
-//void WordRegister::Clear()
-//{
-//	m_Value = 0;
-//}

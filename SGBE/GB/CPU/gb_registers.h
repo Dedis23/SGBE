@@ -2,7 +2,7 @@
 #define __GB_REGISTERS_H
 
 #include <iostream>
-#include "../Generic/registers.h"
+#include "../../Generic/registers.h"
 
 /*
 	The GB CPU has one flag register and it uses its 4 high bits:
@@ -30,16 +30,5 @@ public:
 	void SetCFlag(bool i_IsRaise);
 	bool GetCFlag() const;
 };
-
-//class WordRegister
-//{
-//public:
-//	WordRegister(uint16_t i_Value = 0);
-//	void SetBit(uint8_t i_BitNumber, bool i_IsRaise);
-//	bool GetBit(uint8_t i_BitNumber) const;
-//	void Clear();
-//private:
-//	uint16_t m_Value = 0;
-//};
 
 #endif

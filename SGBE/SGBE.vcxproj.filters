@@ -13,36 +13,45 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="CPU">
-      <UniqueIdentifier>{7f8db396-5688-4b01-a8b5-167a487c61a3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Generic">
       <UniqueIdentifier>{eae75e57-28db-4aee-8e16-d9f97e563a6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GB">
+      <UniqueIdentifier>{1cd6e61a-3faf-47b7-8d53-c9923f0f59c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GB\CPU">
+      <UniqueIdentifier>{7f8db396-5688-4b01-a8b5-167a487c61a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EmulatorApp">
+      <UniqueIdentifier>{65d38de0-5298-42e6-94a7-8ec419d7ab12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CPU\gb_registers.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
     <ClCompile Include="Generic\registers.cpp">
       <Filter>Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="EmulatorApp\main.cpp">
+      <Filter>EmulatorApp</Filter>
+    </ClCompile>
+    <ClCompile Include="GB\CPU\gb_registers.cpp">
+      <Filter>GB\CPU</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CPU\gb_registers.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
     <ClInclude Include="Generic\registers.h">
       <Filter>Generic</Filter>
     </ClInclude>
-    <ClInclude Include="CPU\gb_cpu.h">
-      <Filter>CPU</Filter>
+    <ClInclude Include="GB\CPU\gb_cpu.h">
+      <Filter>GB\CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\CPU\gb_registers.h">
+      <Filter>GB\CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\gb_utility.h">
+      <Filter>GB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

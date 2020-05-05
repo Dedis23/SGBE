@@ -150,13 +150,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CPU\gb_registers.cpp" />
+    <ClCompile Include="EmulatorApp\main.cpp" />
+    <ClCompile Include="GB\CPU\gb_registers.cpp" />
     <ClCompile Include="Generic\registers.cpp" />
-    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CPU\gb_cpu.h" />
-    <ClInclude Include="CPU\gb_registers.h" />
+    <ClInclude Include="GB\CPU\gb_cpu.h" />
+    <ClInclude Include="GB\CPU\gb_registers.h" />
+    <ClInclude Include="GB\gb_utility.h" />
     <ClInclude Include="Generic\registers.h" />
     <ClInclude Include="utility.h" />
   </ItemGroup>

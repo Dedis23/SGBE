@@ -4,7 +4,7 @@
 #include <iostream>
 
 const uint32_t TARGET_FRAME_RATE = 60;
-const uint32_t GAMEBOY_WIDTH = 160;
-const uint32_t GAMEBOY_HEIGHT = 144;
+const uint32_t GAMEBOY_SCREEN_WIDTH = 160;
+const uint32_t GAMEBOY_SCREEN_HEIGHT = 144;
 
 #endif
