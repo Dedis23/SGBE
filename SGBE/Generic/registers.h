@@ -35,6 +35,10 @@ public:
 
 	void SetValue(uint16_t i_NewValue);
 	uint16_t GetValue();
+	void SetLowByte(uint8_t i_NewLowByte);
+	uint8_t GetLowByte() const;
+	void SetHighByte(uint8_t i_NewHighByte);
+	uint8_t GetHighByte() const;
 	void SetBit(uint8_t i_BitNumber, bool i_IsRaise);
 	bool GetBit(uint8_t i_BitNumber) const;
 	void Clear();

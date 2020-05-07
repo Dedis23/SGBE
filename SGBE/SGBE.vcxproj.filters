@@ -22,8 +22,14 @@
     <Filter Include="GB\CPU">
       <UniqueIdentifier>{7f8db396-5688-4b01-a8b5-167a487c61a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EmulatorApp">
+    <Filter Include="GB\MMU">
+      <UniqueIdentifier>{89486bae-da77-4d43-ad74-e5f36986f8cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App">
       <UniqueIdentifier>{65d38de0-5298-42e6-94a7-8ec419d7ab12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GB\Interpreter">
+      <UniqueIdentifier>{ab2b2236-229c-4d8c-8584-9238f3c595ed}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -31,10 +37,13 @@
       <Filter>Generic</Filter>
     </ClCompile>
     <ClCompile Include="EmulatorApp\main.cpp">
-      <Filter>EmulatorApp</Filter>
+      <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="GB\CPU\gb_registers.cpp">
       <Filter>GB\CPU</Filter>
+    </ClCompile>
+    <ClCompile Include="Interpreter.cpp">
+      <Filter>GB\Interpreter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="GB\gb_utility.h">
       <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpreter.h">
+      <Filter>GB\Interpreter</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

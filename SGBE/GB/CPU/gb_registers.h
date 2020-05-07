@@ -31,4 +31,22 @@ public:
 	bool GetCFlag() const;
 };
 
+class PairRegisters
+{
+public:
+	PairRegisters(ByteRegister& i_HighByteRegister, ByteRegister& i_LowByteRegister);
+	virtual ~PairRegisters() = default;
+	PairRegisters(const FlagRegister&) = delete;
+	PairRegisters& operator=(const PairRegisters&) = delete;
+
+	uint16_t GetValue();
+	void SetValue(uint16_t i_NewValue);
+	ByteRegister& GetHighRegister();
+	ByteRegister& GetLowRegister();
+
+private:
+	ByteRegister& m_HighByteRegister;
+	ByteRegister& m_LowByteRegister;
+};
+
 #endif
