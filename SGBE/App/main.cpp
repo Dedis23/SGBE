@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
 	ByteRegister low(145);
 	ByteRegister high(222);
 
-	PairRegisters pair(high, low);
+	Pair8BRegisters pair(high, low);
 
 	pair.SetValue(62000);
 

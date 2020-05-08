@@ -7,7 +7,7 @@ void ByteRegister::SetValue(uint8_t i_NewValue)
 	m_Value = i_NewValue;
 }
 
-uint8_t ByteRegister::GetValue()
+uint8_t ByteRegister::GetValue() const
 {
 	return m_Value;
 }
@@ -45,7 +45,7 @@ void WordRegister::SetValue(uint16_t i_NewValue)
 	m_Value = i_NewValue;
 }
 
-uint16_t WordRegister::GetValue()
+uint16_t WordRegister::GetValue() const
 {
 	return m_Value;
 }
@@ -96,4 +96,28 @@ void WordRegister::Increment()
 void WordRegister::Decrement()
 {
 	m_Value -= 1;
+}
+
+Pair8BRegisters::Pair8BRegisters(ByteRegister& i_HighByteRegister, ByteRegister& i_LowByteRegister)
+	: m_HighByteRegister(i_HighByteRegister), m_LowByteRegister(i_LowByteRegister) {}
+
+void Pair8BRegisters::SetValue(uint16_t i_NewValue)
+{
+	m_LowByteRegister.SetValue(static_cast<uint8_t>(i_NewValue));
+	m_HighByteRegister.SetValue(static_cast<uint8_t>(i_NewValue >> 8));
+}
+
+uint16_t Pair8BRegisters::GetValue() const
+{
+	return (static_cast<uint16_t>(m_HighByteRegister.GetValue() << 8)) | m_LowByteRegister.GetValue();
+}
+
+ByteRegister& Pair8BRegisters::GetHighRegister()
+{
+	return m_HighByteRegister;
+}
+
+ByteRegister& Pair8BRegisters::GetLowRegister()
+{
+	return m_LowByteRegister;
 }

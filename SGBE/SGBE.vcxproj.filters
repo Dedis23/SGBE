@@ -36,14 +36,20 @@
     <ClCompile Include="Generic\registers.cpp">
       <Filter>Generic</Filter>
     </ClCompile>
-    <ClCompile Include="EmulatorApp\main.cpp">
-      <Filter>App</Filter>
-    </ClCompile>
     <ClCompile Include="GB\CPU\gb_registers.cpp">
       <Filter>GB\CPU</Filter>
     </ClCompile>
     <ClCompile Include="Interpreter.cpp">
       <Filter>GB\Interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="GB\CPU\gb_cpu.cpp">
+      <Filter>GB\CPU</Filter>
+    </ClCompile>
+    <ClCompile Include="Generic\address.cpp">
+      <Filter>Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="App\main.cpp">
+      <Filter>App</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="Interpreter.h">
       <Filter>GB\Interpreter</Filter>
+    </ClInclude>
+    <ClInclude Include="Generic\address.h">
+      <Filter>Generic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

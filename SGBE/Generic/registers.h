@@ -4,7 +4,7 @@
 #include <iostream>
 
 /*
-	A genreal 8-bit register class
+	A genreal 8-bit register
 */
 class ByteRegister
 {
@@ -15,7 +15,7 @@ public:
 	ByteRegister& operator=(const ByteRegister&) = delete;
 
 	void SetValue(uint8_t i_NewValue);
-	uint8_t GetValue();
+	uint8_t GetValue() const;
 	void SetBit(uint8_t i_BitNumber, bool i_IsRaise);
 	bool GetBit(uint8_t i_BitNumber) const;
 	void Clear();
@@ -25,6 +25,9 @@ protected:
 	uint8_t m_Value = 0;
 };
 
+/*
+	A genreal 16-bit register
+*/
 class WordRegister
 {
 public:
@@ -34,7 +37,7 @@ public:
 	WordRegister& operator=(const WordRegister&) = delete;
 
 	void SetValue(uint16_t i_NewValue);
-	uint16_t GetValue();
+	uint16_t GetValue() const;
 	void SetLowByte(uint8_t i_NewLowByte);
 	uint8_t GetLowByte() const;
 	void SetHighByte(uint8_t i_NewHighByte);
@@ -46,6 +49,26 @@ public:
 	void Decrement();
 private:
 	uint16_t m_Value = 0;
+};
+
+/*
+	16-bit register that is consists of 2x8-bit registers paired together
+*/
+class Pair8BRegisters
+{
+public:
+	Pair8BRegisters(ByteRegister& i_HighByteRegister, ByteRegister& i_LowByteRegister);
+	virtual ~Pair8BRegisters() = default;
+	Pair8BRegisters(const Pair8BRegisters&) = delete;
+	Pair8BRegisters& operator=(const Pair8BRegisters&) = delete;
+
+	void SetValue(uint16_t i_NewValue);
+	uint16_t GetValue() const;
+	ByteRegister& GetHighRegister();
+	ByteRegister& GetLowRegister();
+private:
+	ByteRegister& m_HighByteRegister;
+	ByteRegister& m_LowByteRegister;
 };
 
 #endif

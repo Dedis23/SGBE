@@ -7,7 +7,10 @@ class Interpreter
 {
 public:
 	Interpreter() = default;
-	~Interpreter() = default;
+	virtual ~Interpreter() = default;
+	Interpreter(const Interpreter&) = delete;
+	Interpreter& operator=(const Interpreter&) = delete;
+
 	void Run();
 
 private:

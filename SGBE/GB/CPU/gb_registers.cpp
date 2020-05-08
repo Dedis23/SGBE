@@ -41,27 +41,3 @@ bool FlagRegister::GetCFlag() const
 {
 	return GetBit(5);
 }
-
-PairRegisters::PairRegisters(ByteRegister& i_HighByteRegister, ByteRegister& i_LowByteRegister) 
-	: m_HighByteRegister(i_HighByteRegister), m_LowByteRegister(i_LowByteRegister) {}
-
-uint16_t PairRegisters::GetValue()
-{
-	return (static_cast<uint16_t>(m_HighByteRegister.GetValue() << 8)) | m_LowByteRegister.GetValue();
-}
-
-void PairRegisters::SetValue(uint16_t i_NewValue)
-{
-	m_LowByteRegister.SetValue(static_cast<uint8_t>(i_NewValue));
-	m_HighByteRegister.SetValue(static_cast<uint8_t>(i_NewValue >> 8));
-}
-
-ByteRegister& PairRegisters::GetHighRegister()
-{
-	return m_HighByteRegister;
-}
-
-ByteRegister& PairRegisters::GetLowRegister()
-{
-	return m_LowByteRegister;
-}
