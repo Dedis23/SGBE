@@ -1,7 +1,7 @@
-#ifndef __INTERPRETER_H
-#define __INTERPRETER_H
+#ifndef __GB_INTERPRETER_H
+#define __GB_INTERPRETER_H
 
-#include "GB/CPU/gb_cpu.h"
+#include "../CPU/gb_cpu.h"
 
 class Interpreter
 {

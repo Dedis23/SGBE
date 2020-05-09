@@ -1,6 +1,7 @@
 #include "SDL.h"
 #include "../Generic/registers.h"
 #include "../GB/CPU/gb_registers.h"
+#include "../Generic/logger.h"
 
 int main(int argc, char* argv[])
 {
@@ -59,85 +60,85 @@ int main(int argc, char* argv[])
 	//}
 	//std::cout << std::endl;
 
-	WordRegister a(60000);
-	std::cout << a.GetValue() << std::endl;
-	
-	for (int i = 16; i > 0; i--)
-	{
-		std::cout << a.GetBit(i);
-	}
-	std::cout << std::endl;
-	
-	a.SetBit(1, true);
-	a.SetBit(3, true);
-	
-	for (int i = 16; i > 0; i--)
-	{
-		std::cout << a.GetBit(i);
-	}
-	std::cout << std::endl;
-
-	std::cout << "Low byte is: " << a.GetLowByte() << std::endl;
-	for (int i = 8; i > 0; i--)
-	{
-		std::cout << a.GetBit(i);
-	}
-	std::cout << std::endl;
-
-	std::cout << "High byte is: " << a.GetHighByte() << std::endl;
-	for (int i = 16; i > 8; i--)
-	{
-		std::cout << a.GetBit(i);
-	}
-	std::cout << std::endl;
-
-	std::cout << "Changing low byte:" << std::endl;
-	uint8_t test = 0;
-	a.SetLowByte(test);
-	for (int i = 8; i > 0; i--)
-	{
-		std::cout << a.GetBit(i);
-	}
-	std::cout << std::endl;
-
-	uint8_t test2 = 188;
-	a.SetHighByte(test2);
-	std::cout << "Changing high byte:" << std::endl;
-	for (int i = 16; i > 8; i--)
-	{
-		std::cout << a.GetBit(i);
-	}
-	std::cout << std::endl;
-
-	ByteRegister low(145);
-	ByteRegister high(222);
-
-	Pair8BRegisters pair(high, low);
-
-	pair.SetValue(62000);
-
-	uint16_t combinedValue = pair.GetValue();
-	a.SetValue(combinedValue);
-
-	for (int i = 16; i > 0; i--)
-	{
-		std::cout << a.GetBit(i);
-	}
-	std::cout << std::endl;
-
-	std::cout << "high byte is:" << std::endl;
-	for (int i = 8; i > 0; i--)
-	{
-		std::cout << high.GetBit(i);
-	}
-	std::cout << std::endl;
-
-	std::cout << "low byte is:" << std::endl;
-	for (int i = 8; i > 0; i--)
-	{
-		std::cout << low.GetBit(i);
-	}
-	std::cout << std::endl;
+	//WordRegister a(60000);
+	//std::cout << a.GetValue() << std::endl;
+	//
+	//for (int i = 16; i > 0; i--)
+	//{
+	//	std::cout << a.GetBit(i);
+	//}
+	//std::cout << std::endl;
+	//
+	//a.SetBit(1, true);
+	//a.SetBit(3, true);
+	//
+	//for (int i = 16; i > 0; i--)
+	//{
+	//	std::cout << a.GetBit(i);
+	//}
+	//std::cout << std::endl;
+	//
+	//std::cout << "Low byte is: " << a.GetLowByte() << std::endl;
+	//for (int i = 8; i > 0; i--)
+	//{
+	//	std::cout << a.GetBit(i);
+	//}
+	//std::cout << std::endl;
+	//
+	//std::cout << "High byte is: " << a.GetHighByte() << std::endl;
+	//for (int i = 16; i > 8; i--)
+	//{
+	//	std::cout << a.GetBit(i);
+	//}
+	//std::cout << std::endl;
+	//
+	//std::cout << "Changing low byte:" << std::endl;
+	//uint8_t test = 0;
+	//a.SetLowByte(test);
+	//for (int i = 8; i > 0; i--)
+	//{
+	//	std::cout << a.GetBit(i);
+	//}
+	//std::cout << std::endl;
+	//
+	//uint8_t test2 = 188;
+	//a.SetHighByte(test2);
+	//std::cout << "Changing high byte:" << std::endl;
+	//for (int i = 16; i > 8; i--)
+	//{
+	//	std::cout << a.GetBit(i);
+	//}
+	//std::cout << std::endl;
+	//
+	//ByteRegister low(145);
+	//ByteRegister high(222);
+	//
+	//Pair8BRegisters pair(high, low);
+	//
+	//pair.SetValue(62000);
+	//
+	//uint16_t combinedValue = pair.GetValue();
+	//a.SetValue(combinedValue);
+	//
+	//for (int i = 16; i > 0; i--)
+	//{
+	//	std::cout << a.GetBit(i);
+	//}
+	//std::cout << std::endl;
+	//
+	//std::cout << "high byte is:" << std::endl;
+	//for (int i = 8; i > 0; i--)
+	//{
+	//	std::cout << high.GetBit(i);
+	//}
+	//std::cout << std::endl;
+	//
+	//std::cout << "low byte is:" << std::endl;
+	//for (int i = 8; i > 0; i--)
+	//{
+	//	std::cout << low.GetBit(i);
+	//}
+	//std::cout << std::endl;
 
 	//std::cout << a.GetValue() << std::endl;
 	//
@@ -152,6 +153,14 @@ int main(int argc, char* argv[])
 	//a.Decrement();
 	//
 	//std::cout << a.GetValue() << std::endl;
+
+	LOG_INFO_TO_FILE("DEDI SIDI EFG");
+	LOG_INFO_TO_FILE("HIJKLMNOP");
+
+	LOGGER_SET_FILE_NAME("dedi_sidi.log");
+
+	LOG_INFO_TO_FILE("QRSTUVW");
+	LOG_INFO_TO_FILE("XYZ");
 
 	return 0;
 }

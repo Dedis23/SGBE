@@ -153,17 +153,21 @@
     <ClCompile Include="App\main.cpp" />
     <ClCompile Include="GB\CPU\gb_cpu.cpp" />
     <ClCompile Include="GB\CPU\gb_registers.cpp" />
+    <ClCompile Include="GB\Interpreter\gb_interpreter.cpp" />
     <ClCompile Include="Generic\address.cpp" />
+    <ClCompile Include="Generic\logger.cpp" />
     <ClCompile Include="Generic\registers.cpp" />
-    <ClCompile Include="Interpreter.cpp" />
+    <ClCompile Include="Generic\‏‏cartridge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GB\CPU\gb_cpu.h" />
     <ClInclude Include="GB\CPU\gb_registers.h" />
     <ClInclude Include="GB\gb_utility.h" />
+    <ClInclude Include="GB\Interpreter\gb_interpreter.h" />
     <ClInclude Include="Generic\address.h" />
+    <ClInclude Include="Generic\cartridge.h" />
+    <ClInclude Include="Generic\logger.h" />
     <ClInclude Include="Generic\registers.h" />
-    <ClInclude Include="Interpreter.h" />
     <ClInclude Include="utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

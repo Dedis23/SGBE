@@ -22,14 +22,11 @@
     <Filter Include="GB\CPU">
       <UniqueIdentifier>{7f8db396-5688-4b01-a8b5-167a487c61a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GB\MMU">
-      <UniqueIdentifier>{89486bae-da77-4d43-ad74-e5f36986f8cf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="App">
       <UniqueIdentifier>{65d38de0-5298-42e6-94a7-8ec419d7ab12}</UniqueIdentifier>
     </Filter>
     <Filter Include="GB\Interpreter">
-      <UniqueIdentifier>{ab2b2236-229c-4d8c-8584-9238f3c595ed}</UniqueIdentifier>
+      <UniqueIdentifier>{78ba6b5e-8f9d-4c48-9871-fd217a3b777a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,17 +36,23 @@
     <ClCompile Include="GB\CPU\gb_registers.cpp">
       <Filter>GB\CPU</Filter>
     </ClCompile>
-    <ClCompile Include="Interpreter.cpp">
-      <Filter>GB\Interpreter</Filter>
-    </ClCompile>
     <ClCompile Include="GB\CPU\gb_cpu.cpp">
       <Filter>GB\CPU</Filter>
+    </ClCompile>
+    <ClCompile Include="App\main.cpp">
+      <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="Generic\address.cpp">
       <Filter>Generic</Filter>
     </ClCompile>
-    <ClCompile Include="App\main.cpp">
-      <Filter>App</Filter>
+    <ClCompile Include="GB\Interpreter\gb_interpreter.cpp">
+      <Filter>GB\Interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="Generic\‏‏cartridge.cpp">
+      <Filter>Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="Generic\logger.cpp">
+      <Filter>Generic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,10 +71,16 @@
     <ClInclude Include="GB\gb_utility.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="Interpreter.h">
+    <ClInclude Include="Generic\address.h">
+      <Filter>Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="Generic\cartridge.h">
+      <Filter>Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\Interpreter\gb_interpreter.h">
       <Filter>GB\Interpreter</Filter>
     </ClInclude>
-    <ClInclude Include="Generic\address.h">
+    <ClInclude Include="Generic\logger.h">
       <Filter>Generic</Filter>
     </ClInclude>
   </ItemGroup>
