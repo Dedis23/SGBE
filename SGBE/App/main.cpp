@@ -2,6 +2,35 @@
 #include "../Generic/registers.h"
 #include "../GB/CPU/gb_registers.h"
 #include "../Generic/logger.h"
+#include <thread>
+
+#define NUM_OF_TESTS 1000
+
+int test1(int tnum)
+{
+	for (int i = 0; i < NUM_OF_TESTS; i++)
+	{
+
+		stringstream strs;
+		strs << "A message number: " << i + 1 << " from thread number: " << tnum;
+		//LOGGER_SET_LOG_LEVEL(Logger::Log_Level::Critical);
+		LOG_ERROR(strs.str());
+	}
+	return 0;
+}
+
+int test2(int tnum)
+{
+	for (int i = 0; i < NUM_OF_TESTS; i++)
+	{
+
+		stringstream strs;
+		strs << "A message number: " << i + 1 << " from thread number: " << tnum;
+		//LOGGER_SET_LOG_LEVEL(Logger::Log_Level::Critical);
+		LOG_INFO(strs.str());
+	}
+	return 0;
+}
 
 int main(int argc, char* argv[])
 {
@@ -154,13 +183,24 @@ int main(int argc, char* argv[])
 	//
 	//std::cout << a.GetValue() << std::endl;
 
-	LOG_INFO_TO_FILE("DEDI SIDI EFG");
-	LOG_INFO_TO_FILE("HIJKLMNOP");
+LOGGER_SET_FILE_NAME("thread tests.log");
+	
+thread t1(test1, 1);
 
-	LOGGER_SET_FILE_NAME("dedi_sidi.log");
+thread t2(test2, 2);
 
-	LOG_INFO_TO_FILE("QRSTUVW");
-	LOG_INFO_TO_FILE("XYZ");
+t1.join();
+t2.join();
+
+	//LOG_INFO("DEDI SIDI EFG");
+	//LOG_INFO_TO_FILE("HIJKLMNOP");
+	//
+	//LOGGER_SET_FILE_NAME("dedi_sidi.log");
+	//
+	//LOG_INFO_TO_FILE("QRSTUVW");
+	//LOG_INFO_TO_FILE("XYZ");
+
+	//cout << Logger::GetInstance()->getCurrentTime() << endl;
 
 	return 0;
 }
