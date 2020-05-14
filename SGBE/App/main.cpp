@@ -183,7 +183,9 @@ int main(int argc, char* argv[])
 	//
 	//std::cout << a.GetValue() << std::endl;
 
+
 LOGGER_SET_FILE_NAME("thread tests.log");
+
 
 //thread t1(test1, 1);
 //
