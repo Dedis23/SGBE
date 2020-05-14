@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
 	//std::cout << a.GetValue() << std::endl;
 
 LOGGER_SET_FILE_NAME("thread tests.log");
-	
+
 //thread t1(test1, 1);
 //
 //thread t2(test2, 2);
@@ -192,7 +192,9 @@ LOGGER_SET_FILE_NAME("thread tests.log");
 //t1.join();
 //t2.join();
 
+
 string(__FILE__).substr(string(__FILE__).find_last_of(R"(\)") + 1);
+
 
 	//LOG_INFO("DEDI SIDI EFG");
 	//LOG_INFO_TO_FILE("HIJKLMNOP");
