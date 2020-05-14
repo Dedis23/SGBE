@@ -192,9 +192,7 @@ LOGGER_SET_FILE_NAME("thread tests.log");
 //t1.join();
 //t2.join();
 
-
 string(__FILE__).substr(string(__FILE__).find_last_of(R"(\)") + 1);
-
 
 	//LOG_INFO("DEDI SIDI EFG");
 	//LOG_INFO_TO_FILE("HIJKLMNOP");
