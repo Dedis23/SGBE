@@ -89,7 +89,24 @@ void Logger::initFileStream()
 string Logger::constructLog(const string& i_Headline, const string& i_Message)
 {
 	stringstream ss;
-	ss << i_Headline << " [" << getCurrentTime() << " - " << i_Message;
+	string token;
+	vector<string> tokens;
+
+	// split the filename, line, func name and message into seperate strings
+	ss << i_Message;
+	for (int i = 0; i < 4; i++)
+	{
+		getline(ss, token, '\n');
+		tokens.push_back(token);
+	}
+
+	// remove the full path from filename
+	tokens[0] = tokens[0].substr(tokens[0].find_last_of(R"(\)") + 1);
+
+	// build the log with time and headline
+	ss.str("");
+	ss.clear();
+	ss << getCurrentTime() << " " << i_Headline << " " << tokens[0] << " at " << tokens[1] << " line " << tokens[2] << ": " << tokens[3];
 	return ss.str();
 }
 

@@ -168,7 +168,6 @@
     <ClInclude Include="Generic\cartridge.h" />
     <ClInclude Include="Generic\logger.h" />
     <ClInclude Include="Generic\registers.h" />
-    <ClInclude Include="utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

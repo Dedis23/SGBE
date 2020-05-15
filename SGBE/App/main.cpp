@@ -185,6 +185,7 @@ int main(int argc, char* argv[])
 
 
 LOGGER_SET_FILE_NAME("thread tests.log");
+LOGGER_SET_LOG_TYPE(Logger::Log_Type::Console);
 
 
 //thread t1(test1, 1);
@@ -193,6 +194,8 @@ LOGGER_SET_FILE_NAME("thread tests.log");
 //
 //t1.join();
 //t2.join();
+
+LOG_INFO("ASD");
 
 string(__FILE__).substr(string(__FILE__).find_last_of(R"(\)") + 1);
 

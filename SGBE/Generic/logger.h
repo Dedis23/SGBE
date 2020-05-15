@@ -12,23 +12,22 @@
 #include <mutex>
 #include <chrono>
 #include <ctime>
+#include <vector>
 
 using namespace std;
 
 /* Direct interface using macros */
-#define LOG_INFO(msg) LOGGER_HEADLINE(msg) Logger::GetInstance()->Info(lss.str())
-#define LOG_ERROR(msg) LOGGER_HEADLINE(msg) Logger::GetInstance()->Error(lss.str())
-#define LOG_CRITICAL(msg) LOGGER_HEADLINE(msg) Logger::GetInstance()->Critical(lss.str())
+#define LOG_INFO(message) LOG_METADATA(message) Logger::GetInstance()->Info(metaDataAndMsg.str())
+#define LOG_ERROR(message) LOG_METADATA(message) Logger::GetInstance()->Error(metaDataAndMsg.str())
+#define LOG_CRITICAL(message) LOG_METADATA(message) Logger::GetInstance()->Critical(metaDataAndMsg.str())
 
 /* Direct interface to change logger options */
 #define LOGGER_SET_FILE_NAME(fileName) Logger::GetInstance()->SetFileName(fileName)
 #define LOGGER_SET_LOG_LEVEL(LogLevel) Logger::GetInstance()->SetLogLevel(LogLevel)
 #define LOGGER_SET_LOG_TYPE(LogType) Logger::GetInstance()->SetLogType(LogType)
 
-/* utility macros, not be used outside */
-// string logMetaData; loogMetaData.append(__FILENAME__);
-#define LOGGER_HEADLINE(msg) __FILENAME__ stringstream lss; lss << f << ":" << __LINE__ << " - " << __func__ << "] --> " << msg;
-#define __FILENAME__ string f = __FILE__; f = f.substr(f.find_last_of(R"(\)") + 1);
+/* utility macros to get log metadata, not be used outside */
+#define LOG_METADATA(message) stringstream metaDataAndMsg; metaDataAndMsg << __FILE__ << "\n" << __func__ << "\n" << __LINE__ << "\n" << message;
 
 class Logger
 {
