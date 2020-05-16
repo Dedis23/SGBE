@@ -68,7 +68,6 @@ void Logger::Critical(const string& i_Message)
 	if (m_LogLevel >= Logger::Log_Level::Critical)
 	{
 		outputLog(constructLog(c_CriticalHeadline, i_Message));
-		exit(EXIT_FAILURE);
 	}
 }
 

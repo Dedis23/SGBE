@@ -8,6 +8,7 @@
 #define __GB_UTILITY_H
 
 #include <iostream>
+#include "../Generic/logger.h"
 
 const uint32_t TARGET_FRAME_RATE = 60;
 const uint32_t GAMEBOY_SCREEN_WIDTH = 160;

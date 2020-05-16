@@ -18,18 +18,58 @@
 
 using namespace std;
 
-/* Direct interface using macros */
-#define LOG_INFO(message) LOG_METADATA(message) Logger::GetInstance()->Info(metaDataAndMsg.str())
-#define LOG_ERROR(message) LOG_METADATA(message) Logger::GetInstance()->Error(metaDataAndMsg.str())
-#define LOG_CRITICAL(message) LOG_METADATA(message) Logger::GetInstance()->Critical(metaDataAndMsg.str())
+/****************************************************
+ *			Direct interface using macros			*
+ *			Use only these macros to write logs     *
+ ****************************************************/
 
-/* Direct interface to change logger options */
+/* Direct interface to log in INFO level */
+#define LOG_INFO(condition, action, message) \
+	LOG_METADATA(message) \
+	CHECK_CONDITION(condition, action, Logger::GetInstance()->Info(metaDataAndMsg.str()))
+
+/* Direct interface to log in ERROR level */
+#define LOG_ERROR(condition, action, message) \
+	LOG_METADATA(message) \
+	CHECK_CONDITION(condition, action, Logger::GetInstance()->Error(metaDataAndMsg.str()))
+
+/* Direct interface to log in CRITICAL level */
+#define LOG_CRITICAL(condition, action, message) \
+	LOG_METADATA(message) \
+	CHECK_CONDITION(condition, action, Logger::GetInstance()->Critical(metaDataAndMsg.str()))
+
+/**********************************************
+ * Direct interface to change logger options  *
+ **********************************************/
+
+/* Direct interface to change the logger filename */
 #define LOGGER_SET_FILE_NAME(fileName) Logger::GetInstance()->SetFileName(fileName)
+
+/* Direct interface to set the logging level: INFO, ERROR, CRITICAL or DISABLED */
 #define LOGGER_SET_LOG_LEVEL(LogLevel) Logger::GetInstance()->SetLogLevel(LogLevel)
+
+/* Direct interface to set the logger output type: File or Console */
 #define LOGGER_SET_LOG_TYPE(LogType) Logger::GetInstance()->SetLogType(LogType)
 
-/* utility macros to get log metadata, not be used outside */
-#define LOG_METADATA(message) stringstream metaDataAndMsg; metaDataAndMsg << __FILE__ << "\n" << __func__ << "\n" << __LINE__ << "\n" << message;
+/**************************************************************
+ * Utility macros to get log metadata, NOT TO BE USED OUTSDIE *
+ **************************************************************/
+
+#define LOG_METADATA(message) \
+	stringstream metaDataAndMsg; \
+	metaDataAndMsg << __FILE__ << "\n" << __func__ << "\n" << __LINE__ << "\n" << message; \
+
+#define CHECK_CONDITION(condition, action, loggerFunction) \
+	if (condition) \
+	{ \
+		loggerFunction; \
+		action; \
+	} \
+	static_assert(true, "")  // << this last part is to force semicolon upon usage
+
+/***************************
+ *		Logger class       *
+ ***************************/
 
 class Logger
 {
