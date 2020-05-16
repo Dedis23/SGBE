@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App\main.cpp" />
+    <ClCompile Include="App\sgbe.cpp" />
     <ClCompile Include="GB\CPU\gb_cpu.cpp" />
     <ClCompile Include="GB\CPU\gb_registers.cpp" />
     <ClCompile Include="GB\Interpreter\gb_interpreter.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="Generic\gb_‏‏cartridge.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\sgbe.h" />
     <ClInclude Include="GB\CPU\gb_cpu.h" />
     <ClInclude Include="GB\CPU\gb_registers.h" />
     <ClInclude Include="GB\gb_utility.h" />
