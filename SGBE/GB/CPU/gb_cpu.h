@@ -1,3 +1,9 @@
+/************************************************
+ *			Copyright (C) 2020 Dedi Sidi		*
+ *												*
+ *			The CPU of the gameboy				*
+ ************************************************/
+
 #ifndef __GB_CPU_H
 #define __GB_CPU_H
 

@@ -1,3 +1,9 @@
+/**********************************************************************
+ *			Copyright (C) 2020 Dedi Sidi			                  *
+ *														              *
+ *			register classes that are specific for the gameboy        *
+ **********************************************************************/
+
 #ifndef __GB_REGISTERS_H
 #define __GB_REGISTERS_H
 

@@ -1,10 +1,16 @@
+/************************************************************
+ *			Copyright (C) 2020 Dedi Sidi					*
+ *															*
+ *			Generic address classes of various sizes		*
+ ************************************************************/
+
 #ifndef __ADDRESS_H
 #define __ADDRESS_H
 
 #include "registers.h"
 
 /*
-	A genreal 16-bit address
+	A general 16-bit address
 */
 class WordAddress
 {

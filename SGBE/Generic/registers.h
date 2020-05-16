@@ -1,10 +1,16 @@
+/************************************************************
+ *			Copyright (C) 2020 Dedi Sidi					*
+ *															*
+ *			Generic registers classes of various sizes		*
+ ************************************************************/
+
 #ifndef __REGISTERS_H
 #define __REGISTERS_H
 
 #include <iostream>
 
 /*
-	A genreal 8-bit register
+	A general 8-bit register
 */
 class ByteRegister
 {
@@ -26,7 +32,7 @@ protected:
 };
 
 /*
-	A genreal 16-bit register
+	A general 16-bit register
 */
 class WordRegister
 {

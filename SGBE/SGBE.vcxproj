@@ -157,7 +157,7 @@
     <ClCompile Include="Generic\address.cpp" />
     <ClCompile Include="Generic\logger.cpp" />
     <ClCompile Include="Generic\registers.cpp" />
-    <ClCompile Include="Generic\‏‏cartridge.cpp" />
+    <ClCompile Include="Generic\gb_‏‏cartridge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GB\CPU\gb_cpu.h" />
@@ -165,7 +165,7 @@
     <ClInclude Include="GB\gb_utility.h" />
     <ClInclude Include="GB\Interpreter\gb_interpreter.h" />
     <ClInclude Include="Generic\address.h" />
-    <ClInclude Include="Generic\cartridge.h" />
+    <ClInclude Include="Generic\gb_cartridge.h" />
     <ClInclude Include="Generic\logger.h" />
     <ClInclude Include="Generic\registers.h" />
   </ItemGroup>

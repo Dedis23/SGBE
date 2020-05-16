@@ -1,6 +1,8 @@
-/****************************************
- *	Generic thread-safe Logger class	*
- ****************************************/
+/********************************************************
+ *			Copyright (C) 2020 Dedi Sidi				*
+ *														*
+ *			Generic thread-safe Logger class			*
+ ********************************************************/
 
 #ifndef __LOGGER_H
 #define __LOGGER_H
@@ -47,9 +49,9 @@ public:
 	};
 
 public:
+	virtual ~Logger() = default;
 	Logger(const Logger&) = delete;
 	Logger& operator=(const Logger&) = delete;
-	virtual ~Logger() = default;
 
 	static Logger* GetInstance();
 	static void SetFileName(const string& i_FileName);

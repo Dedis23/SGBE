@@ -1,15 +1,22 @@
+/********************************************************************************
+ *			Copyright (C) 2020 Dedi Sidi										*
+ *																				*
+ *			The interpreter is the main emulation module						*
+ *			It holds and operates the various components of the gameboy			*
+ ********************************************************************************/
+
 #ifndef __GB_INTERPRETER_H
 #define __GB_INTERPRETER_H
 
 #include "../CPU/gb_cpu.h"
 
-class Interpreter
+class GBInterpreter
 {
 public:
-	Interpreter() = default;
-	virtual ~Interpreter() = default;
-	Interpreter(const Interpreter&) = delete;
-	Interpreter& operator=(const Interpreter&) = delete;
+	GBInterpreter() = default;
+	virtual ~GBInterpreter() = default;
+	GBInterpreter(const GBInterpreter&) = delete;
+	GBInterpreter& operator=(const GBInterpreter&) = delete;
 
 	void Run();
 

@@ -1,5 +1,11 @@
-#ifndef __UTILITY_H
-#define __UTILITY_H
+/*************************************************************************************
+ *			Copyright (C) 2020 Dedi Sidi			                		         *
+ *														                	         *
+ *			Utility functions and definitions that are specific for the gameboy      *
+ *************************************************************************************/
+
+#ifndef __GB_UTILITY_H
+#define __GB_UTILITY_H
 
 #include <iostream>
 

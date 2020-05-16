@@ -48,11 +48,11 @@
     <ClCompile Include="GB\Interpreter\gb_interpreter.cpp">
       <Filter>GB\Interpreter</Filter>
     </ClCompile>
-    <ClCompile Include="Generic\‏‏cartridge.cpp">
-      <Filter>Generic</Filter>
-    </ClCompile>
     <ClCompile Include="Generic\logger.cpp">
       <Filter>Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="Generic\gb_‏‏cartridge.cpp">
+      <Filter>GB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -71,14 +71,14 @@
     <ClInclude Include="Generic\address.h">
       <Filter>Generic</Filter>
     </ClInclude>
-    <ClInclude Include="Generic\cartridge.h">
-      <Filter>Generic</Filter>
-    </ClInclude>
     <ClInclude Include="GB\Interpreter\gb_interpreter.h">
       <Filter>GB\Interpreter</Filter>
     </ClInclude>
     <ClInclude Include="Generic\logger.h">
       <Filter>Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="Generic\gb_cartridge.h">
+      <Filter>GB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
