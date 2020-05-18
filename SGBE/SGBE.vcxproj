@@ -156,6 +156,7 @@
     <ClCompile Include="GB\CPU\gb_registers.cpp" />
     <ClCompile Include="GB\Interpreter\gb_interpreter.cpp" />
     <ClCompile Include="Generic\address.cpp" />
+    <ClCompile Include="Generic\cli.cpp" />
     <ClCompile Include="Generic\logger.cpp" />
     <ClCompile Include="Generic\registers.cpp" />
     <ClCompile Include="Generic\gb_‏‏cartridge.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="GB\gb_utility.h" />
     <ClInclude Include="GB\Interpreter\gb_interpreter.h" />
     <ClInclude Include="Generic\address.h" />
+    <ClInclude Include="Generic\cli.h" />
     <ClInclude Include="Generic\gb_cartridge.h" />
     <ClInclude Include="Generic\logger.h" />
     <ClInclude Include="Generic\registers.h" />

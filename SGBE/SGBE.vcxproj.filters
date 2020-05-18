@@ -57,6 +57,9 @@
     <ClCompile Include="App\sgbe.cpp">
       <Filter>App</Filter>
     </ClCompile>
+    <ClCompile Include="Generic\cli.cpp">
+      <Filter>Generic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Generic\registers.h">
@@ -85,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="App\sgbe.h">
       <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="Generic\cli.h">
+      <Filter>Generic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

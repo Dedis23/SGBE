@@ -23,17 +23,17 @@ using namespace std;
  *			Use only these macros to write logs     *
  ****************************************************/
 
-/* Direct interface to log in INFO level */
+/* Direct interface to log in info level */
 #define LOG_INFO(condition, action, message) \
 	LOG_METADATA(message) \
 	CHECK_CONDITION(condition, action, Logger::GetInstance()->Info(metaDataAndMsg.str()))
 
-/* Direct interface to log in ERROR level */
+/* Direct interface to log in error level */
 #define LOG_ERROR(condition, action, message) \
 	LOG_METADATA(message) \
 	CHECK_CONDITION(condition, action, Logger::GetInstance()->Error(metaDataAndMsg.str()))
 
-/* Direct interface to log in CRITICAL level */
+/* Direct interface to log in critical level */
 #define LOG_CRITICAL(condition, action, message) \
 	LOG_METADATA(message) \
 	CHECK_CONDITION(condition, action, Logger::GetInstance()->Critical(metaDataAndMsg.str()))
@@ -57,7 +57,7 @@ using namespace std;
 
 #define LOG_METADATA(message) \
 	stringstream metaDataAndMsg; \
-	metaDataAndMsg << __FILE__ << "\n" << __func__ << "\n" << __LINE__ << "\n" << message; \
+	metaDataAndMsg << __FILE__ << "\n" << __func__ << "\n" << __LINE__ << "\n" << message;
 
 #define CHECK_CONDITION(condition, action, loggerFunction) \
 	if (condition) \
