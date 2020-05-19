@@ -11,14 +11,15 @@
 #include "SDL.h"
 #include "../Generic/cli.h"
 #include "../GB/gb_utility.h"
+#include "../GB/Interpreter/gb_interpreter.h"
 
 class SGBE
 {
 public:
     SGBE(int argc, char* argv[]);
-	virtual ~SGBE() = default;
-	SGBE(const SGBE&) = delete;
-	SGBE& operator=(const SGBE&) = delete;
+    virtual ~SGBE();
+    SGBE(const SGBE&) = delete;
+    SGBE& operator=(const SGBE&) = delete;
 
     void Run();
 
@@ -26,11 +27,19 @@ private:
     bool loadDefaultSettings();
     bool loadArguments(int argc, char* argv[]);
     bool initializeSDL();
-    static void loadRom(const string& i_FileName);
+    bool initializeInterpreter();
+
+    // CLI Options
+private:
+    static void cliRomOption(const string& i_RomFileName);
+    static void cliSilentOption();
+    static void cliLogFileNameOption(const string& i_LogFileName);
 
 private:
+    static string s_ROMFileName;
     SDL_Window* m_Window;
     SDL_Renderer* m_Renderer;
+    GBInterpreter* m_GBInterpreter;
 };
 
 #endif

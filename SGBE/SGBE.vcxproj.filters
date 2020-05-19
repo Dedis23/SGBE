@@ -51,14 +51,14 @@
     <ClCompile Include="Generic\logger.cpp">
       <Filter>Generic</Filter>
     </ClCompile>
-    <ClCompile Include="Generic\gb_‏‏cartridge.cpp">
-      <Filter>GB</Filter>
-    </ClCompile>
     <ClCompile Include="App\sgbe.cpp">
       <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="Generic\cli.cpp">
       <Filter>Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="GB\gb_‏‏cartridge.cpp">
+      <Filter>GB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,14 +83,14 @@
     <ClInclude Include="Generic\logger.h">
       <Filter>Generic</Filter>
     </ClInclude>
-    <ClInclude Include="Generic\gb_cartridge.h">
-      <Filter>GB</Filter>
-    </ClInclude>
     <ClInclude Include="App\sgbe.h">
       <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="Generic\cli.h">
       <Filter>Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\gb_cartridge.h">
+      <Filter>GB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

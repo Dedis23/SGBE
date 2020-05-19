@@ -41,7 +41,7 @@ using namespace std;
 		CHECK_CONDITION(condition, action, Logger::GetInstance()->Critical(metaDataAndMsg.str())) \
 	} static_assert(true, "")
 
-// Note - the "static_assert(true, "")" in the end to force semicolon upon usage
+// Note - the "static_assert(true, "")" at the end is to force semicolon upon usage
 
 /**********************************************
  * Direct interface to change logger options  *

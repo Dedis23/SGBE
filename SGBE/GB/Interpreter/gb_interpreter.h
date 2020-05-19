@@ -8,12 +8,16 @@
 #ifndef __GB_INTERPRETER_H
 #define __GB_INTERPRETER_H
 
+#include <string>
+#include <vector>
 #include "../CPU/gb_cpu.h"
+#include "../../Generic/logger.h"
+#include "../gb_cartridge.h"
 
 class GBInterpreter
 {
 public:
-	GBInterpreter() = default;
+	GBInterpreter(const std::string& i_RomFileName);
 	virtual ~GBInterpreter() = default;
 	GBInterpreter(const GBInterpreter&) = delete;
 	GBInterpreter& operator=(const GBInterpreter&) = delete;
@@ -22,6 +26,7 @@ public:
 
 private:
 	GBCPU m_CPU;
+	GBCartridge m_Cartridge;
 };
 
 #endif

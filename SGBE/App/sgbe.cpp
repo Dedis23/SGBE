@@ -1,6 +1,8 @@
 #include "sgbe.h"
 
-SGBE::SGBE(int argc, char* argv[]) : m_Window(nullptr), m_Renderer(nullptr)
+string SGBE::s_ROMFileName = "";
+
+SGBE::SGBE(int argc, char* argv[]) : m_Window(nullptr), m_Renderer(nullptr), m_GBInterpreter(nullptr)
 {
 	bool res;
 
@@ -12,11 +14,20 @@ SGBE::SGBE(int argc, char* argv[]) : m_Window(nullptr), m_Renderer(nullptr)
 
 	res = initializeSDL();
 	LOG_CRITICAL(res == false, throw exception(), "Failed to initialize SDL");
+
+	res = initializeInterpreter();
+	LOG_CRITICAL(res == false, throw exception(), "Failed to initialize the interpreter");
+}
+
+SGBE::~SGBE()
+{
+	delete m_GBInterpreter;
+	m_GBInterpreter = nullptr;
 }
 
 void SGBE::Run()
 {
-	SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
+	SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255); // todo remove this
 	SDL_RenderClear(m_Renderer);
 	SDL_RenderPresent(m_Renderer);
 	SDL_Delay(3000);
@@ -34,12 +45,10 @@ bool SGBE::loadDefaultSettings()
 bool SGBE::loadArguments(int argc, char* argv[])
 {
 	CLI cli;
-
-	cli.AddOption("game", &loadRom);
+	cli.AddOption("game", &cliRomOption);
+	cli.AddOption("silent", &cliSilentOption);
+	cli.AddOption("logfile", &cliLogFileNameOption);
 	cli.LoadArgs(argc, argv);
-	
-	// CHECK THAT MAYBE THERE IS A BUG WITH CLI IS THAT WE CAN ADD MULTIPLE GAMES BUT IT WAS REGISTERED AS A SINGLE ARG (LIKE NOW)
-	// MAYBE THIS IS NOW WORKING ACTUALLY
 
 	return true;
 }
@@ -57,8 +66,36 @@ bool SGBE::initializeSDL()
 	return true;
 }
 
-void SGBE::loadRom(const string& i_FileName)
+bool SGBE::initializeInterpreter()
 {
-	// TODO
-	cout << "loaded rom: " << i_FileName << endl;
+	// assert that the user inserted a rom file name
+	LOG_ERROR(s_ROMFileName == "", return false, "Cannot initialize without a ROM file name");
+
+	try
+	{
+		m_GBInterpreter = new GBInterpreter(s_ROMFileName);
+	}
+	catch (const std::exception&)
+	{
+		return false;
+	}
+}
+
+void SGBE::cliRomOption(const string& i_RomFileName)
+{
+	s_ROMFileName = i_RomFileName;
+}
+
+void SGBE::cliSilentOption()
+{
+	LOGGER_SET_LOG_LEVEL(Logger::LogLevel::Disabled);
+}
+
+void SGBE::cliLogFileNameOption(const string& i_LogFileName)
+{
+	LOGGER_SET_LOG_TYPE(Logger::LogType::File);
+	LOG_INFO(true, NOP, "Log type set to File");
+
+	LOGGER_SET_FILE_NAME(i_LogFileName);
+	LOG_INFO(true, NOP, "Log file name set to" << i_LogFileName);
 }

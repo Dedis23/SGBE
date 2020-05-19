@@ -10,17 +10,22 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iterator>
+#include "../Generic/logger.h"
 
 using namespace std;
 
 class GBCartridge
 {
 public:
-    GBCartridge(const string& i_FilePath);
+    GBCartridge(const string& i_RomFileName);
 	virtual ~GBCartridge() = default;
 
+private:
+    bool loadROM(const string& i_RomFilePath);
+
 protected:
-	vector<uint8_t> mData;
+	vector<uint8_t> m_ROMData;
 };
 
 #endif

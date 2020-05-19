@@ -2,9 +2,14 @@
 
 CLI::CLI(const string& i_OptionDelimiter) : m_OptionDelimiter(i_OptionDelimiter) {}
 
-void CLI::AddOption(const string& i_Option, OptionFunction i_Function)
+void CLI::AddOption(const string& i_Option, OptionFunctionNoArg i_Function)
 {
-	m_OptionsMap.insert(std::make_pair(i_Option, i_Function));
+	m_NoArgsOptionsMap.insert(std::make_pair(i_Option, i_Function));
+}
+
+void CLI::AddOption(const string& i_Option, OptionFunctionSingleArg i_Function)
+{
+	m_SingleArgOptionsMap.insert(std::make_pair(i_Option, i_Function));
 }
 
 void CLI::AddOption(const string& i_Option, OptionFunctionMultipleArgs i_FunctionWithMultipleArgs)
@@ -44,22 +49,29 @@ void CLI::LoadArgs(int argc, char* argv[])
 			}
 		}
 	}
-	
+
 	// invoke every function of every option
-	unordered_map<string, OptionFunction>::const_iterator itrSingleArg;
-	unordered_map<string, OptionFunctionMultipleArgs>::const_iterator itrMultipleArgs;
+	unordered_map<string, OptionFunctionNoArg>::const_iterator itrNoArgMap;
+	unordered_map<string, OptionFunctionSingleArg>::const_iterator itrSingleArgMap;
+	unordered_map<string, OptionFunctionMultipleArgs>::const_iterator itrMultipleArgsMap;
 	for (int i = 0; i < options.size(); i++)
 	{
-		itrSingleArg = m_OptionsMap.find(options[i]);
-		if (itrSingleArg != m_OptionsMap.end())
+		itrNoArgMap = m_NoArgsOptionsMap.find(options[i]);
+		if (itrNoArgMap != m_NoArgsOptionsMap.end())
 		{
-			itrSingleArg->second(optionsArguments[i][0]);
+			itrNoArgMap->second();
 			continue;
 		}
-		itrMultipleArgs = m_MultipleArgsOptionsMap.find(options[i]);
-		if (itrMultipleArgs != m_MultipleArgsOptionsMap.end())
+		itrSingleArgMap = m_SingleArgOptionsMap.find(options[i]);
+		if (itrSingleArgMap != m_SingleArgOptionsMap.end())
 		{
-			itrMultipleArgs->second(optionsArguments[i]);
+			itrSingleArgMap->second(optionsArguments[i][0]);
+			continue;
+		}
+		itrMultipleArgsMap = m_MultipleArgsOptionsMap.find(options[i]);
+		if (itrMultipleArgsMap != m_MultipleArgsOptionsMap.end())
+		{
+			itrMultipleArgsMap->second(optionsArguments[i]);
 		}
 	}
 }

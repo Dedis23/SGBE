@@ -81,7 +81,7 @@ void Logger::initFileStream()
 	m_FileStream.open(s_FileName.c_str(), std::ios_base::app);
 	if (!m_FileStream.is_open() || !m_FileStream.good())
 	{
-		throw "Error opening file!";
+		throw exception("Error opening file!");
 	}
 }
 
@@ -117,7 +117,7 @@ void Logger::outputLog(const string& i_Message)
 	// output
 	if (m_LogType == Logger::LogType::File)
 	{
-		// init filestream upon first  writing
+		// init filestream upon first writing
 		if (!m_FileStream.is_open())
 		{
 			initFileStream();
