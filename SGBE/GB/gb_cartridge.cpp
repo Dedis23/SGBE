@@ -2,7 +2,7 @@
 
 GBCartridge::GBCartridge(const string& i_RomFileName)
 {
-	bool res;
+	bool res = false;
 
 	res = loadROM(i_RomFileName);
 	LOG_CRITICAL(res == false, throw exception(), "Failed to load ROM data");
@@ -10,7 +10,7 @@ GBCartridge::GBCartridge(const string& i_RomFileName)
 
 bool GBCartridge::loadROM(const string& i_RomFileName)
 {
-	bool res;
+	bool res = false;
 
 	// read file
 	std::ifstream romFile(i_RomFileName, std::ios::binary);
@@ -24,9 +24,9 @@ bool GBCartridge::loadROM(const string& i_RomFileName)
 	// reserve capacity in the vector
 	m_ROMData.reserve(fileSize);
 
-	// read the data:
+	// read the data
 	m_ROMData.insert(m_ROMData.begin(), istream_iterator<uint8_t>(romFile), std::istream_iterator<uint8_t>());
-	LOG_INFO(true, NOP, "Read " << m_ROMData.size() / 1024 << "Kb from file: " << i_RomFileName);
+	LOG_INFO(true, NOP, "Read " << m_ROMData.size() / 1024 << "KB from file: " << i_RomFileName);
 	romFile.close();
 
 	return true;

@@ -4,7 +4,7 @@ string SGBE::s_ROMFileName = "";
 
 SGBE::SGBE(int argc, char* argv[]) : m_Window(nullptr), m_Renderer(nullptr), m_GBInterpreter(nullptr)
 {
-	bool res;
+	bool res = false;
 
 	res = loadDefaultSettings();
 	LOG_CRITICAL(res == false, throw exception(), "Failed to load default settings");
@@ -21,8 +21,17 @@ SGBE::SGBE(int argc, char* argv[]) : m_Window(nullptr), m_Renderer(nullptr), m_G
 
 SGBE::~SGBE()
 {
+	// delete interpreter
 	delete m_GBInterpreter;
 	m_GBInterpreter = nullptr;
+	
+	// clean logger instance
+	Logger::ResetInstance();
+
+	// clean SDL
+	SDL_DestroyRenderer(m_Renderer);
+	SDL_DestroyWindow(m_Window);
+	SDL_Quit();
 }
 
 void SGBE::Run()
@@ -30,13 +39,13 @@ void SGBE::Run()
 	SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255); // todo remove this
 	SDL_RenderClear(m_Renderer);
 	SDL_RenderPresent(m_Renderer);
-	SDL_Delay(3000);
+	SDL_Delay(500);
 }
 
 bool SGBE::loadDefaultSettings()
 {
 	// set default logger settings
-	LOGGER_SET_LOG_LEVEL(Logger::LogLevel::Critical);
+	LOGGER_SET_LOG_LEVEL(Logger::LogLevel::Info);
 	LOGGER_SET_LOG_TYPE(Logger::LogType::Console);
 	LOGGER_SET_LOG_METADATA(false);
 

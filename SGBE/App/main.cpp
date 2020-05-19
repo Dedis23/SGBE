@@ -2,7 +2,8 @@
 
 int main(int argc, char* argv[])
 {
-	SGBE* sgbe;
+	SGBE* sgbe = nullptr;
+	int exitStatus = EXIT_SUCCESS;
 
 	try
 	{
@@ -10,11 +11,12 @@ int main(int argc, char* argv[])
 	}
 	catch (const std::exception&)
 	{
-		LOG_CRITICAL(true, exit(EXIT_FAILURE), "Failed to initialize SGBE");
+		LOG_CRITICAL(true, exitStatus = EXIT_FAILURE, "Failed to initialize SGBE");
 	}
 
 	sgbe->Run();
 	delete sgbe;
+	Logger::ResetInstance();
 
-	return EXIT_SUCCESS;
+	return exitStatus;
 }

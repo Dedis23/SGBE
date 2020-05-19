@@ -84,9 +84,9 @@ public:
 	enum class LogLevel
 	{
 		Disabled = 0,
-		Info = 1,
+		Critical = 1,
 		Error = 2,
-		Critical = 3, // ALL LOGS
+		Info = 3, // ALL LOGS
 	};
 
 	enum class LogType
@@ -101,6 +101,7 @@ public:
 	Logger& operator=(const Logger&) = delete;
 
 	static Logger* GetInstance();
+	static void ResetInstance();
 	static void SetFileName(const string& i_FileName);
 	static void SetLogLevel(const LogLevel& i_LogLevel);
 	static void SetLogType(const LogType& i_LogType);

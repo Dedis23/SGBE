@@ -22,6 +22,12 @@ Logger* Logger::GetInstance()
 	return s_Instance;
 }
 
+void Logger::ResetInstance()
+{
+	delete s_Instance;
+	s_Instance = nullptr;
+}
+
 void Logger::SetFileName(const string& i_FileName)
 {
 	// lock
