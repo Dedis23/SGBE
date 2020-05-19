@@ -23,19 +23,25 @@ void debug(const vector<string>& i_Args)
 
 int main(int argc, char* argv[])
 {
-	//LOGGER_SET_LOG_TYPE(Logger::Log_Type::Console);
+	SGBE* sgbe;
 
-	//SGBE sgbe;
-	//sgbe.Run();
+	try
+	{
+		sgbe = new SGBE(argc, argv);
+	}
+	catch (const std::exception&)
+	{
+		LOG_CRITICAL(true, exit(EXIT_FAILURE), "Failed to initialize SGBE");
+	}
 
-	//LOG_INFO(true, exit(EXIT_FAILURE), "HELLO WORLD!");
+	sgbe->Run();
+	delete sgbe;
 
-	CLI cli;
-	cli.AddOption({ "file" }, &file);
-	cli.AddOption({ "silent" }, &silent);
-	cli.AddOption({ "debug" }, &debug);
+	//CLI cli;
+	//cli.AddOption({ "file" }, &file);
+	//cli.AddOption({ "silent" }, &silent);
+	//cli.AddOption({ "debug" }, &debug);
+	//cli.LoadArgs(argc, argv);
 
-	cli.LoadArgs(argc, argv);
-
-	return 0;
+	return EXIT_SUCCESS;
 }

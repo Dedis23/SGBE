@@ -7,6 +7,11 @@ void CLI::AddOption(const string& i_Option, OptionFunction i_Function)
 	m_OptionsMap.insert(std::make_pair(i_Option, i_Function));
 }
 
+void CLI::AddOption(const string& i_Option, OptionFunctionMultipleArgs i_FunctionWithMultipleArgs)
+{
+	m_MultipleArgsOptionsMap.insert(std::make_pair(i_Option, i_FunctionWithMultipleArgs));
+}
+
 void CLI::LoadArgs(int argc, char* argv[])
 {
 	vector<string> options;
@@ -41,13 +46,20 @@ void CLI::LoadArgs(int argc, char* argv[])
 	}
 	
 	// invoke every function of every option
-	unordered_map<string, OptionFunction>::const_iterator itr;
+	unordered_map<string, OptionFunction>::const_iterator itrSingleArg;
+	unordered_map<string, OptionFunctionMultipleArgs>::const_iterator itrMultipleArgs;
 	for (int i = 0; i < options.size(); i++)
 	{
-		itr = m_OptionsMap.find(options[i]);
-		if (itr != m_OptionsMap.end())
+		itrSingleArg = m_OptionsMap.find(options[i]);
+		if (itrSingleArg != m_OptionsMap.end())
 		{
-			itr->second(optionsArguments[i]);
+			itrSingleArg->second(optionsArguments[i][0]);
+			continue;
+		}
+		itrMultipleArgs = m_MultipleArgsOptionsMap.find(options[i]);
+		if (itrMultipleArgs != m_MultipleArgsOptionsMap.end())
+		{
+			itrMultipleArgs->second(optionsArguments[i]);
 		}
 	}
 }

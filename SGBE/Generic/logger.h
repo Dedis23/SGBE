@@ -25,18 +25,23 @@ using namespace std;
 
 /* Direct interface to log in info level */
 #define LOG_INFO(condition, action, message) \
-	LOG_METADATA(message) \
-	CHECK_CONDITION(condition, action, Logger::GetInstance()->Info(metaDataAndMsg.str()))
+	{	LOG_METADATA(message) \
+		CHECK_CONDITION(condition, action, Logger::GetInstance()->Info(metaDataAndMsg.str())) \
+	} static_assert(true, "")
 
 /* Direct interface to log in error level */
 #define LOG_ERROR(condition, action, message) \
-	LOG_METADATA(message) \
-	CHECK_CONDITION(condition, action, Logger::GetInstance()->Error(metaDataAndMsg.str()))
+	{	LOG_METADATA(message) \
+		CHECK_CONDITION(condition, action, Logger::GetInstance()->Error(metaDataAndMsg.str())) \
+	} static_assert(true, "")
 
 /* Direct interface to log in critical level */
 #define LOG_CRITICAL(condition, action, message) \
-	LOG_METADATA(message) \
-	CHECK_CONDITION(condition, action, Logger::GetInstance()->Critical(metaDataAndMsg.str()))
+	{	LOG_METADATA(message) \
+		CHECK_CONDITION(condition, action, Logger::GetInstance()->Critical(metaDataAndMsg.str())) \
+	} static_assert(true, "")
+
+// Note - the "static_assert(true, "")" in the end to force semicolon upon usage
 
 /**********************************************
  * Direct interface to change logger options  *
@@ -64,8 +69,7 @@ using namespace std;
 	{ \
 		loggerFunction; \
 		action; \
-	} \
-	static_assert(true, "")  // << this last part is to force semicolon upon usage
+	} 
 
 /***************************
  *		Logger class       *
@@ -74,7 +78,7 @@ using namespace std;
 class Logger
 {
 public:
-	enum class Log_Level
+	enum class LogLevel
 	{
 		Disabled = 0,
 		Info = 1,
@@ -82,7 +86,7 @@ public:
 		Critical = 3, // ALL LOGS
 	};
 
-	enum class Log_Type
+	enum class LogType
 	{
 		Console = 0,
 		File = 1,
@@ -95,8 +99,8 @@ public:
 
 	static Logger* GetInstance();
 	static void SetFileName(const string& i_FileName);
-	static void SetLogLevel(const Log_Level& i_LogLevel);
-	static void SetLogType(const Log_Type& i_LogType);
+	static void SetLogLevel(const LogLevel& i_LogLevel);
+	static void SetLogType(const LogType& i_LogType);
 
 	void Info(const string& i_Message);
 	void Error(const string& i_Message);
@@ -116,8 +120,8 @@ private:
 	static std::mutex s_FileLock;
 	static std::ofstream m_FileStream;
 	static string s_FileName;
-	Log_Level m_LogLevel = Log_Level::Critical;
-	Log_Type m_LogType = Log_Type::File;
+	LogLevel m_LogLevel = LogLevel::Critical;
+	LogType m_LogType = LogType::File;
 	const string c_InfoHeadline = "[INFO]:";
 	const string c_ErrorHeadline = "[ERROR]:";
 	const string c_CriticalHeadline = "[CRITICAL]:";

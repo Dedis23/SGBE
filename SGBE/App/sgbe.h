@@ -9,12 +9,13 @@
 #define __SGBE_H
 
 #include "SDL.h"
+#include "../Generic/cli.h"
 #include "../GB/gb_utility.h"
 
 class SGBE
 {
 public:
-    SGBE();
+    SGBE(int argc, char* argv[]);
 	virtual ~SGBE() = default;
 	SGBE(const SGBE&) = delete;
 	SGBE& operator=(const SGBE&) = delete;
@@ -22,7 +23,10 @@ public:
     void Run();
 
 private:
-    void initialize();
+    bool loadDefaultSettings();
+    bool loadArguments(int argc, char* argv[]);
+    bool initializeSDL();
+    static void loadRom(const string& i_FileName);
 
 private:
     SDL_Window* m_Window;

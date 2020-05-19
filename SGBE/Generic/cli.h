@@ -13,7 +13,8 @@
 
 using namespace std;
 
-typedef void (*OptionFunction)(const vector<string>&);
+typedef void (*OptionFunction)(const string&);
+typedef void (*OptionFunctionMultipleArgs)(const vector<string>&);
 
 class CLI
 {
@@ -24,10 +25,12 @@ public:
     CLI& operator=(const CLI&) = delete;
 
     void AddOption(const string& i_Option, OptionFunction i_Function);
+    void AddOption(const string& i_Option, OptionFunctionMultipleArgs i_FunctionWithMultipleArgs);
     void LoadArgs(int argc, char* argv[]);
 
 private:
     unordered_map<string, OptionFunction> m_OptionsMap;
+    unordered_map<string, OptionFunctionMultipleArgs> m_MultipleArgsOptionsMap;
     string m_OptionDelimiter;
 };
 

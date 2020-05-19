@@ -35,13 +35,13 @@ void Logger::SetFileName(const string& i_FileName)
 	s_FileName = i_FileName;
 }
 
-void Logger::SetLogLevel(const Log_Level& i_LogLevel)
+void Logger::SetLogLevel(const LogLevel& i_LogLevel)
 {
 	std::lock_guard<std::mutex> lock(s_FileLock);
 	Logger::GetInstance()->m_LogLevel = i_LogLevel;
 }
 
-void Logger::SetLogType(const Log_Type& i_LogType)
+void Logger::SetLogType(const LogType& i_LogType)
 {
 	std::lock_guard<std::mutex> lock(s_FileLock);
 	Logger::GetInstance()->m_LogType = i_LogType;
@@ -49,7 +49,7 @@ void Logger::SetLogType(const Log_Type& i_LogType)
 
 void Logger::Info(const string& i_Message)
 {
-	if (m_LogLevel >= Logger::Log_Level::Info)
+	if (m_LogLevel >= Logger::LogLevel::Info)
 	{
 		outputLog(constructLog(c_InfoHeadline, i_Message));
 	}
@@ -57,7 +57,7 @@ void Logger::Info(const string& i_Message)
 
 void Logger::Error(const string& i_Message)
 {
-	if (m_LogLevel >= Logger::Log_Level::Error)
+	if (m_LogLevel >= Logger::LogLevel::Error)
 	{
 		outputLog(constructLog(c_ErrorHeadline, i_Message));
 	}
@@ -65,7 +65,7 @@ void Logger::Error(const string& i_Message)
 
 void Logger::Critical(const string& i_Message)
 {
-	if (m_LogLevel >= Logger::Log_Level::Critical)
+	if (m_LogLevel >= Logger::LogLevel::Critical)
 	{
 		outputLog(constructLog(c_CriticalHeadline, i_Message));
 	}
@@ -115,7 +115,7 @@ void Logger::outputLog(const string& i_Message)
 	std::lock_guard<std::mutex> lock(s_FileLock);
 
 	// output
-	if (m_LogType == Logger::Log_Type::File)
+	if (m_LogType == Logger::LogType::File)
 	{
 		// init filestream upon first  writing
 		if (!m_FileStream.is_open())
