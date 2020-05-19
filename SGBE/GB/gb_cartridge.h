@@ -12,6 +12,7 @@
 #include <vector>
 #include <iterator>
 #include "../Generic/logger.h"
+#include "../GB/gb_utility.h"
 
 using namespace std;
 

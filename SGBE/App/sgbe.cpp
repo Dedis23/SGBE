@@ -38,6 +38,7 @@ bool SGBE::loadDefaultSettings()
 	// set default logger settings
 	LOGGER_SET_LOG_LEVEL(Logger::LogLevel::Critical);
 	LOGGER_SET_LOG_TYPE(Logger::LogType::Console);
+	LOGGER_SET_LOG_METADATA(false);
 
 	return true;
 }
@@ -48,6 +49,7 @@ bool SGBE::loadArguments(int argc, char* argv[])
 	cli.AddOption("game", &cliRomOption);
 	cli.AddOption("silent", &cliSilentOption);
 	cli.AddOption("logfile", &cliLogFileNameOption);
+	cli.AddOption("debug", &cliDebugOption);
 	cli.LoadArgs(argc, argv);
 
 	return true;
@@ -98,4 +100,10 @@ void SGBE::cliLogFileNameOption(const string& i_LogFileName)
 
 	LOGGER_SET_FILE_NAME(i_LogFileName);
 	LOG_INFO(true, NOP, "Log file name set to" << i_LogFileName);
+}
+
+void SGBE::cliDebugOption()
+{
+	// in debug mode we set the logger to display logs with metadata
+	LOGGER_SET_LOG_METADATA(true);
 }

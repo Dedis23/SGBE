@@ -154,7 +154,7 @@
     <ClCompile Include="App\sgbe.cpp" />
     <ClCompile Include="GB\CPU\gb_cpu.cpp" />
     <ClCompile Include="GB\CPU\gb_registers.cpp" />
-    <ClCompile Include="GB\gb_‏‏cartridge.cpp" />
+    <ClCompile Include="GB\gb_cartridge.cpp" />
     <ClCompile Include="GB\Interpreter\gb_interpreter.cpp" />
     <ClCompile Include="Generic\address.cpp" />
     <ClCompile Include="Generic\cli.cpp" />

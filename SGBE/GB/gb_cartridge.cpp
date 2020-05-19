@@ -26,6 +26,8 @@ bool GBCartridge::loadROM(const string& i_RomFileName)
 
 	// read the data:
 	m_ROMData.insert(m_ROMData.begin(), istream_iterator<uint8_t>(romFile), std::istream_iterator<uint8_t>());
+	LOG_INFO(true, NOP, "Read " << m_ROMData.size() / 1024 << "Kb from file: " << i_RomFileName);
+	romFile.close();
 
 	return true;
 }

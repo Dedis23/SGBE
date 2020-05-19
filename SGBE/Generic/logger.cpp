@@ -5,6 +5,7 @@ std::mutex Logger::s_FileLock;
 Logger* Logger::s_Instance = nullptr;
 std::ofstream Logger::m_FileStream;
 string Logger::s_FileName = "Logger.log"; // default file name
+bool Logger::s_IsMetaData = true;
 
 Logger::Logger()
 {
@@ -45,6 +46,11 @@ void Logger::SetLogType(const LogType& i_LogType)
 {
 	std::lock_guard<std::mutex> lock(s_FileLock);
 	Logger::GetInstance()->m_LogType = i_LogType;
+}
+
+void Logger::SetLogMetaData(bool i_IsMetaDataOn)
+{
+	s_IsMetaData = i_IsMetaDataOn;
 }
 
 void Logger::Info(const string& i_Message)
@@ -102,10 +108,17 @@ string Logger::constructLog(const string& i_Headline, const string& i_Message)
 	// remove the full path from filename
 	tokens[0] = tokens[0].substr(tokens[0].find_last_of(R"(\)") + 1);
 
-	// build the log with time and headline
+	// build the log with time, headline and metadata
 	ss.str("");
 	ss.clear();
-	ss << getCurrentTime() << " " << i_Headline << " " << tokens[0] << " at " << tokens[1] << " line " << tokens[2] << ": " << tokens[3];
+	if (s_IsMetaData)
+	{
+		ss << getCurrentTime() << " " << i_Headline << " " << tokens[0] << " at " << tokens[1] << " line " << tokens[2] << ": " << tokens[3];
+	}
+	else // build only with the headline
+	{
+		ss << i_Headline << " " << tokens[3];
+	}
 	return ss.str();
 }
 

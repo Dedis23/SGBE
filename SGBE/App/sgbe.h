@@ -34,6 +34,7 @@ private:
     static void cliRomOption(const string& i_RomFileName);
     static void cliSilentOption();
     static void cliLogFileNameOption(const string& i_LogFileName);
+    static void cliDebugOption();
 
 private:
     static string s_ROMFileName;

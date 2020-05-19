@@ -56,6 +56,9 @@ using namespace std;
 /* Direct interface to set the logger output type: File or Console */
 #define LOGGER_SET_LOG_TYPE(LogType) Logger::GetInstance()->SetLogType(LogType)
 
+/* Direct interface to enable / disable the logger metadata in the output */
+#define LOGGER_SET_LOG_METADATA(_bool) Logger::GetInstance()->SetLogMetaData(_bool)
+
 /**************************************************************
  * Utility macros to get log metadata, NOT TO BE USED OUTSDIE *
  **************************************************************/
@@ -101,6 +104,7 @@ public:
 	static void SetFileName(const string& i_FileName);
 	static void SetLogLevel(const LogLevel& i_LogLevel);
 	static void SetLogType(const LogType& i_LogType);
+	static void SetLogMetaData(bool i_IsMetaDataOn);
 
 	void Info(const string& i_Message);
 	void Error(const string& i_Message);
@@ -120,6 +124,7 @@ private:
 	static std::mutex s_FileLock;
 	static std::ofstream m_FileStream;
 	static string s_FileName;
+	static bool s_IsMetaData;
 	LogLevel m_LogLevel = LogLevel::Critical;
 	LogType m_LogType = LogType::File;
 	const string c_InfoHeadline = "[INFO]:";
