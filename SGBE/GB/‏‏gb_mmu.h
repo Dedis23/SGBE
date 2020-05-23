@@ -10,7 +10,7 @@
 	0x000-0x00FF: 256 bytes of the bootstrap - after reading that, the gameboy can access these addresses again from the cartridge
 
 	0x0000-0x3FFF: 16K ROM bank (first rom bank of the cartridge)
-	  ---> 0x0100-0x014F: Cartridge metadata
+	  ---> 0x0100-0x014F: Cartridge header
 
 	0x4000-0x7FFF: Switchable 16K ROM banks (the cartridge can switch rom banks so that the cpu can access more memory. (up to 256 banks) minimum cartridge 32KB max 4MB
 

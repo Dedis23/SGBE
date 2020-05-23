@@ -54,7 +54,12 @@ bool GBInterpreter::initializeCartridge()
 {
 	bool res = false;
 
-	GBCartridgeMetaData cartridgeMetaData(m_ROMData);
+	GBCartridgeHeader cartridgeHeader(m_ROMData);
+	LOG_INFO(true, NOP, "Cartridge title: " << cartridgeHeader.Title);
+	LOG_INFO(true, NOP, "Version: " << cartridgeHeader.Version);
+	LOG_INFO(true, NOP, "Cartridge type: " << cartridgeHeader.CartridgeTypeToString());
+	LOG_INFO(true, NOP, "Total ROM size: " << cartridgeHeader.ROMSizeToString());
+	LOG_INFO(true, NOP, "Additional RAM size: " << cartridgeHeader.RAMSizeToString());
 
 	return true;
 }

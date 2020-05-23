@@ -102,14 +102,19 @@ string Logger::constructLog(const string& i_Headline, const string& i_Message)
 	stringstream ss;
 	string token;
 	vector<string> tokens;
+	size_t pos = 0;
 
 	// split the filename, line, func name and message into seperate strings
 	ss << i_Message;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		getline(ss, token, '\n');
 		tokens.push_back(token);
+		pos += token.size() + 1; // +1 is for '\n'
 	}
+	// extract the message itself
+	tokens.push_back(ss.str());
+	tokens[3] = tokens[3].substr(pos);
 
 	// remove the full path from filename
 	tokens[0] = tokens[0].substr(tokens[0].find_last_of(R"(\)") + 1);

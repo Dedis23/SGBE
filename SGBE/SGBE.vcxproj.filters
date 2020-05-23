@@ -63,7 +63,7 @@
     <ClCompile Include="GB\Cartridge\gb_cartridge.cpp">
       <Filter>GB\Cartridge</Filter>
     </ClCompile>
-    <ClCompile Include="GB\Cartridge\‏‏gb_cartridge_metadata.cpp">
+    <ClCompile Include="GB\Cartridge\‏‏gb_cartridge_header.cpp">
       <Filter>GB\Cartridge</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,7 +101,7 @@
     <ClInclude Include="GB\Cartridge\gb_cartridge.h">
       <Filter>GB\Cartridge</Filter>
     </ClInclude>
-    <ClInclude Include="GB\Cartridge\‏‏gb_cartridge_metadata.h">
+    <ClInclude Include="GB\Cartridge\‏‏gb_cartridge_header.h">
       <Filter>GB\Cartridge</Filter>
     </ClInclude>
   </ItemGroup>

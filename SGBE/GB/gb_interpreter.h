@@ -13,7 +13,7 @@
 #include "CPU/gb_cpu.h"
 #include "gb_utility.h"
 #include "Cartridge/gb_cartridge.h"
-#include "Cartridge//þþgb_cartridge_metadata.h"
+#include "Cartridge//þþgb_cartridge_header.h"
 #include "þþgb_mmu.h"
 
 class GBInterpreter
