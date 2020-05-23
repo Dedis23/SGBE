@@ -2,22 +2,7 @@
 
 string SGBE::s_ROMFileName = "";
 
-SGBE::SGBE(int argc, char* argv[]) : m_Window(nullptr), m_Renderer(nullptr), m_GBInterpreter(nullptr)
-{
-	bool res = false;
-
-	res = loadDefaultSettings();
-	LOG_CRITICAL(res == false, throw exception(), "Failed to load default settings");
-
-	res = loadArguments(argc, argv);
-	LOG_CRITICAL(res == false, throw exception(), "Failed to load arguments");
-
-	res = initializeSDL();
-	LOG_CRITICAL(res == false, throw exception(), "Failed to initialize SDL");
-
-	res = initializeInterpreter();
-	LOG_CRITICAL(res == false, throw exception(), "Failed to initialize the interpreter");
-}
+SGBE::SGBE() : m_Window(nullptr), m_Renderer(nullptr), m_GBInterpreter(nullptr) {}
 
 SGBE::~SGBE()
 {
@@ -32,6 +17,31 @@ SGBE::~SGBE()
 	SDL_DestroyRenderer(m_Renderer);
 	SDL_DestroyWindow(m_Window);
 	SDL_Quit();
+}
+
+bool SGBE::Initialize(int argc, char* argv[])
+{
+	bool res = false;
+
+	res = loadDefaultSettings();
+	LOG_CRITICAL(res == false, return false, "Failed to load default settings");
+
+	res = loadArguments(argc, argv);
+	LOG_CRITICAL(res == false, return false, "Failed to load arguments");
+
+	res = initializeSDL();
+	LOG_CRITICAL(res == false, return false, "Failed to initialize SDL");
+
+	// assert that the user inserted a rom file name
+	LOG_ERROR(s_ROMFileName == "", return false, "Cannot initialize without a ROM file name");
+
+	// initialize the interpreter
+	m_GBInterpreter = new GBInterpreter();
+	LOG_CRITICAL(m_GBInterpreter == nullptr , return false, "Failed to allocate memory for the interpreter");
+	res = m_GBInterpreter->Initialize(s_ROMFileName);
+	LOG_CRITICAL(res == false, return false, "Failed to initialize the interpreter");
+
+	return true;
 }
 
 void SGBE::Run()
@@ -75,21 +85,6 @@ bool SGBE::initializeSDL()
 	LOG_CRITICAL(m_Window == NULL, return false, "Failed to create SDL renderer");
 
 	return true;
-}
-
-bool SGBE::initializeInterpreter()
-{
-	// assert that the user inserted a rom file name
-	LOG_ERROR(s_ROMFileName == "", return false, "Cannot initialize without a ROM file name");
-
-	try
-	{
-		m_GBInterpreter = new GBInterpreter(s_ROMFileName);
-	}
-	catch (const std::exception&)
-	{
-		return false;
-	}
 }
 
 void SGBE::cliRomOption(const string& i_RomFileName)

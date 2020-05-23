@@ -152,10 +152,12 @@
   <ItemGroup>
     <ClCompile Include="App\main.cpp" />
     <ClCompile Include="App\sgbe.cpp" />
+    <ClCompile Include="GB\Cartridge\gb_cartridge.cpp" />
+    <ClCompile Include="GB\Cartridge\‏‏gb_cartridge_metadata.cpp" />
     <ClCompile Include="GB\CPU\gb_cpu.cpp" />
     <ClCompile Include="GB\CPU\gb_registers.cpp" />
-    <ClCompile Include="GB\gb_cartridge.cpp" />
-    <ClCompile Include="GB\Interpreter\gb_interpreter.cpp" />
+    <ClCompile Include="GB\gb_interpreter.cpp" />
+    <ClCompile Include="GB\‏‏gb_mmu.cpp" />
     <ClCompile Include="Generic\address.cpp" />
     <ClCompile Include="Generic\cli.cpp" />
     <ClCompile Include="Generic\logger.cpp" />
@@ -163,11 +165,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\sgbe.h" />
+    <ClInclude Include="GB\Cartridge\gb_cartridge.h" />
+    <ClInclude Include="GB\Cartridge\‏‏gb_cartridge_metadata.h" />
     <ClInclude Include="GB\CPU\gb_cpu.h" />
     <ClInclude Include="GB\CPU\gb_registers.h" />
-    <ClInclude Include="GB\gb_cartridge.h" />
+    <ClInclude Include="GB\gb_interpreter.h" />
     <ClInclude Include="GB\gb_utility.h" />
-    <ClInclude Include="GB\Interpreter\gb_interpreter.h" />
+    <ClInclude Include="GB\‏‏gb_mmu.h" />
     <ClInclude Include="Generic\address.h" />
     <ClInclude Include="Generic\cli.h" />
     <ClInclude Include="Generic\logger.h" />

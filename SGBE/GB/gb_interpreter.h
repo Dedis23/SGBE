@@ -10,23 +10,32 @@
 
 #include <string>
 #include <vector>
-#include "../CPU/gb_cpu.h"
-#include "../../Generic/logger.h"
-#include "../gb_cartridge.h"
+#include "CPU/gb_cpu.h"
+#include "gb_utility.h"
+#include "Cartridge/gb_cartridge.h"
+#include "Cartridge//þþgb_cartridge_metadata.h"
+#include "þþgb_mmu.h"
 
 class GBInterpreter
 {
 public:
-	GBInterpreter(const std::string& i_RomFileName);
-	virtual ~GBInterpreter() = default;
+	GBInterpreter();
+	virtual ~GBInterpreter();
 	GBInterpreter(const GBInterpreter&) = delete;
 	GBInterpreter& operator=(const GBInterpreter&) = delete;
 
+	bool Initialize(const std::string& i_RomFileName);
 	void Run();
 
 private:
+	bool loadROM(const string& i_RomFilePath);
+	bool initializeCartridge();
+
+private:
+	vector<byte> m_ROMData;
 	GBCPU m_CPU;
-	GBCartridge m_Cartridge;
+	GBMMU m_MMU;
+	GBCartridge* m_Cartridge;
 };
 
 #endif

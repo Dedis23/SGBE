@@ -1,6 +1,6 @@
 #include "gb_registers.h"
 
-FlagRegister::FlagRegister(uint8_t i_Value) : ByteRegister(i_Value) {}
+FlagRegister::FlagRegister(byte i_Value) : ByteRegister(i_Value) {}
 
 void FlagRegister::SetZFlag(bool i_IsRaise)
 {

@@ -25,8 +25,8 @@
     <Filter Include="App">
       <UniqueIdentifier>{65d38de0-5298-42e6-94a7-8ec419d7ab12}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GB\Interpreter">
-      <UniqueIdentifier>{78ba6b5e-8f9d-4c48-9871-fd217a3b777a}</UniqueIdentifier>
+    <Filter Include="GB\Cartridge">
+      <UniqueIdentifier>{3ceebfda-01bb-425f-90ee-f0227bad5c3e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,9 +45,6 @@
     <ClCompile Include="Generic\address.cpp">
       <Filter>Generic</Filter>
     </ClCompile>
-    <ClCompile Include="GB\Interpreter\gb_interpreter.cpp">
-      <Filter>GB\Interpreter</Filter>
-    </ClCompile>
     <ClCompile Include="Generic\logger.cpp">
       <Filter>Generic</Filter>
     </ClCompile>
@@ -57,8 +54,17 @@
     <ClCompile Include="Generic\cli.cpp">
       <Filter>Generic</Filter>
     </ClCompile>
-    <ClCompile Include="GB\gb_cartridge.cpp">
+    <ClCompile Include="GB\gb_interpreter.cpp">
       <Filter>GB</Filter>
+    </ClCompile>
+    <ClCompile Include="GB\‏‏gb_mmu.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
+    <ClCompile Include="GB\Cartridge\gb_cartridge.cpp">
+      <Filter>GB\Cartridge</Filter>
+    </ClCompile>
+    <ClCompile Include="GB\Cartridge\‏‏gb_cartridge_metadata.cpp">
+      <Filter>GB\Cartridge</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,9 +83,6 @@
     <ClInclude Include="Generic\address.h">
       <Filter>Generic</Filter>
     </ClInclude>
-    <ClInclude Include="GB\Interpreter\gb_interpreter.h">
-      <Filter>GB\Interpreter</Filter>
-    </ClInclude>
     <ClInclude Include="Generic\logger.h">
       <Filter>Generic</Filter>
     </ClInclude>
@@ -89,8 +92,17 @@
     <ClInclude Include="Generic\cli.h">
       <Filter>Generic</Filter>
     </ClInclude>
-    <ClInclude Include="GB\gb_cartridge.h">
+    <ClInclude Include="GB\gb_interpreter.h">
       <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\‏‏gb_mmu.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\Cartridge\gb_cartridge.h">
+      <Filter>GB\Cartridge</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\Cartridge\‏‏gb_cartridge_metadata.h">
+      <Filter>GB\Cartridge</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

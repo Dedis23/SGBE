@@ -9,6 +9,8 @@
 
 #include <iostream>
 #include "../Generic/logger.h"
+#include "../Generic/address.h"
+#include "CPU/gb_registers.h"
 
 const uint32_t TARGET_FRAME_RATE = 60;
 const uint32_t GAMEBOY_SCREEN_WIDTH = 160;

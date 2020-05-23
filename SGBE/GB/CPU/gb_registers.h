@@ -7,7 +7,6 @@
 #ifndef __GB_REGISTERS_H
 #define __GB_REGISTERS_H
 
-#include <iostream>
 #include "../../Generic/registers.h"
 
 /*
@@ -22,7 +21,7 @@
 class FlagRegister : public ByteRegister
 {
 public:
-	FlagRegister(uint8_t i_Value = 0);
+	FlagRegister(byte i_Value = 0);
 	virtual ~FlagRegister() = default;
 	FlagRegister(const FlagRegister&) = delete;
 	FlagRegister& operator=(const FlagRegister&) = delete;

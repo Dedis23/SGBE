@@ -15,14 +15,16 @@
 class WordAddress
 {
 public:
-	WordAddress(uint16_t i_AddressLocation);
+	WordAddress(word i_AddressLocation);
 	WordAddress(const WordRegister& i_WordRegister);
 	WordAddress(const Pair8BRegisters& i_Pair8BRegisters);
 	virtual ~WordAddress() = default;
 
-	uint16_t GetValue() const;
+	word GetValue() const;
+	bool InRange(const WordAddress& i_Lower, const WordAddress& i_Upper) const;
+
 private:
-	uint16_t m_Value = 0;
+	word m_Value = 0;
 };
 
 #endif

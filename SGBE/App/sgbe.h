@@ -11,23 +11,23 @@
 #include "SDL.h"
 #include "../Generic/cli.h"
 #include "../GB/gb_utility.h"
-#include "../GB/Interpreter/gb_interpreter.h"
+#include "../GB/gb_interpreter.h"
 
 class SGBE
 {
 public:
-    SGBE(int argc, char* argv[]);
+    SGBE();
     virtual ~SGBE();
     SGBE(const SGBE&) = delete;
     SGBE& operator=(const SGBE&) = delete;
 
+    bool Initialize(int argc, char* argv[]);
     void Run();
 
 private:
     bool loadDefaultSettings();
     bool loadArguments(int argc, char* argv[]);
     bool initializeSDL();
-    bool initializeInterpreter();
 
     // CLI Options
 private:
