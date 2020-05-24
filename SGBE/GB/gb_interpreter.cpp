@@ -20,6 +20,11 @@ bool GBInterpreter::Initialize(const std::string& i_RomFileName)
 	return true;
 }
 
+bool GBInterpreter::IsCartridgeLoadedSuccessfully()
+{
+	return m_Cartridge != nullptr;
+}
+
 /* This is the main emulation loop */
 void GBInterpreter::Run()
 {
@@ -60,6 +65,9 @@ bool GBInterpreter::initializeCartridge()
 	LOG_INFO(true, NOP, "Cartridge type: " << cartridgeHeader.CartridgeTypeToString());
 	LOG_INFO(true, NOP, "Total ROM size: " << cartridgeHeader.ROMSizeToString());
 	LOG_INFO(true, NOP, "Additional RAM size: " << cartridgeHeader.RAMSizeToString());
+
+	m_Cartridge = CartridgeFactory::CreateCartridge(m_ROMData, cartridgeHeader.CartridgeType);
+	LOG_ERROR(m_Cartridge == nullptr, NOP, "Cartridge type " << cartridgeHeader.CartridgeTypeToString() << " is currently unsupported");
 
 	return true;
 }

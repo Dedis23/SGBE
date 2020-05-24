@@ -46,10 +46,14 @@ bool SGBE::Initialize(int argc, char* argv[])
 
 void SGBE::Run()
 {
-	SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255); // todo remove this
-	SDL_RenderClear(m_Renderer);
-	SDL_RenderPresent(m_Renderer);
-	SDL_Delay(500);
+	if (m_GBInterpreter->IsCartridgeLoadedSuccessfully())
+	{
+		// game loop here
+		SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255); // todo remove this
+		SDL_RenderClear(m_Renderer);
+		SDL_RenderPresent(m_Renderer);
+		SDL_Delay(5000);
+	}
 }
 
 bool SGBE::loadDefaultSettings()
@@ -68,7 +72,6 @@ bool SGBE::loadArguments(int argc, char* argv[])
 	cli.AddOption("game", &cliRomOption);
 	cli.AddOption("silent", &cliSilentOption);
 	cli.AddOption("logfile", &cliLogFileNameOption);
-	cli.AddOption("debug", &cliDebugOption);
 	cli.LoadArgs(argc, argv);
 
 	return true;
@@ -104,10 +107,4 @@ void SGBE::cliLogFileNameOption(const string& i_LogFileName)
 
 	LOGGER_SET_FILE_NAME(i_LogFileName);
 	LOG_INFO(true, NOP, "Log file name set to" << i_LogFileName);
-}
-
-void SGBE::cliDebugOption()
-{
-	// in debug mode we set the logger to display logs with metadata
-	LOGGER_SET_LOG_METADATA(true);
 }

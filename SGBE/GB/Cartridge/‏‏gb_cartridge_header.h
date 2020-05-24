@@ -43,7 +43,7 @@ const word GLOBAL_CHECKSUM_END = 0x14F;
 class GBCartridgeHeader
 {
 public:
-    enum class CartridgeType
+    enum class CartridgeType_E
     {
         NoMBC,
         MBC1,
@@ -54,7 +54,7 @@ public:
     };
     std::string CartridgeTypeToString();
 
-    enum class ROMSize
+    enum class ROMSize_E
     {
         _32KB,
         _64KB,
@@ -72,7 +72,7 @@ public:
     };
     std::string ROMSizeToString();
 
-    enum class RAMSize
+    enum class RAMSize_E
     {
        None,
        _2KB,
@@ -89,9 +89,9 @@ public:
 	virtual ~GBCartridgeHeader() = default;
 
     std::string Title;
-    CartridgeType CartridgeType;
-    ROMSize ROMSize;
-    RAMSize RAMSize;
+    CartridgeType_E CartridgeType;
+    ROMSize_E ROMSize;
+    RAMSize_E RAMSize;
     int Version;
 
 private:

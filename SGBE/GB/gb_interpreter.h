@@ -1,4 +1,4 @@
-/********************************************************************************
+ï»¿/********************************************************************************
  *			Copyright (C) 2020 Dedi Sidi										*
  *																				*
  *			The interpreter is the main emulation module						*
@@ -13,8 +13,8 @@
 #include "CPU/gb_cpu.h"
 #include "gb_utility.h"
 #include "Cartridge/gb_cartridge.h"
-#include "Cartridge//şşgb_cartridge_header.h"
-#include "şşgb_mmu.h"
+#include "Cartridge/â€â€gb_cartridge_header.h"
+#include "â€â€gb_mmu.h"
 
 class GBInterpreter
 {
@@ -25,6 +25,7 @@ public:
 	GBInterpreter& operator=(const GBInterpreter&) = delete;
 
 	bool Initialize(const std::string& i_RomFileName);
+	bool IsCartridgeLoadedSuccessfully();
 	void Run();
 
 private:

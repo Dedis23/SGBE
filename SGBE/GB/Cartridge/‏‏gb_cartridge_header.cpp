@@ -1,10 +1,10 @@
-#include "˛˛gb_cartridge_header.h"
+Ôªø#include "‚Äè‚Äègb_cartridge_header.h"
 
 GBCartridgeHeader::GBCartridgeHeader(const vector<byte>& i_ROMData) :
 	m_ROMData(i_ROMData),
-	CartridgeType(CartridgeType::UnknownCartridgeType),
-	ROMSize(ROMSize::UnknownROMSize),
-	RAMSize(RAMSize::UnknownRAMSize)
+	CartridgeType(CartridgeType_E::UnknownCartridgeType),
+	ROMSize(ROMSize_E::UnknownROMSize),
+	RAMSize(RAMSize_E::UnknownRAMSize)
 {
 	readTitle();
 	readCartridgeType();
@@ -17,17 +17,17 @@ std::string GBCartridgeHeader::CartridgeTypeToString()
 {
 	switch (CartridgeType)
 	{
-		case CartridgeType::NoMBC:
+		case CartridgeType_E::NoMBC:
 			return "NoMBC";
-		case CartridgeType::MBC1:
+		case CartridgeType_E::MBC1:
 			return "MBC1";
-		case CartridgeType::MBC2:
+		case CartridgeType_E::MBC2:
 			return "MBC2";
-		case CartridgeType::MBC3:
+		case CartridgeType_E::MBC3:
 			return "MBC3";
-		case CartridgeType::MBC5:
+		case CartridgeType_E::MBC5:
 			return "MBC5";
-		case CartridgeType::UnknownCartridgeType:
+		case CartridgeType_E::UnknownCartridgeType:
 		default:
 			return "Unknown cartridge type";
 	}
@@ -37,31 +37,31 @@ std::string GBCartridgeHeader::ROMSizeToString()
 {
 	switch (ROMSize)
 	{
-		case ROMSize::_32KB:
+		case ROMSize_E::_32KB:
 			return "32KB";
-		case ROMSize::_64KB:
+		case ROMSize_E::_64KB:
 			return "64KB";
-		case ROMSize::_128KB:
+		case ROMSize_E::_128KB:
 			return "128KB";
-		case ROMSize::_256KB:
+		case ROMSize_E::_256KB:
 			return "256KB";
-		case ROMSize::_512KB:
+		case ROMSize_E::_512KB:
 			return "512KB";
-		case ROMSize::_1MB:
+		case ROMSize_E::_1MB:
 			return "1MB";
-		case ROMSize::_2MB:
+		case ROMSize_E::_2MB:
 			return "2MB";
-		case ROMSize::_4MB:
+		case ROMSize_E::_4MB:
 			return "4MB";
-		case ROMSize::_8MB:
+		case ROMSize_E::_8MB:
 			return "8MB";
-		case ROMSize::_1_1MB:
+		case ROMSize_E::_1_1MB:
 			return "1.1MB";
-		case ROMSize::_1_2MB:
+		case ROMSize_E::_1_2MB:
 			return "1.2MB";
-		case ROMSize::_1_5MB:
+		case ROMSize_E::_1_5MB:
 			return "1.5MB";
-		case ROMSize::UnknownROMSize:
+		case ROMSize_E::UnknownROMSize:
 		default:
 			return "Unknown ROM size";
 	}
@@ -71,19 +71,19 @@ std::string GBCartridgeHeader::RAMSizeToString()
 {
 	switch (RAMSize)
 	{
-		case RAMSize::None:
+		case RAMSize_E::None:
 			return "None";
-		case RAMSize::_2KB:
+		case RAMSize_E::_2KB:
 			return "2KB";
-		case RAMSize::_8KB:
+		case RAMSize_E::_8KB:
 			return "8KB";
-		case RAMSize::_32KB:
+		case RAMSize_E::_32KB:
 			return "32KB";
-		case RAMSize::_64KB:
+		case RAMSize_E::_64KB:
 			return "64KB";
-		case RAMSize::_128KB:
+		case RAMSize_E::_128KB:
 			return "128KB";
-		case RAMSize::UnknownRAMSize:
+		case RAMSize_E::UnknownRAMSize:
 		default:
 			return "Unknown RAM size";
 	}
@@ -105,23 +105,23 @@ void GBCartridgeHeader::readCartridgeType()
 		case 0x00:
 		case 0x08:
 		case 0x09:
-			CartridgeType = CartridgeType::NoMBC;
+			CartridgeType = CartridgeType_E::NoMBC;
 			break;
 		case 0x01:
 		case 0x02:
 		case 0x03:
-			CartridgeType = CartridgeType::MBC1;
+			CartridgeType = CartridgeType_E::MBC1;
 			break;
 		case 0x05:
 		case 0x06:
-			CartridgeType = CartridgeType::MBC2;
+			CartridgeType = CartridgeType_E::MBC2;
 			break;
 		case 0x0F:
 		case 0x10:
 		case 0x11:
 		case 0x12:
 		case 0x13:
-			CartridgeType = CartridgeType::MBC3;
+			CartridgeType = CartridgeType_E::MBC3;
 			break;
 		case 0x19:
 		case 0x1A:
@@ -129,10 +129,10 @@ void GBCartridgeHeader::readCartridgeType()
 		case 0x1C:
 		case 0x1D:
 		case 0x1E:
-			CartridgeType = CartridgeType::MBC5;
+			CartridgeType = CartridgeType_E::MBC5;
 			break;
 		default:
-			CartridgeType = CartridgeType::UnknownCartridgeType;
+			CartridgeType = CartridgeType_E::UnknownCartridgeType;
 			break;
 	}
 }
@@ -142,43 +142,43 @@ void GBCartridgeHeader::readROMSize()
 	switch (m_ROMData[ROM_SIZE])
 	{
 		case 0x00:
-			ROMSize = ROMSize::_32KB;
+			ROMSize = ROMSize_E::_32KB;
 			break;
 		case 0x01:
-			ROMSize = ROMSize::_64KB;
+			ROMSize = ROMSize_E::_64KB;
 			break;
 		case 0x02:
-			ROMSize = ROMSize::_128KB;
+			ROMSize = ROMSize_E::_128KB;
 			break;
 		case 0x03:
-			ROMSize = ROMSize::_256KB;
+			ROMSize = ROMSize_E::_256KB;
 			break;
 		case 0x04:
-			ROMSize = ROMSize::_512KB;
+			ROMSize = ROMSize_E::_512KB;
 			break;
 		case 0x05:
-			ROMSize = ROMSize::_1MB;
+			ROMSize = ROMSize_E::_1MB;
 			break;
 		case 0x06:
-			ROMSize = ROMSize::_2MB;
+			ROMSize = ROMSize_E::_2MB;
 			break;
 		case 0x07:
-			ROMSize = ROMSize::_4MB;
+			ROMSize = ROMSize_E::_4MB;
 			break;
 		case 0x08:
-			ROMSize = ROMSize::_8MB;
+			ROMSize = ROMSize_E::_8MB;
 			break;
 		case 0x52:
-			ROMSize = ROMSize::_1_1MB;
+			ROMSize = ROMSize_E::_1_1MB;
 			break;
 		case 0x53:
-			ROMSize = ROMSize::_1_2MB;
+			ROMSize = ROMSize_E::_1_2MB;
 			break;
 		case 0x54:
-			ROMSize = ROMSize::_1_5MB;
+			ROMSize = ROMSize_E::_1_5MB;
 			break;
 		default:
-			ROMSize = ROMSize::UnknownROMSize;
+			ROMSize = ROMSize_E::UnknownROMSize;
 			break;
 	}
 }
@@ -188,25 +188,25 @@ void GBCartridgeHeader::readRAMSize()
 	switch (m_ROMData[RAM_SIZE])
 	{
 	case 0x00:
-		RAMSize = RAMSize::None;
+		RAMSize = RAMSize_E::None;
 		break;
 	case 0x01:
-		RAMSize = RAMSize::_2KB;
+		RAMSize = RAMSize_E::_2KB;
 		break;
 	case 0x02:
-		RAMSize = RAMSize::_8KB;
+		RAMSize = RAMSize_E::_8KB;
 		break;
 	case 0x03:
-		RAMSize = RAMSize::_32KB;
+		RAMSize = RAMSize_E::_32KB;
 		break;
 	case 0x04:
-		RAMSize = RAMSize::_128KB;
+		RAMSize = RAMSize_E::_128KB;
 		break;
 	case 0x05:
-		RAMSize = RAMSize::_64KB;
+		RAMSize = RAMSize_E::_64KB;
 		break;
 	default:
-		RAMSize = RAMSize::UnknownRAMSize;
+		RAMSize = RAMSize_E::UnknownRAMSize;
 		break;
 	}
 }
