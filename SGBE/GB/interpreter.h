@@ -5,24 +5,24 @@
  *			It holds and operates the various components of the gameboy			*
  ********************************************************************************/
 
-#ifndef __GB_INTERPRETER_H
-#define __GB_INTERPRETER_H
+#ifndef __INTERPRETER_H
+#define __INTERPRETER_H
 
 #include <string>
 #include <vector>
-#include "CPU/gb_cpu.h"
-#include "gb_utility.h"
-#include "Cartridge/gb_cartridge.h"
-#include "Cartridge/‏‏gb_cartridge_header.h"
-#include "‏‏gb_mmu.h"
+#include "cpu.h"
+#include "utility.h"
+#include "cartridge.h"
+#include "cartridge_header.h"
+#include "mmu.h"
 
-class GBInterpreter
+class Interpreter
 {
 public:
-	GBInterpreter();
-	virtual ~GBInterpreter();
-	GBInterpreter(const GBInterpreter&) = delete;
-	GBInterpreter& operator=(const GBInterpreter&) = delete;
+	Interpreter();
+	virtual ~Interpreter();
+	Interpreter(const Interpreter&) = delete;
+	Interpreter& operator=(const Interpreter&) = delete;
 
 	bool Initialize(const std::string& i_RomFileName);
 	bool IsCartridgeLoadedSuccessfully();
@@ -34,9 +34,9 @@ private:
 
 private:
 	vector<byte> m_ROMData;
-	GBCPU m_CPU;
-	GBMMU m_MMU;
-	GBCartridge* m_Cartridge;
+	CPU m_CPU;
+	MMU m_MMU;
+	Cartridge* m_Cartridge;
 };
 
 #endif

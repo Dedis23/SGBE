@@ -1,13 +1,13 @@
-#include "gb_interpreter.h"
+#include "interpreter.h"
 
-GBInterpreter::GBInterpreter() : m_MMU(*m_Cartridge), m_Cartridge(nullptr) {}
+Interpreter::Interpreter() : m_MMU(*m_Cartridge), m_Cartridge(nullptr) {}
 
-GBInterpreter::~GBInterpreter()
+Interpreter::~Interpreter()
 {
 	delete m_Cartridge;
 }
 
-bool GBInterpreter::Initialize(const std::string& i_RomFileName)
+bool Interpreter::Initialize(const std::string& i_RomFileName)
 {
 	bool res = false;
 
@@ -20,18 +20,18 @@ bool GBInterpreter::Initialize(const std::string& i_RomFileName)
 	return true;
 }
 
-bool GBInterpreter::IsCartridgeLoadedSuccessfully()
+bool Interpreter::IsCartridgeLoadedSuccessfully()
 {
 	return m_Cartridge != nullptr;
 }
 
 /* This is the main emulation loop */
-void GBInterpreter::Run()
+void Interpreter::Run()
 {
 	//m_CPU.Step();
 }
 
-bool GBInterpreter::loadROM(const string& i_RomFileName)
+bool Interpreter::loadROM(const string& i_RomFileName)
 {
 	bool res = false;
 
@@ -55,11 +55,11 @@ bool GBInterpreter::loadROM(const string& i_RomFileName)
 	return true;
 }
 
-bool GBInterpreter::initializeCartridge()
+bool Interpreter::initializeCartridge()
 {
 	bool res = false;
 
-	GBCartridgeHeader cartridgeHeader(m_ROMData);
+	CartridgeHeader cartridgeHeader(m_ROMData);
 	LOG_INFO(true, NOP, "Cartridge title: " << cartridgeHeader.Title);
 	LOG_INFO(true, NOP, "Version: " << cartridgeHeader.Version);
 	LOG_INFO(true, NOP, "Cartridge type: " << cartridgeHeader.CartridgeTypeToString());

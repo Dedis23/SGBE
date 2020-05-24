@@ -7,7 +7,7 @@
 #ifndef __ADDRESS_H
 #define __ADDRESS_H
 
-#include "registers.h"
+#include "../GB/registers.h"
 
 /*
 	A general 16-bit address

@@ -10,8 +10,8 @@
 
 #include "SDL.h"
 #include "../Generic/cli.h"
-#include "../GB/gb_utility.h"
-#include "../GB/gb_interpreter.h"
+#include "../GB/utility.h"
+#include "../GB/interpreter.h"
 
 class SGBE
 {
@@ -39,7 +39,7 @@ private:
     static string s_ROMFileName;
     SDL_Window* m_Window;
     SDL_Renderer* m_Renderer;
-    GBInterpreter* m_GBInterpreter;
+    Interpreter* m_Interpreter;
 };
 
 #endif

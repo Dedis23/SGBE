@@ -152,30 +152,28 @@
   <ItemGroup>
     <ClCompile Include="App\main.cpp" />
     <ClCompile Include="App\sgbe.cpp" />
-    <ClCompile Include="GB\Cartridge\gb_cartridge.cpp" />
-    <ClCompile Include="GB\Cartridge\‏‏gb_cartridge_header.cpp" />
-    <ClCompile Include="GB\CPU\gb_cpu.cpp" />
-    <ClCompile Include="GB\CPU\gb_registers.cpp" />
-    <ClCompile Include="GB\gb_interpreter.cpp" />
-    <ClCompile Include="GB\‏‏gb_mmu.cpp" />
+    <ClCompile Include="GB\cartridge.cpp" />
+    <ClCompile Include="GB\cartridge_header.cpp" />
+    <ClCompile Include="GB\cpu.cpp" />
+    <ClCompile Include="GB\interpreter.cpp" />
+    <ClCompile Include="GB\mmu.cpp" />
+    <ClCompile Include="GB\registers.cpp" />
     <ClCompile Include="Generic\address.cpp" />
     <ClCompile Include="Generic\cli.cpp" />
     <ClCompile Include="Generic\logger.cpp" />
-    <ClCompile Include="Generic\registers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\sgbe.h" />
-    <ClInclude Include="GB\Cartridge\gb_cartridge.h" />
-    <ClInclude Include="GB\Cartridge\‏‏gb_cartridge_header.h" />
-    <ClInclude Include="GB\CPU\gb_cpu.h" />
-    <ClInclude Include="GB\CPU\gb_registers.h" />
-    <ClInclude Include="GB\gb_interpreter.h" />
-    <ClInclude Include="GB\gb_utility.h" />
-    <ClInclude Include="GB\‏‏gb_mmu.h" />
+    <ClInclude Include="GB\cartridge.h" />
+    <ClInclude Include="GB\cartridge_header.h" />
+    <ClInclude Include="GB\cpu.h" />
+    <ClInclude Include="GB\interpreter.h" />
+    <ClInclude Include="GB\mmu.h" />
+    <ClInclude Include="GB\registers.h" />
+    <ClInclude Include="GB\utility.h" />
     <ClInclude Include="Generic\address.h" />
     <ClInclude Include="Generic\cli.h" />
     <ClInclude Include="Generic\logger.h" />
-    <ClInclude Include="Generic\registers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

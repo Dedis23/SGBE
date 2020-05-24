@@ -2,13 +2,13 @@
 
 string SGBE::s_ROMFileName = "";
 
-SGBE::SGBE() : m_Window(nullptr), m_Renderer(nullptr), m_GBInterpreter(nullptr) {}
+SGBE::SGBE() : m_Window(nullptr), m_Renderer(nullptr), m_Interpreter(nullptr) {}
 
 SGBE::~SGBE()
 {
 	// delete interpreter
-	delete m_GBInterpreter;
-	m_GBInterpreter = nullptr;
+	delete m_Interpreter;
+	m_Interpreter = nullptr;
 	
 	// clean logger instance
 	Logger::ResetInstance();
@@ -36,9 +36,9 @@ bool SGBE::Initialize(int argc, char* argv[])
 	LOG_ERROR(s_ROMFileName == "", return false, "Cannot initialize without a ROM file name");
 
 	// initialize the interpreter
-	m_GBInterpreter = new GBInterpreter();
-	LOG_CRITICAL(m_GBInterpreter == nullptr , return false, "Failed to allocate memory for the interpreter");
-	res = m_GBInterpreter->Initialize(s_ROMFileName);
+	m_Interpreter = new Interpreter();
+	LOG_CRITICAL(m_Interpreter == nullptr , return false, "Failed to allocate memory for the interpreter");
+	res = m_Interpreter->Initialize(s_ROMFileName);
 	LOG_CRITICAL(res == false, return false, "Failed to initialize the interpreter");
 
 	return true;
@@ -46,7 +46,7 @@ bool SGBE::Initialize(int argc, char* argv[])
 
 void SGBE::Run()
 {
-	if (m_GBInterpreter->IsCartridgeLoadedSuccessfully())
+	if (m_Interpreter->IsCartridgeLoadedSuccessfully())
 	{
 		// game loop here
 		SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255); // todo remove this

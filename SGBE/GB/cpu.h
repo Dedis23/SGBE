@@ -4,19 +4,19 @@
  *			The CPU of the gameboy				*
  ************************************************/
 
-#ifndef __GB_CPU_H
-#define __GB_CPU_H
+#ifndef __CPU_H
+#define __CPU_H
 
-#include "gb_registers.h"
+#include "registers.h"
 #include <unordered_map>
 
-class GBCPU
+class CPU
 {
 public:
-	GBCPU();
-	virtual ~GBCPU() = default;
-	GBCPU(const GBCPU&) = delete;
-	GBCPU& operator=(const GBCPU&) = delete;
+	CPU();
+	virtual ~CPU() = default;
+	CPU(const CPU&) = delete;
+	CPU& operator=(const CPU&) = delete;
 
 	void Step();
 	void Reset();

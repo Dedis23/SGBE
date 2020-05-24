@@ -1,8 +1,8 @@
-#include "gb_cartridge.h"
+#include "cartridge.h"
 
-GBCartridge::GBCartridge(vector<byte>& i_ROMData) : m_ROMData(i_ROMData) {}
+Cartridge::Cartridge(vector<byte>& i_ROMData) : m_ROMData(i_ROMData) {}
 
-NoMBC::NoMBC(vector<byte>& i_ROMData) : GBCartridge(i_ROMData) {}
+NoMBC::NoMBC(vector<byte>& i_ROMData) : Cartridge(i_ROMData) {}
 
 byte NoMBC::Read(const WordAddress& i_Address)
 {
@@ -21,13 +21,13 @@ void NoMBC::Write(const WordAddress& i_Address, byte i_Value)
 
 // currently the emulator supports only type NoMBC (aka no additional ROM / RAM)
 // todo - add more types
-GBCartridge* CartridgeFactory::CreateCartridge(vector<byte>& i_ROMData, GBCartridgeHeader::CartridgeType_E i_CartridgeType)
+Cartridge* CartridgeFactory::CreateCartridge(vector<byte>& i_ROMData, CartridgeHeader::CartridgeType_E i_CartridgeType)
 {
-    GBCartridge* cartridge = nullptr;
+    Cartridge* cartridge = nullptr;
 
 	switch (i_CartridgeType)
 	{
-    case GBCartridgeHeader::CartridgeType_E::NoMBC:
+    case CartridgeHeader::CartridgeType_E::NoMBC:
         cartridge = new NoMBC(i_ROMData);
         break;
 	}

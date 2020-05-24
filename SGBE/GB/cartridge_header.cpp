@@ -1,6 +1,6 @@
-﻿#include "‏‏gb_cartridge_header.h"
+﻿#include "cartridge_header.h"
 
-GBCartridgeHeader::GBCartridgeHeader(const vector<byte>& i_ROMData) :
+CartridgeHeader::CartridgeHeader(const vector<byte>& i_ROMData) :
 	m_ROMData(i_ROMData),
 	CartridgeType(CartridgeType_E::UnknownCartridgeType),
 	ROMSize(ROMSize_E::UnknownROMSize),
@@ -13,7 +13,7 @@ GBCartridgeHeader::GBCartridgeHeader(const vector<byte>& i_ROMData) :
 	Version	= m_ROMData[ROM_VERSION];
 }
 
-std::string GBCartridgeHeader::CartridgeTypeToString()
+std::string CartridgeHeader::CartridgeTypeToString()
 {
 	switch (CartridgeType)
 	{
@@ -33,7 +33,7 @@ std::string GBCartridgeHeader::CartridgeTypeToString()
 	}
 }
 
-std::string GBCartridgeHeader::ROMSizeToString()
+std::string CartridgeHeader::ROMSizeToString()
 {
 	switch (ROMSize)
 	{
@@ -67,7 +67,7 @@ std::string GBCartridgeHeader::ROMSizeToString()
 	}
 }
 
-std::string GBCartridgeHeader::RAMSizeToString()
+std::string CartridgeHeader::RAMSizeToString()
 {
 	switch (RAMSize)
 	{
@@ -89,7 +89,7 @@ std::string GBCartridgeHeader::RAMSizeToString()
 	}
 }
 
-void GBCartridgeHeader::readTitle()
+void CartridgeHeader::readTitle()
 {
 	int pos = TITLE_START;
 	for (int i = 0; i < (TITLE_END - TITLE_START  + 1); i++)
@@ -98,7 +98,7 @@ void GBCartridgeHeader::readTitle()
 	}
 }
 
-void GBCartridgeHeader::readCartridgeType()
+void CartridgeHeader::readCartridgeType()
 {
 	switch (m_ROMData[CARTRIDGE_TYPE])
 	{
@@ -137,7 +137,7 @@ void GBCartridgeHeader::readCartridgeType()
 	}
 }
 
-void GBCartridgeHeader::readROMSize()
+void CartridgeHeader::readROMSize()
 {
 	switch (m_ROMData[ROM_SIZE])
 	{
@@ -183,7 +183,7 @@ void GBCartridgeHeader::readROMSize()
 	}
 }
 
-void GBCartridgeHeader::readRAMSize()
+void CartridgeHeader::readRAMSize()
 {
 	switch (m_ROMData[RAM_SIZE])
 	{

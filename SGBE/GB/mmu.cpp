@@ -1,8 +1,8 @@
-﻿#include "‏‏gb_mmu.h"
+﻿#include "mmu.h"
 
-GBMMU::GBMMU(GBCartridge& i_Cartridge) : m_Cartridge(i_Cartridge) {}
+MMU::MMU(Cartridge& i_Cartridge) : m_Cartridge(i_Cartridge) {}
 
-byte GBMMU::Read(const WordAddress& i_Address) const
+byte MMU::Read(const WordAddress& i_Address) const
 {
     // bootstrap
     // if(!bootstrap_done)
@@ -67,7 +67,7 @@ byte GBMMU::Read(const WordAddress& i_Address) const
     return stam;
 }
 
-void GBMMU::Write(const WordAddress& i_Address, byte i_Value)
+void MMU::Write(const WordAddress& i_Address, byte i_Value)
 {
 	// TODO
 }

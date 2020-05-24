@@ -1,13 +1,13 @@
-#include "gb_cpu.h"
+#include "cpu.h"
 
-GBCPU::GBCPU() : AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false) {}
+CPU::CPU() : AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false) {}
 
-void GBCPU::Step()
+void CPU::Step()
 {
 	//byte instruction = MMU.
 }
 
-void GBCPU::Reset()
+void CPU::Reset()
 {
 	A.SetValue(0);
 	B.SetValue(0);

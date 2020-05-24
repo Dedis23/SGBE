@@ -4,10 +4,10 @@
  *			A class that holds metadata about the cartridge         *
  ********************************************************************/
 
-#ifndef __GB_CARTRIDGE_HEADER_
-#define __GB_CARTRIDGE_HEADER_
+#ifndef __CARTRIDGE_HEADER_H
+#define __CARTRIDGE_HEADER_H
 
-#include "../gb_utility.h"
+#include "utility.h"
 #include <vector>
 #include <string>
 
@@ -40,7 +40,7 @@ const word HEADER_CHECKSUM = 0x14D; // 1 byte
 const word GLOBAL_CHECKSUM_START = 0x14E; // 2 bytes
 const word GLOBAL_CHECKSUM_END = 0x14F;
 
-class GBCartridgeHeader
+class CartridgeHeader
 {
 public:
     enum class CartridgeType_E
@@ -85,8 +85,8 @@ public:
     std::string RAMSizeToString();
 
 public:
-    GBCartridgeHeader(const vector<byte>& i_ROMData);
-	virtual ~GBCartridgeHeader() = default;
+    CartridgeHeader(const vector<byte>& i_ROMData);
+	virtual ~CartridgeHeader() = default;
 
     std::string Title;
     CartridgeType_E CartridgeType;

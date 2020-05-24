@@ -19,26 +19,11 @@
     <Filter Include="GB">
       <UniqueIdentifier>{1cd6e61a-3faf-47b7-8d53-c9923f0f59c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GB\CPU">
-      <UniqueIdentifier>{7f8db396-5688-4b01-a8b5-167a487c61a3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="App">
       <UniqueIdentifier>{65d38de0-5298-42e6-94a7-8ec419d7ab12}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GB\Cartridge">
-      <UniqueIdentifier>{3ceebfda-01bb-425f-90ee-f0227bad5c3e}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Generic\registers.cpp">
-      <Filter>Generic</Filter>
-    </ClCompile>
-    <ClCompile Include="GB\CPU\gb_registers.cpp">
-      <Filter>GB\CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="GB\CPU\gb_cpu.cpp">
-      <Filter>GB\CPU</Filter>
-    </ClCompile>
     <ClCompile Include="App\main.cpp">
       <Filter>App</Filter>
     </ClCompile>
@@ -54,32 +39,26 @@
     <ClCompile Include="Generic\cli.cpp">
       <Filter>Generic</Filter>
     </ClCompile>
-    <ClCompile Include="GB\gb_interpreter.cpp">
+    <ClCompile Include="GB\mmu.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="GB\‏‏gb_mmu.cpp">
+    <ClCompile Include="GB\interpreter.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="GB\Cartridge\gb_cartridge.cpp">
-      <Filter>GB\Cartridge</Filter>
+    <ClCompile Include="GB\registers.cpp">
+      <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="GB\Cartridge\‏‏gb_cartridge_header.cpp">
-      <Filter>GB\Cartridge</Filter>
+    <ClCompile Include="GB\cpu.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
+    <ClCompile Include="GB\cartridge_header.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
+    <ClCompile Include="GB\cartridge.cpp">
+      <Filter>GB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Generic\registers.h">
-      <Filter>Generic</Filter>
-    </ClInclude>
-    <ClInclude Include="GB\CPU\gb_cpu.h">
-      <Filter>GB\CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="GB\CPU\gb_registers.h">
-      <Filter>GB\CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="GB\gb_utility.h">
-      <Filter>GB</Filter>
-    </ClInclude>
     <ClInclude Include="Generic\address.h">
       <Filter>Generic</Filter>
     </ClInclude>
@@ -92,17 +71,26 @@
     <ClInclude Include="Generic\cli.h">
       <Filter>Generic</Filter>
     </ClInclude>
-    <ClInclude Include="GB\gb_interpreter.h">
+    <ClInclude Include="GB\utility.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="GB\‏‏gb_mmu.h">
+    <ClInclude Include="GB\mmu.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="GB\Cartridge\gb_cartridge.h">
-      <Filter>GB\Cartridge</Filter>
+    <ClInclude Include="GB\interpreter.h">
+      <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="GB\Cartridge\‏‏gb_cartridge_header.h">
-      <Filter>GB\Cartridge</Filter>
+    <ClInclude Include="GB\registers.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\cpu.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\cartridge_header.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\cartridge.h">
+      <Filter>GB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

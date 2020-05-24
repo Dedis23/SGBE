@@ -4,23 +4,23 @@
  *			Cartridge class that is specific for the gameboy        *
  ********************************************************************/
 
-#ifndef __GB_CARTRIDGE_
-#define __GB_CARTRIDGE_
+#ifndef __CARTRIDGE_H
+#define __CARTRIDGE_H
 
 #include <iostream>
 #include <string>
 #include <vector>
 #include <iterator>
-#include "../../Generic/logger.h"
-#include "../../GB/CPU/gb_registers.h"
-#include "../../GB/gb_utility.h"
-#include "‏‏gb_cartridge_header.h"
+#include "../Generic/logger.h"
+#include "registers.h"
+#include "utility.h"
+#include "cartridge_header.h"
 
-class GBCartridge
+class Cartridge
 {
 public:
-    GBCartridge(vector<byte>& i_ROMData);
-	virtual ~GBCartridge() = default;
+    Cartridge(vector<byte>& i_ROMData);
+	virtual ~Cartridge() = default;
 
     virtual byte Read(const WordAddress& i_Address) = 0;
     virtual void Write(const WordAddress& i_Address, byte i_Value) = 0;
@@ -30,7 +30,7 @@ protected:
 };
 
 /* cartridge with not additional banks, no additional ROM and no additional RAM (32K in size) */
-class NoMBC : public GBCartridge
+class NoMBC : public Cartridge
 {
 public:
     NoMBC(vector<byte>& i_ROMData);
@@ -45,7 +45,7 @@ public:
 class CartridgeFactory
 {
 public:
-    static GBCartridge* CreateCartridge(vector<byte>& i_ROMData, GBCartridgeHeader::CartridgeType_E i_CartridgeType);
+    static Cartridge* CreateCartridge(vector<byte>& i_ROMData, CartridgeHeader::CartridgeType_E i_CartridgeType);
 };
 
 #endif
