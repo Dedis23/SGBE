@@ -6,7 +6,7 @@ NoMBC::NoMBC(vector<byte>& i_ROMData) : Cartridge(i_ROMData) {}
 
 byte NoMBC::Read(const WordAddress& i_Address)
 {
-    if (i_Address.InRange(0x0, 0x7FFF))
+    if (i_Address.checkRangeBounds(0x0, 0x7FFF))
     {
         return m_ROMData[i_Address.GetValue()];
     }

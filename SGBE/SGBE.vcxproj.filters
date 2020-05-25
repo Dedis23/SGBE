@@ -27,9 +27,6 @@
     <ClCompile Include="App\main.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="Generic\address.cpp">
-      <Filter>Generic</Filter>
-    </ClCompile>
     <ClCompile Include="Generic\logger.cpp">
       <Filter>Generic</Filter>
     </ClCompile>
@@ -59,9 +56,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Generic\address.h">
-      <Filter>Generic</Filter>
-    </ClInclude>
     <ClInclude Include="Generic\logger.h">
       <Filter>Generic</Filter>
     </ClInclude>

@@ -5,16 +5,14 @@
  *			It holds and operates the various components of the gameboy			*
  ********************************************************************************/
 
-#ifndef __INTERPRETER_H
-#define __INTERPRETER_H
-
 #include <string>
 #include <vector>
 #include "cpu.h"
-#include "utility.h"
 #include "cartridge.h"
-#include "cartridge_header.h"
 #include "mmu.h"
+
+#ifndef __INTERPRETER_H
+#define __INTERPRETER_H
 
 class Interpreter
 {

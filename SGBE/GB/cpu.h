@@ -4,11 +4,11 @@
  *			The CPU of the gameboy				*
  ************************************************/
 
+#include <unordered_map>
+#include "utility.h"
+
 #ifndef __CPU_H
 #define __CPU_H
-
-#include "registers.h"
-#include <unordered_map>
 
 class CPU
 {

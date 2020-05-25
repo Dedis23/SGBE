@@ -4,12 +4,12 @@
  *			A very basic CLI parsing system                                     *
  ********************************************************************************/
 
-#ifndef __CLI_H
-#define __CLI_H
-
 #include <sstream>
 #include <vector>
 #include <unordered_map>
+
+#ifndef __CLI_H
+#define __CLI_H
 
 using namespace std;
 

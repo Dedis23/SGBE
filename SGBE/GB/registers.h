@@ -5,10 +5,10 @@
  *		as well as registers that are specific for the gameboy 	*
  ****************************************************************/
 
+#include <iostream>
+
 #ifndef __REGISTERS_H
 #define __REGISTERS_H
-
-#include <iostream>
 
 typedef uint8_t byte;
 typedef uint16_t word;

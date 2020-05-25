@@ -158,7 +158,6 @@
     <ClCompile Include="GB\interpreter.cpp" />
     <ClCompile Include="GB\mmu.cpp" />
     <ClCompile Include="GB\registers.cpp" />
-    <ClCompile Include="Generic\address.cpp" />
     <ClCompile Include="Generic\cli.cpp" />
     <ClCompile Include="Generic\logger.cpp" />
   </ItemGroup>
@@ -171,7 +170,6 @@
     <ClInclude Include="GB\mmu.h" />
     <ClInclude Include="GB\registers.h" />
     <ClInclude Include="GB\utility.h" />
-    <ClInclude Include="Generic\address.h" />
     <ClInclude Include="Generic\cli.h" />
     <ClInclude Include="Generic\logger.h" />
   </ItemGroup>

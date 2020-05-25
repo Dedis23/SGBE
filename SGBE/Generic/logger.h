@@ -4,9 +4,6 @@
  *			Generic thread-safe Logger class			*
  ********************************************************/
 
-#ifndef __LOGGER_H
-#define __LOGGER_H
-
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -15,6 +12,9 @@
 #include <chrono>
 #include <ctime>
 #include <vector>
+
+#ifndef __LOGGER_H
+#define __LOGGER_H
 
 using namespace std;
 

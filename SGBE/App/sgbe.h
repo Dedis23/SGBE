@@ -5,13 +5,12 @@
  *          the application is based on the SDL framework       *
  ****************************************************************/
 
-#ifndef __SGBE_H
-#define __SGBE_H
-
 #include "SDL.h"
 #include "../Generic/cli.h"
-#include "../GB/utility.h"
 #include "../GB/interpreter.h"
+
+#ifndef __SGBE_H
+#define __SGBE_H
 
 class SGBE
 {

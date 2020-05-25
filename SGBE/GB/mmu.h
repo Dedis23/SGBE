@@ -31,13 +31,13 @@
  0xFF80-0xFFFF: Zero Page - high speed RAM of 128 bytes, includes the Interrupt Enable Register
 */
 
-#ifndef __MMU_H
-#define __MMU_H
-
 #include <string>
 #include <vector>
 #include "cartridge.h"
 #include "utility.h"
+
+#ifndef __MMU_H
+#define __MMU_H
 
 class MMU
 {

@@ -4,17 +4,13 @@
  *			Cartridge class that is specific for the gameboy        *
  ********************************************************************/
 
-#ifndef __CARTRIDGE_H
-#define __CARTRIDGE_H
-
 #include <iostream>
 #include <string>
 #include <vector>
-#include <iterator>
-#include "../Generic/logger.h"
-#include "registers.h"
-#include "utility.h"
 #include "cartridge_header.h"
+
+#ifndef __CARTRIDGE_H
+#define __CARTRIDGE_H
 
 class Cartridge
 {

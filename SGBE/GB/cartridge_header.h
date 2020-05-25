@@ -4,12 +4,12 @@
  *			A class that holds metadata about the cartridge         *
  ********************************************************************/
 
-#ifndef __CARTRIDGE_HEADER_H
-#define __CARTRIDGE_HEADER_H
-
-#include "utility.h"
 #include <vector>
 #include <string>
+#include "utility.h"
+
+#ifndef __CARTRIDGE_HEADER_H
+#define __CARTRIDGE_HEADER_H
 
 /* Most of the info was taken from: */
 /* https://gbdev.gg8.se/wiki/articles/The_Cartridge_Header */
