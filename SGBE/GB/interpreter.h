@@ -34,6 +34,7 @@ private:
 	vector<byte> m_ROMData;
 	CPU m_CPU;
 	MMU m_MMU;
+	CartridgeHeader* m_CartridgeHeader;
 	Cartridge* m_Cartridge;
 };
 

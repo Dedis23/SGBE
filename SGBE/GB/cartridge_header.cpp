@@ -13,6 +13,19 @@ CartridgeHeader::CartridgeHeader(const vector<byte>& i_ROMData) :
 	Version	= m_ROMData[ROM_VERSION];
 }
 
+bool CartridgeHeader::VerifyChecksum()
+{
+	// algorithm is: x=0:FOR i=0134h TO 014Ch:x=x-MEM[i]-1:NEXT
+	// taken from https://gbdev.gg8.se/wiki/articles/The_Cartridge_Header
+
+	uint32_t checksum = 0;
+	for (word ptr = TITLE_START; ptr <= ROM_VERSION; ptr++)
+	{
+		checksum = checksum - m_ROMData[ptr] - 1;
+	}
+	return static_cast<byte>(checksum) == m_ROMData[HEADER_CHECKSUM];
+}
+
 std::string CartridgeHeader::CartridgeTypeToString()
 {
 	switch (CartridgeType)

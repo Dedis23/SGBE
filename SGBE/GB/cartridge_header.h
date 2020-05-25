@@ -88,6 +88,9 @@ public:
     CartridgeHeader(const vector<byte>& i_ROMData);
 	virtual ~CartridgeHeader() = default;
 
+    bool VerifyChecksum();
+
+public:
     std::string Title;
     CartridgeType_E CartridgeType;
     ROMSize_E ROMSize;
