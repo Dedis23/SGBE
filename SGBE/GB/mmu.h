@@ -31,6 +31,11 @@
  0xFF80-0xFFFF: Zero Page - high speed RAM of 128 bytes, includes the Interrupt Enable Register
 */
 
+/*
+	bootstrap taken from:
+	https://realboyemulator.wordpress.com/2013/01/03/a-look-at-the-game-boy-bootstrap-let-the-fun-begin/
+*/
+
 #include <string>
 #include <vector>
 #include "cartridge.h"
@@ -51,12 +56,16 @@ public:
 	void Write(const WordAddress& i_Address, byte i_Value);
 
 private:
+	bool isBootstrapDone() const;
+
+private:
     Cartridge& m_Cartridge;
 	vector<byte> m_VRAM = vector<byte>(0x9FFF - 0x8000 + 1);
 	vector<byte> m_RAM = vector<byte>(0xFDFF - 0xC000 + 1); // including the shadow ram
 	vector<byte> m_OAM = vector<byte>(0xFEFF - 0xFE00 + 1); // including the unusable section
 	vector<byte> m_MappedIO = vector<byte>(0xFF7F - 0xFF00 + 1);
 	vector<byte> m_ZeroPageRAM = vector<byte>(0xFFFF - 0xFF80 + 1);
+	static const vector<byte> s_Bootstrap;
 };
 
 #endif

@@ -4,6 +4,7 @@ Interpreter::Interpreter() : m_MMU(*m_Cartridge), m_CartridgeHeader(nullptr), m_
 
 Interpreter::~Interpreter()
 {
+	delete m_CartridgeHeader;
 	delete m_Cartridge;
 }
 
