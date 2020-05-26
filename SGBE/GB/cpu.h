@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 #include "utility.h"
+#include "mmu.h"
 
 #ifndef __CPU_H
 #define __CPU_H
@@ -13,7 +14,7 @@
 class CPU
 {
 public:
-	CPU();
+	CPU(MMU& i_MMU);
 	virtual ~CPU() = default;
 	CPU(const CPU&) = delete;
 	CPU& operator=(const CPU&) = delete;
@@ -28,16 +29,20 @@ private:
 	FlagRegister Flag; // flag register, high nible is affected: Z N H C 0 0 0 0
 	Pair8BRegisters AF, BC, DE, HL; // 2x8-bit registers paired together
 	bool m_IME; // Interrupt master enable
+	/* components */
+	MMU& m_MMU;
 
 private:
 	/* opcodes */
-	//std::unordered_map<byte, >
-	//struct OPCode
-	//{
-	//	void operation(void) {}
-	//	std::string name;
-	//	uint8_t		cycles;
-	//};
+	typedef uint32_t(CPU::* OPCodeFuntion)(byte operand);
+	struct OPCode
+	{
+		OPCodeFuntion Operation;
+		std::string Name;
+	};
+
+	static const std::vector<OPCode> m_OPCodeMap;
+	uint32_t stam(byte operand);
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "interpreter.h"
 
-Interpreter::Interpreter() : m_MMU(*m_Cartridge), m_CartridgeHeader(nullptr), m_Cartridge(nullptr) {}
+Interpreter::Interpreter() : m_CPU(m_MMU), m_MMU(*m_Cartridge), m_CartridgeHeader(nullptr), m_Cartridge(nullptr) {}
 
 Interpreter::~Interpreter()
 {
@@ -35,7 +35,7 @@ bool Interpreter::IsCartridgeLoadedSuccessfully()
 /* This is the main emulation loop */
 void Interpreter::Run()
 {
-	//m_CPU.Step();
+	m_CPU.Step();
 }
 
 bool Interpreter::loadROM(const string& i_RomFileName)

@@ -4,6 +4,8 @@ MMU::MMU(Cartridge& i_Cartridge) : m_Cartridge(i_Cartridge) {}
 
 byte MMU::Read(const WordAddress& i_Address) const
 {
+    /* more info about the sections is in the h file */
+
     if (i_Address.checkRangeBounds(0x00, 0xFF))
     {
         /* bootstrap */
@@ -13,7 +15,62 @@ byte MMU::Read(const WordAddress& i_Address) const
         }
     }
 
-    LOG_CRITICAL(true, return 0, "Attempting to read from unmapped memory address: 0x" << i_Address.GetValue());
+    /* Cartridge ROM banks */
+    if (i_Address.checkRangeBounds(0x0000, 0x7FFF))
+    {
+        return m_Cartridge.Read(i_Address.GetValue());
+    }
+
+    /* Video RAM */
+    if (i_Address.checkRangeBounds(0x8000, 0x9FFF))
+    {
+        return m_VRAM[i_Address.GetValue() - 0x8000];
+    }
+
+    /* External RAM (RAM on specific cartridge types which supported this) */
+    if (i_Address.checkRangeBounds(0xA000, 0xBFFF))
+    {
+        return m_Cartridge.Read(i_Address.GetValue() - 0xA000);
+    }
+
+    /* Internal RAM */
+    if (i_Address.checkRangeBounds(0xC000, 0xDFFF))
+    {
+        return m_RAM[i_Address.GetValue() - 0xC000];
+    }
+
+    /* Shadow RAM */
+    if (i_Address.checkRangeBounds(0xE000, 0xFDFF))
+    {
+        /* reading exact copy from the internal RAM which is 0x2000 addresses below */
+        return m_RAM[i_Address.GetValue() - 0x2000];
+    }
+
+    /* OAM */
+    if (i_Address.checkRangeBounds(0xFE00, 0xFE9F))
+    {
+        return m_OAM[i_Address.GetValue() - 0xFE00];
+    }
+
+    /* Unusable area - shouldn't get here */
+    if (i_Address.checkRangeBounds(0xFEA0, 0xFEFF))
+    {
+        LOG_ERROR(true, return 0, "Attempting to read from unusable memory address: 0x" << i_Address.GetValue());
+    }
+
+    /* Mapped IO */
+    if (i_Address.checkRangeBounds(0xFF00, 0xFF7F))
+    {
+        return m_MappedIO[i_Address.GetValue() - 0xFF00];
+    }
+
+    /* Zero Page RAM */
+    if (i_Address.checkRangeBounds(0xFF80, 0xFFFF))
+    {
+        return m_ZeroPageRAM[i_Address.GetValue() - 0xFF80];
+    }
+
+    LOG_ERROR(true, return 0, "Attempting to read from unmapped memory address: 0x" << i_Address.GetValue());
 }
 
 void MMU::Write(const WordAddress& i_Address, byte i_Value)

@@ -49,7 +49,10 @@ void SGBE::Run()
 	if (m_Interpreter->IsCartridgeLoadedSuccessfully())
 	{
 		// game loop here
-		SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255); // todo remove this
+		m_Interpreter->Run();
+
+		// todo remove this
+		SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
 		SDL_RenderClear(m_Renderer);
 		SDL_RenderPresent(m_Renderer);
 		SDL_Delay(5000);
