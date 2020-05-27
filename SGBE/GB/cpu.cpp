@@ -4,10 +4,11 @@ CPU::CPU(MMU& i_MMU) : m_MMU(i_MMU), AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_I
 
 void CPU::Step()
 {
-	// read next byte from memory (whether its an instruction or a value from the memory)
-	byte opcode = m_MMU.Read(PC.GetValue());
-
-	//cout << m_OPCodeMap[0].Name << endl;
+	// read next instruction opcode
+	byte OPCode = m_MMU.Read(PC.GetValue());
+	OPCodeData OPCodeData = m_OPCodeDataMap[OPCode];
+	LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << PC.GetValue() - 1);
+	OPCodeData.Operation;
 }
 
 void CPU::Reset()
@@ -26,13 +27,43 @@ void CPU::Reset()
 	m_IME = false;
 }
 
-uint32_t CPU::stam(byte operand)
+byte CPU::readNextByte()
 {
-	cout << "in stam" << endl;
-	return 999;
+	byte nextByte = m_MMU.Read(PC.GetValue());
+	PC.Increment();
+	return nextByte;
 }
 
-const std::vector<CPU::OPCode> CPU::m_OPCodeMap
+word CPU::readNextWord()
 {
-	{ &CPU::stam, "stam" }
+	byte highByte = readNextByte();
+	byte lowByte = readNextByte();
+	return static_cast<word>(highByte << 8 | lowByte);
+}
+
+/* OPCodes */
+
+/*
+	Operation:
+	LD nn, n
+
+	Description:
+	Put value n into nn
+
+	nn = B, C, D, E, H, L, BC, DE, HL, SP
+	n = 8 bit immediate value
+*/
+void LD_nn_n(ByteRegister& i_Operand)
+{
+
+}
+
+const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
+{
+	{ &OPCode_06, "LD B, n", 8 } // 06
 };
+
+void CPU::OPCode_06()
+{
+	LD_nn_n(B);
+}
