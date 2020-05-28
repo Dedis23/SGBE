@@ -51,16 +51,84 @@ private:
 	};
 	static const std::vector<OPCodeData> m_OPCodeDataMap;
 
-	// CPU Operations
-	void LD_nn_n(ByteRegister& i_Operand);
+	/* CPU Operations */
+	void LD_nn_n(ByteRegister& i_DestOperand);
+	void LD_r1_r2(ByteRegister& i_DestOperand, const ByteRegister& i_SrcOperand);
+	void LD_r1_r2(ByteRegister& i_DestOperand, const WordAddress& i_SrcOperand);
+	void LD_r1_r2(const WordAddress& i_DestOperand, ByteRegister& i_SrcOperand);
 
-	// OPCode Functions
+	/* OPCode Functions */
 	void OPCode_06();
 	void OPCode_0E();
 	void OPCode_16();
 	void OPCode_1E();
 	void OPCode_26();
 	void OPCode_2E();
+
+	void OPCode_7F();
+	void OPCode_78();
+	void OPCode_79();
+	void OPCode_7A();
+	void OPCode_7B();
+	void OPCode_7C();
+	void OPCode_7D();
+	void OPCode_7E();
+
+	void OPCode_40();
+	void OPCode_41();
+	void OPCode_42();
+	void OPCode_43();
+	void OPCode_44();
+	void OPCode_45();
+	void OPCode_46();
+
+	void OPCode_48();
+	void OPCode_49();
+	void OPCode_4A();
+	void OPCode_4B();
+	void OPCode_4C();
+	void OPCode_4D();
+	void OPCode_4E();
+
+	void OPCode_50();
+	void OPCode_51();
+	void OPCode_52();
+	void OPCode_53();
+	void OPCode_54();
+	void OPCode_55();
+	void OPCode_56();
+
+	void OPCode_58();
+	void OPCode_59();
+	void OPCode_5A();
+	void OPCode_5B();
+	void OPCode_5C();
+	void OPCode_5D();
+	void OPCode_5E();
+
+	void OPCode_60();
+	void OPCode_61();
+	void OPCode_62();
+	void OPCode_63();
+	void OPCode_64();
+	void OPCode_65();
+	void OPCode_66();
+
+	void OPCode_68();
+	void OPCode_69();
+	void OPCode_6A();
+	void OPCode_6B();
+	void OPCode_6C();
+	void OPCode_6D();
+	void OPCode_6E();
+
+	void OPCode_70();
+	void OPCode_71();
+	void OPCode_72();
+	void OPCode_73();
+	void OPCode_74();
+	void OPCode_75();
+	void OPCode_36();
 };
 
 #endif
