@@ -50,20 +50,51 @@ word CPU::readNextWord()
 	Description:
 	Put value n into nn
 
-	nn = B, C, D, E, H, L, BC, DE, HL, SP
+	nn = B, C, D, E, H, L
 	n = 8 bit immediate value
 */
-void LD_nn_n(ByteRegister& i_Operand)
+void CPU::LD_nn_n(ByteRegister& i_Operand)
 {
-
+	byte n = readNextByte();
+	i_Operand.SetValue(n);
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
-	{ &OPCode_06, "LD B, n", 8 } // 06
+	{ &OPCode_06, "LD B, n", 8 }, // 06
+	{ &OPCode_0E, "LD C, n", 8 }, // 0E
+	{ &OPCode_16, "LD D, n", 8 }, // 16
+	{ &OPCode_1E, "LD E, n", 8 }, // 1E
+	{ &OPCode_26, "LD H, n", 8 }, // 26
+	{ &OPCode_2E, "LD L, n", 8 }, // 2E
 };
 
 void CPU::OPCode_06()
 {
 	LD_nn_n(B);
+}
+
+void CPU::OPCode_0E()
+{
+	LD_nn_n(C);
+}
+
+void CPU::OPCode_16()
+{
+	LD_nn_n(D);
+}
+
+void CPU::OPCode_1E()
+{
+	LD_nn_n(E);
+}
+
+void CPU::OPCode_26()
+{
+	LD_nn_n(H);
+}
+
+void CPU::OPCode_2E()
+{
+	LD_nn_n(L);
 }
