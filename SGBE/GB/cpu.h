@@ -53,6 +53,7 @@ private:
 
 	// CPU Operations
 	void LD_nn_n(ByteRegister& i_Operand);
+	void LD_nn_n(WordRegister& i_Operand);
 
 	// OPCode Functions
 	void OPCode_06();

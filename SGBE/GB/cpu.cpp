@@ -36,8 +36,8 @@ byte CPU::readNextByte()
 
 word CPU::readNextWord()
 {
-	byte highByte = readNextByte();
 	byte lowByte = readNextByte();
+	byte highByte = readNextByte();
 	return static_cast<word>(highByte << 8 | lowByte);
 }
 
