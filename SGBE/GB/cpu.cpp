@@ -172,6 +172,10 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_12, "LD (DE), A", 8 },
 	{ &OPCode_77, "LD (HL), A", 8 },
 	{ &OPCode_EA, "LD (nn), A", 16 },
+
+	{ &OPCode_F2, "LD A, (C)", 8 },
+
+	{ &OPCode_E2, "LD (C), A", 8 },
 };
 
 void CPU::OPCode_06()
@@ -578,5 +582,17 @@ void CPU::OPCode_77()
 void CPU::OPCode_EA()
 {
 	word addr = readNextWord();
+	LD_r1_r2(addr, A);
+}
+
+void CPU::OPCode_F2()
+{
+	word addr = 0xFF00 + C.GetValue();
+	LD_r1_r2(A, addr);
+}
+
+void CPU::OPCode_E2()
+{
+	word addr = 0xFF00 + C.GetValue();
 	LD_r1_r2(addr, A);
 }

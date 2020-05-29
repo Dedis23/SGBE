@@ -145,6 +145,10 @@ private:
 	void OPCode_12();
 	void OPCode_77();
 	void OPCode_EA();
+
+	void OPCode_F2();
+
+	void OPCode_E2();
 };
 
 #endif
