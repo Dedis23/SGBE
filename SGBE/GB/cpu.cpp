@@ -83,13 +83,19 @@ void CPU::LD_r1_r2(ByteRegister& i_DestOperand, const ByteRegister& i_SrcOperand
 	i_DestOperand.SetValue(val);
 }
 
+void CPU::LD_r1_r2(WordRegister& i_DestOperand, const WordRegister& i_SrcOperand)
+{
+	word val = i_SrcOperand.GetValue();
+	i_DestOperand.SetValue(val);
+}
+
 void CPU::LD_r1_r2(ByteRegister& i_DestOperand, const WordAddress& i_SrcOperand)
 {
 	byte val = m_MMU.Read(i_SrcOperand);
 	i_DestOperand.SetValue(val);
 }
 
-void CPU::LD_r1_r2(const WordAddress& i_DestOperand, ByteRegister& i_SrcOperand)
+void CPU::LD_r1_r2(const WordAddress& i_DestOperand, const ByteRegister& i_SrcOperand)
 {
 	byte val = i_SrcOperand.GetValue();
 	m_MMU.Write(i_DestOperand, val);
@@ -201,6 +207,8 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_11, "LD DE, nn", 12 },
 	{ &OPCode_21, "LD HL, nn", 12 },
 	{ &OPCode_31, "LD SP, nn", 12 },
+
+	{ &OPCode_F9, "LD SP, HL", 8 },
 };
 
 void CPU::OPCode_06()
@@ -678,4 +686,9 @@ void CPU::OPCode_21()
 void CPU::OPCode_31()
 {
 	LD_nn_n(SP);
+}
+
+void CPU::OPCode_F9()
+{
+	//LD_r1_r2(SP, HL);
 }

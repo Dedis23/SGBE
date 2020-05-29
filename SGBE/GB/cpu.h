@@ -56,8 +56,9 @@ private:
 	void LD_nn_n(WordRegister& i_DestOperand);
 	void LD_nn_n(Pair8BRegisters& i_DestOperand);
 	void LD_r1_r2(ByteRegister& i_DestOperand, const ByteRegister& i_SrcOperand);
+	void LD_r1_r2(WordRegister& i_DestOperand, const WordRegister& i_SrcOperand);
 	void LD_r1_r2(ByteRegister& i_DestOperand, const WordAddress& i_SrcOperand);
-	void LD_r1_r2(const WordAddress& i_DestOperand, ByteRegister& i_SrcOperand);
+	void LD_r1_r2(const WordAddress& i_DestOperand, const ByteRegister& i_SrcOperand);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -164,6 +165,8 @@ private:
 	void OPCode_11();
 	void OPCode_21();
 	void OPCode_31();
+
+	void OPCode_F9();
 };
 
 #endif
