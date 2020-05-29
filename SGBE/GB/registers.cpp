@@ -112,6 +112,22 @@ word Pair8BRegisters::GetValue() const
 	return (static_cast<word>(m_HighByteRegister.GetValue() << 8)) | m_LowByteRegister.GetValue();
 }
 
+void Pair8BRegisters::Clear()
+{
+	m_LowByteRegister.Clear();
+	m_HighByteRegister.Clear();
+}
+
+void Pair8BRegisters::Increment()
+{
+	SetValue(GetValue() + 1);
+}
+
+void Pair8BRegisters::Decrement()
+{
+	SetValue(GetValue() - 1);
+}
+
 ByteRegister& Pair8BRegisters::GetHighRegister()
 {
 	return m_HighByteRegister;

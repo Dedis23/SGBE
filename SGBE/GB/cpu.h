@@ -149,6 +149,8 @@ private:
 	void OPCode_F2();
 
 	void OPCode_E2();
+
+	void OPCode_3A();
 };
 
 #endif

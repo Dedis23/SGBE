@@ -176,6 +176,8 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_F2, "LD A, (C)", 8 },
 
 	{ &OPCode_E2, "LD (C), A", 8 },
+
+	{ &OPCode_3A, "LDD A, (HL)", 8 },
 };
 
 void CPU::OPCode_06()
@@ -595,4 +597,10 @@ void CPU::OPCode_E2()
 {
 	word addr = 0xFF00 + C.GetValue();
 	LD_r1_r2(addr, A);
+}
+
+void CPU::OPCode_3A()
+{
+	OPCode_7E();
+	HL.Decrement();
 }

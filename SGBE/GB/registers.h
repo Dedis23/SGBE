@@ -74,6 +74,9 @@ public:
 
 	void SetValue(word i_NewValue);
 	word GetValue() const;
+	void Clear();
+	void Increment();
+	void Decrement();
 	ByteRegister& GetHighRegister();
 	ByteRegister& GetLowRegister();
 private:
