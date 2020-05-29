@@ -180,6 +180,10 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_3A, "LDD A, (HL)", 8 },
 
 	{ &OPCode_32, "LDD (HL), A", 8 },
+
+	{ &OPCode_2A, "LDI A, (HL)", 8 },
+					 
+	{ &OPCode_22, "LDI (HL), A", 8 },
 };
 
 void CPU::OPCode_06()
@@ -611,4 +615,16 @@ void CPU::OPCode_32()
 {
 	OPCode_77();
 	HL.Decrement();
+}
+
+void CPU::OPCode_2A()
+{
+	OPCode_7E();
+	HL.Increment();
+}
+
+void CPU::OPCode_22()
+{
+	OPCode_77();
+	HL.Increment();
 }

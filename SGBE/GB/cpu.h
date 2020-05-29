@@ -153,6 +153,10 @@ private:
 	void OPCode_3A();
 
 	void OPCode_32();
+
+	void OPCode_2A();
+
+	void OPCode_22();
 };
 
 #endif
