@@ -151,6 +151,8 @@ private:
 	void OPCode_E2();
 
 	void OPCode_3A();
+
+	void OPCode_32();
 };
 
 #endif
