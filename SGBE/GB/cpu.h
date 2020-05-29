@@ -129,6 +129,19 @@ private:
 	void OPCode_74();
 	void OPCode_75();
 	void OPCode_36();
+
+	void OPCode_0A();
+	void OPCode_1A();
+	void OPCode_FA();
+	void OPCode_3E();
+
+/*
+ LD A, (BC) 0A 8
+ LD A, (DE) 1A 8
+ LD A, (HL) 7E 8
+ LD A, (nn) FA 16
+ LD A, #	3E 8
+*/
 };
 
 #endif

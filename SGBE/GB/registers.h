@@ -19,7 +19,7 @@ typedef uint16_t word;
 class ByteRegister
 {
 public:
-	ByteRegister(byte i_Value = 0);
+	explicit ByteRegister(byte i_Value = 0);
 	virtual ~ByteRegister() = default;
 	ByteRegister(const ByteRegister&) = delete;
 	ByteRegister& operator=(const ByteRegister&) = delete;

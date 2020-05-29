@@ -48,7 +48,7 @@ word CPU::readNextWord()
 	LD nn, n
 
 	Description:
-	Put value n (memory) into nn.
+	Put value n (memory) into nn (register).
 */
 void CPU::LD_nn_n(ByteRegister& i_DestOperand)
 {
@@ -156,6 +156,11 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_74, "LD (HL), H", 8 },
 	{ &OPCode_75, "LD (HL), L", 8 },
 	{ &OPCode_36, "LD (HL), n", 12 },
+
+	{ &OPCode_0A, "LD A, (BC)", 8 },
+	{ &OPCode_1A, "LD A, (DE)", 8 },
+	{ &OPCode_FA, "LD A, (nn)", 16 },
+	{ &OPCode_3E, "LD A, n", 8 },
 };
 
 void CPU::OPCode_06()
@@ -486,4 +491,27 @@ void CPU::OPCode_36()
 	byte n = readNextByte();
 	word addr = HL.GetValue();
 	LD_r1_r2(addr, (ByteRegister&)n);
+}
+
+void CPU::OPCode_0A()
+{
+	word addr = BC.GetValue();
+	LD_r1_r2(A, addr);
+}
+
+void CPU::OPCode_1A()
+{
+	word addr = DE.GetValue();
+	LD_r1_r2(A, addr);
+}
+
+void CPU::OPCode_FA()
+{
+	word addr = readNextWord();
+	LD_r1_r2(A, addr);
+}
+
+void CPU::OPCode_3E()
+{
+	LD_nn_n(A);
 }
