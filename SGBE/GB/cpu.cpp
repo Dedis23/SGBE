@@ -56,6 +56,18 @@ void CPU::LD_nn_n(ByteRegister& i_DestOperand)
 	i_DestOperand.SetValue(n);
 }
 
+void CPU::LD_nn_n(WordRegister& i_DestOperand)
+{
+	word n = readNextWord();
+	i_DestOperand.SetValue(n);
+}
+
+void CPU::LD_nn_n(Pair8BRegisters& i_DestOperand)
+{
+	word n = readNextWord();
+	i_DestOperand.SetValue(n);
+}
+
 
 /*
 	Operation:
@@ -184,6 +196,11 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 
 	{ &OPCode_E0, "LDH (n), A", 12 },
 	{ &OPCode_F0, "LDH A, (n)", 12 },
+
+	{ &OPCode_01, "LD BC, nn", 12 },
+	{ &OPCode_11, "LD DE, nn", 12 },
+	{ &OPCode_21, "LD HL, nn", 12 },
+	{ &OPCode_31, "LD SP, nn", 12 },
 };
 
 void CPU::OPCode_06()
@@ -641,4 +658,24 @@ void CPU::OPCode_F0()
 	byte val = readNextByte();
 	word addr = 0xFF00 + val;
 	LD_r1_r2(A, addr);
+}
+
+void CPU::OPCode_01()
+{
+	LD_nn_n(BC);
+}
+
+void CPU::OPCode_11()
+{
+	LD_nn_n(DE);
+}
+
+void CPU::OPCode_21()
+{
+	LD_nn_n(HL);
+}
+
+void CPU::OPCode_31()
+{
+	LD_nn_n(SP);
 }

@@ -53,6 +53,8 @@ private:
 
 	/* CPU Operations */
 	void LD_nn_n(ByteRegister& i_DestOperand);
+	void LD_nn_n(WordRegister& i_DestOperand);
+	void LD_nn_n(Pair8BRegisters& i_DestOperand);
 	void LD_r1_r2(ByteRegister& i_DestOperand, const ByteRegister& i_SrcOperand);
 	void LD_r1_r2(ByteRegister& i_DestOperand, const WordAddress& i_SrcOperand);
 	void LD_r1_r2(const WordAddress& i_DestOperand, ByteRegister& i_SrcOperand);
@@ -157,6 +159,11 @@ private:
 
 	void OPCode_E0();
 	void OPCode_F0();
+
+	void OPCode_01();
+	void OPCode_11();
+	void OPCode_21();
+	void OPCode_31();
 };
 
 #endif
