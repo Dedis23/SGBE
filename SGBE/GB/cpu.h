@@ -135,13 +135,16 @@ private:
 	void OPCode_FA();
 	void OPCode_3E();
 
-/*
- LD A, (BC) 0A 8
- LD A, (DE) 1A 8
- LD A, (HL) 7E 8
- LD A, (nn) FA 16
- LD A, #	3E 8
-*/
+	void OPCode_47();
+	void OPCode_4F();
+	void OPCode_57();
+	void OPCode_5F();
+	void OPCode_67();
+	void OPCode_6F();
+	void OPCode_02();
+	void OPCode_12();
+	void OPCode_77();
+	void OPCode_EA();
 };
 
 #endif

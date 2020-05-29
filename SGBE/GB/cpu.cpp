@@ -161,6 +161,17 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_1A, "LD A, (DE)", 8 },
 	{ &OPCode_FA, "LD A, (nn)", 16 },
 	{ &OPCode_3E, "LD A, n", 8 },
+
+	{ &OPCode_47, "LD B, A", 4 },
+	{ &OPCode_4F, "LD C, A", 4 },
+	{ &OPCode_57, "LD D, A", 4 },
+	{ &OPCode_5F, "LD E, A", 4 },
+	{ &OPCode_67, "LD H, A", 4 },
+	{ &OPCode_6F, "LD L, A", 4 },
+	{ &OPCode_02, "LD (BC), A", 8 },
+	{ &OPCode_12, "LD (DE), A", 8 },
+	{ &OPCode_77, "LD (HL), A", 8 },
+	{ &OPCode_EA, "LD (nn), A", 16 },
 };
 
 void CPU::OPCode_06()
@@ -514,4 +525,58 @@ void CPU::OPCode_FA()
 void CPU::OPCode_3E()
 {
 	LD_nn_n(A);
+}
+
+void CPU::OPCode_47()
+{
+	LD_r1_r2(B, A);
+}
+
+void CPU::OPCode_4F()
+{
+	LD_r1_r2(C, A);
+}
+
+void CPU::OPCode_57()
+{
+	LD_r1_r2(D, A);
+}
+
+void CPU::OPCode_5F()
+{
+	LD_r1_r2(E, A);
+}
+
+void CPU::OPCode_67()
+{
+	LD_r1_r2(H, A);
+}
+
+void CPU::OPCode_6F()
+{
+	LD_r1_r2(L, A);
+}
+
+void CPU::OPCode_02()
+{
+	word addr = BC.GetValue();
+	LD_r1_r2(addr, A);
+}
+
+void CPU::OPCode_12()
+{
+	word addr = DE.GetValue();
+	LD_r1_r2(addr, A);
+}
+
+void CPU::OPCode_77()
+{
+	word addr = HL.GetValue();
+	LD_r1_r2(addr, A);
+}
+
+void CPU::OPCode_EA()
+{
+	word addr = readNextWord();
+	LD_r1_r2(addr, A);
 }
