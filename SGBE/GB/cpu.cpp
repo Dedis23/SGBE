@@ -5,7 +5,7 @@ CPU::CPU(MMU& i_MMU) : m_MMU(i_MMU), AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_I
 void CPU::Step()
 {
 	// read next instruction opcode
-	byte OPCode = m_MMU.Read(PC.GetValue());
+	byte OPCode = readNextByte();
 	OPCodeData OPCodeData = m_OPCodeDataMap[OPCode];
 	LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << PC.GetValue() - 1);
 	OPCodeData.Operation;
