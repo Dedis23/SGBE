@@ -147,16 +147,16 @@ private:
 	void OPCode_EA();
 
 	void OPCode_F2();
-
 	void OPCode_E2();
 
 	void OPCode_3A();
-
 	void OPCode_32();
 
 	void OPCode_2A();
-
 	void OPCode_22();
+
+	void OPCode_E0();
+	void OPCode_F0();
 };
 
 #endif
