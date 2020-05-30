@@ -48,26 +48,20 @@ word CPU::readNextWord()
 	LD nn, n
 
 	Description:
-	Put value n (memory) into nn (register).
+	Put value n (byte from memory) into nn (register).
+	Put value nn (word from memory) into nn (register).
 */
-void CPU::LD_nn_n(ByteRegister& i_DestOperand)
+void CPU::LD_nn_n(IRegister& i_DestRegister)
 {
 	byte n = readNextByte();
-	i_DestOperand.SetValue(n);
+	i_DestRegister.SetValue(n);
 }
 
-void CPU::LD_nn_n(WordRegister& i_DestOperand)
+void CPU::LD_nn_nn(IRegister& i_DestRegister)
 {
-	word n = readNextWord();
-	i_DestOperand.SetValue(n);
+	word nn = readNextWord();
+	i_DestRegister.SetValue(nn);
 }
-
-void CPU::LD_nn_n(Pair8BRegisters& i_DestOperand)
-{
-	word n = readNextWord();
-	i_DestOperand.SetValue(n);
-}
-
 
 /*
 	Operation:
@@ -77,28 +71,22 @@ void CPU::LD_nn_n(Pair8BRegisters& i_DestOperand)
 	Put value r2 into r1.
 
 */
-void CPU::LD_r1_r2(ByteRegister& i_DestOperand, const ByteRegister& i_SrcOperand)
+void CPU::LD_r1_r2(IRegister& i_DestRegister, const IRegister& i_SrcRegister)
 {
-	byte val = i_SrcOperand.GetValue();
-	i_DestOperand.SetValue(val);
+	word val = i_SrcRegister.GetValue();
+	i_DestRegister.SetValue(val);
 }
 
-void CPU::LD_r1_r2(WordRegister& i_DestOperand, const WordRegister& i_SrcOperand)
+void CPU::LD_r1_r2(IRegister& i_DestRegister, const WordAddress& i_SrcMemory)
 {
-	word val = i_SrcOperand.GetValue();
-	i_DestOperand.SetValue(val);
+	byte val = m_MMU.Read(i_SrcMemory);
+	i_DestRegister.SetValue(val);
 }
 
-void CPU::LD_r1_r2(ByteRegister& i_DestOperand, const WordAddress& i_SrcOperand)
+void CPU::LD_r1_r2(const WordAddress& i_DestMemory, const IRegister& i_SrcRegister)
 {
-	byte val = m_MMU.Read(i_SrcOperand);
-	i_DestOperand.SetValue(val);
-}
-
-void CPU::LD_r1_r2(const WordAddress& i_DestOperand, const ByteRegister& i_SrcOperand)
-{
-	byte val = i_SrcOperand.GetValue();
-	m_MMU.Write(i_DestOperand, val);
+	byte val = i_SrcRegister.GetValue();
+	m_MMU.Write(i_DestMemory, val);
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap

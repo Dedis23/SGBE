@@ -52,13 +52,11 @@ private:
 	static const std::vector<OPCodeData> m_OPCodeDataMap;
 
 	/* CPU Operations */
-	void LD_nn_n(ByteRegister& i_DestOperand);
-	void LD_nn_n(WordRegister& i_DestOperand);
-	void LD_nn_n(Pair8BRegisters& i_DestOperand);
-	void LD_r1_r2(ByteRegister& i_DestOperand, const ByteRegister& i_SrcOperand);
-	void LD_r1_r2(WordRegister& i_DestOperand, const WordRegister& i_SrcOperand);
-	void LD_r1_r2(ByteRegister& i_DestOperand, const WordAddress& i_SrcOperand);
-	void LD_r1_r2(const WordAddress& i_DestOperand, const ByteRegister& i_SrcOperand);
+	void LD_nn_n(IRegister& i_DestRegister);
+	void LD_nn_nn(IRegister& i_DestRegister);
+	void LD_r1_r2(IRegister& i_DestRegister, const IRegister& i_SrcRegister);
+	void LD_r1_r2(IRegister& i_DestRegister, const WordAddress& i_SrcMemory);
+	void LD_r1_r2(const WordAddress& i_DestMemory, const IRegister& i_SrcRegister);
 
 	/* OPCode Functions */
 	void OPCode_06();
