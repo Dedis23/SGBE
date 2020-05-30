@@ -11,40 +11,47 @@
 #define __REGISTERS_H
 
 typedef uint8_t byte;
+typedef int8_t sbyte;
 typedef uint16_t word;
+
+class IRegister
+{
+public:
+	IRegister(word i_Value);
+	virtual void SetValue(word i_NewValue) = 0;
+	virtual word GetValue() const = 0;
+	virtual void SetBit(byte i_BitNumber, bool i_IsRaise);
+	virtual bool GetBit(byte i_BitNumber) const;
+	virtual void Clear();
+	virtual void Increment() = 0;
+	virtual void Decrement() = 0;
+protected:
+	word m_Value = 0;
+};
 
 /*
 	A general 8-bit register
 */
-class ByteRegister
+class ByteRegister : public IRegister
 {
 public:
 	explicit ByteRegister(byte i_Value = 0);
 	virtual ~ByteRegister() = default;
-	ByteRegister(const ByteRegister&) = delete;
-	ByteRegister& operator=(const ByteRegister&) = delete;
 
-	void SetValue(byte i_NewValue);
-	byte GetValue() const;
-	void SetBit(byte i_BitNumber, bool i_IsRaise);
-	bool GetBit(byte i_BitNumber) const;
-	void Clear();
-	void Increment();
-	void Decrement();
-protected:
-	byte m_Value = 0;
+	void SetValue(word i_NewValue) override;
+	word GetValue() const override;
+	void Increment() override;
+	void Decrement() override;
 };
 
 /*
 	A general 16-bit register
 */
-class WordRegister
+class WordRegister : public IRegister
 {
 public:
 	WordRegister(word i_Value = 0);
 	virtual ~WordRegister() = default;
-	WordRegister(const WordRegister&) = delete;
-	WordRegister& operator=(const WordRegister&) = delete;
 
 	void SetValue(word i_NewValue);
 	word GetValue() const;
@@ -52,13 +59,8 @@ public:
 	byte GetLowByte() const;
 	void SetHighByte(byte i_NewHighByte);
 	byte GetHighByte() const;
-	void SetBit(byte i_BitNumber, bool i_IsRaise);
-	bool GetBit(byte i_BitNumber) const;
-	void Clear();
 	void Increment();
 	void Decrement();
-private:
-	word m_Value = 0;
 };
 
 /*

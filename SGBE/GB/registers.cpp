@@ -1,44 +1,46 @@
 #include "registers.h"
 
-ByteRegister::ByteRegister(byte i_Value) : m_Value(i_Value) {}
+IRegister::IRegister(word i_Value) : m_Value(i_Value) {}
 
-void ByteRegister::SetValue(byte i_NewValue)
+void IRegister::SetBit(byte i_BitNumber, bool i_IsRaise)
 {
-	m_Value = i_NewValue;
+	if (i_IsRaise)	m_Value |= 1 << (i_BitNumber);
+	else m_Value &= ~(1 << (i_BitNumber));
 }
 
-byte ByteRegister::GetValue() const
+bool IRegister::GetBit(byte i_BitNumber) const
 {
-	return m_Value;
+	return (m_Value & (1 << i_BitNumber)) > 0 ? true : false;
 }
 
-void ByteRegister::SetBit(byte i_BitNumber, bool i_IsRaise)
-{
-	if (i_IsRaise)	m_Value |= 1 << (i_BitNumber - 1);
-	else m_Value &= ~(1 << (i_BitNumber - 1));
-}
-
-bool ByteRegister::GetBit(byte i_BitNumber) const
-{
-	return (m_Value & (1 << (i_BitNumber - 1))) > 0 ? true : false;
-}
-
-void ByteRegister::Clear()
+void IRegister::Clear()
 {
 	m_Value = 0;
 }
 
+ByteRegister::ByteRegister(byte i_Value) : IRegister(i_Value) {}
+
+void ByteRegister::SetValue(word i_NewValue)
+{
+	m_Value = static_cast<byte>(i_NewValue);
+}
+
+word ByteRegister::GetValue() const
+{
+	return static_cast<byte>(m_Value);
+}
+
 void ByteRegister::Increment()
 {
-	m_Value += 1;
+	m_Value = static_cast<byte>(m_Value + 1);
 }
 
 void ByteRegister::Decrement()
 {
-	m_Value -= 1;
+	m_Value = static_cast<byte>(m_Value - 1);
 }
 
-WordRegister::WordRegister(word i_Value) : m_Value(i_Value) {}
+WordRegister::WordRegister(word i_Value) : IRegister(i_Value) {}
 
 void WordRegister::SetValue(word i_NewValue)
 {
@@ -142,40 +144,40 @@ FlagRegister::FlagRegister(byte i_Value) : ByteRegister(i_Value) {}
 
 void FlagRegister::SetZFlag(bool i_IsRaise)
 {
-	SetBit(8, i_IsRaise);
+	SetBit(7, i_IsRaise);
 }
 
 bool FlagRegister::GetZFlag() const
 {
-	return GetBit(8);
+	return GetBit(7);
 }
 
 void FlagRegister::SetNFlag(bool i_IsRaise)
 {
-	SetBit(7, i_IsRaise);
+	SetBit(6, i_IsRaise);
 }
 
 bool FlagRegister::GetNFlag() const
 {
-	return GetBit(7);
+	return GetBit(6);
 }
 
 void FlagRegister::SetHFlag(bool i_IsRaise)
 {
-	SetBit(6, i_IsRaise);
+	SetBit(5, i_IsRaise);
 }
 
 bool FlagRegister::GetHFlag() const
 {
-	return GetBit(6);
+	return GetBit(5);
 }
 
 void FlagRegister::SetCFlag(bool i_IsRaise)
 {
-	SetBit(5, i_IsRaise);
+	SetBit(4, i_IsRaise);
 }
 
 bool FlagRegister::GetCFlag() const
 {
-	return GetBit(5);
+	return GetBit(4);
 }
