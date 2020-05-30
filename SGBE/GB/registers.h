@@ -17,6 +17,7 @@ typedef uint16_t word;
 class IRegister
 {
 public:
+	IRegister() = default;
 	IRegister(word i_Value);
 	virtual void SetValue(word i_NewValue) = 0;
 	virtual word GetValue() const = 0;
@@ -50,37 +51,39 @@ public:
 class WordRegister : public IRegister
 {
 public:
-	WordRegister(word i_Value = 0);
+	explicit WordRegister(word i_Value = 0);
 	virtual ~WordRegister() = default;
 
-	void SetValue(word i_NewValue);
-	word GetValue() const;
+	void SetValue(word i_NewValue) override;
+	word GetValue() const override;
 	void SetLowByte(byte i_NewLowByte);
 	byte GetLowByte() const;
 	void SetHighByte(byte i_NewHighByte);
 	byte GetHighByte() const;
-	void Increment();
-	void Decrement();
+	void Increment() override;
+	void Decrement() override;
 };
 
 /*
 	16-bit register that is consists of 2x8-bit registers paired together
 */
-class Pair8BRegisters
+class Pair8BRegisters : public IRegister
 {
 public:
-	Pair8BRegisters(ByteRegister& i_HighByteRegister, ByteRegister& i_LowByteRegister);
+	explicit Pair8BRegisters(ByteRegister& i_HighByteRegister, ByteRegister& i_LowByteRegister);
 	virtual ~Pair8BRegisters() = default;
 	Pair8BRegisters(const Pair8BRegisters&) = delete;
 	Pair8BRegisters& operator=(const Pair8BRegisters&) = delete;
 
-	void SetValue(word i_NewValue);
-	word GetValue() const;
-	void Clear();
-	void Increment();
-	void Decrement();
-	ByteRegister& GetHighRegister();
-	ByteRegister& GetLowRegister();
+	void SetValue(word i_NewValue) override;
+	word GetValue() const override;
+	void SetBit(byte i_BitNumber, bool i_IsRaise) override;
+	bool GetBit(byte i_BitNumber) const override;
+	void Clear() override;
+	void Increment() override;
+	void Decrement() override;
+	const ByteRegister& GetHighRegister() const;
+	const ByteRegister& GetLowRegister() const;
 private:
 	ByteRegister& m_HighByteRegister;
 	ByteRegister& m_LowByteRegister;
@@ -98,7 +101,7 @@ private:
 class FlagRegister : public ByteRegister
 {
 public:
-	FlagRegister(byte i_Value = 0);
+	explicit FlagRegister(byte i_Value = 0);
 	virtual ~FlagRegister() = default;
 	FlagRegister(const FlagRegister&) = delete;
 	FlagRegister& operator=(const FlagRegister&) = delete;

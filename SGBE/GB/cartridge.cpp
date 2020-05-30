@@ -10,7 +10,7 @@ byte NoMBC::Read(const WordAddress& i_Address)
     {
         return m_ROMData[i_Address.GetValue()];
     }
-    LOG_ERROR(true, NOP, "Attempting to read address: 0x" << i_Address.GetValue() << " it is out of range of the cartridge banks");
+    LOG_ERROR(true, return 0, "Attempting to read address: 0x" << i_Address.GetValue() << " it is out of range of the cartridge banks");
 }
 
 void NoMBC::Write(const WordAddress& i_Address, byte i_Value)

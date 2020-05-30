@@ -74,22 +74,6 @@ byte WordRegister::GetHighByte() const
 	return static_cast<byte>(m_Value >> 8);
 }
 
-void WordRegister::SetBit(byte i_BitNumber, bool i_IsRaise)
-{
-	if (i_IsRaise)	m_Value |= 1 << (i_BitNumber - 1);
-	else m_Value &= ~(1 << (i_BitNumber - 1));
-}
-
-bool WordRegister::GetBit(byte i_BitNumber) const
-{
-	return (m_Value & (1 << (i_BitNumber - 1))) > 0 ? true : false;
-}
-
-void WordRegister::Clear()
-{
-	m_Value = 0;
-}
-
 void WordRegister::Increment()
 {
 	m_Value += 1;
@@ -114,6 +98,32 @@ word Pair8BRegisters::GetValue() const
 	return (static_cast<word>(m_HighByteRegister.GetValue() << 8)) | m_LowByteRegister.GetValue();
 }
 
+void Pair8BRegisters::SetBit(byte i_BitNumber, bool i_IsRaise)
+{
+	if (i_BitNumber <= 15 && i_BitNumber > 7)
+	{
+		m_HighByteRegister.SetBit(i_BitNumber - 8, i_IsRaise);
+	}
+	else if (i_BitNumber <= 7)
+	{
+		m_LowByteRegister.SetBit(i_BitNumber, i_IsRaise);
+	}
+}
+
+bool Pair8BRegisters::GetBit(byte i_BitNumber) const
+{
+	bool res = false;
+	if (i_BitNumber <= 15 && i_BitNumber > 7)
+	{
+		res = m_HighByteRegister.GetBit(i_BitNumber - 8);
+	}
+	else if (i_BitNumber <= 7)
+	{
+		res = m_LowByteRegister.GetBit(i_BitNumber);
+	}
+	return res;
+}
+
 void Pair8BRegisters::Clear()
 {
 	m_LowByteRegister.Clear();
@@ -130,12 +140,12 @@ void Pair8BRegisters::Decrement()
 	SetValue(GetValue() - 1);
 }
 
-ByteRegister& Pair8BRegisters::GetHighRegister()
+const ByteRegister& Pair8BRegisters::GetHighRegister() const
 {
 	return m_HighByteRegister;
 }
 
-ByteRegister& Pair8BRegisters::GetLowRegister()
+const ByteRegister& Pair8BRegisters::GetLowRegister() const
 {
 	return m_LowByteRegister;
 }
