@@ -61,6 +61,7 @@ private:
 	void LD_HL_SP_n();
 	void PUSH(Pair8BRegisters& i_RegisterPair);
 	void POP(Pair8BRegisters& i_RegisterPair);
+	void ADD(byte i_Value);
 
 	/* OPCode Functions */
 	void OPCode_06();

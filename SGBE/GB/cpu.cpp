@@ -109,7 +109,10 @@ void CPU::LD_r1_r2(const WordAddress& i_DestMemory, const IRegister& i_SrcRegist
 	Description:
 	Put SP + n effective address into HL
 	n = one byte signed immediate value
-
+	Z - Reset
+	N - Reset
+	H - Set or reset according to operation
+	C - Set or reset according to operation
 */
 void CPU::LD_HL_SP_n()
 {
@@ -137,13 +140,13 @@ void CPU::PUSH(Pair8BRegisters& i_RegisterPair)
 {
 	SP.Decrement();
 	word addr = SP.GetValue();
-	byte lowVal = i_RegisterPair.GetHighRegister().GetValue();
-	m_MMU.Write(addr, lowVal);
+	byte highVal = i_RegisterPair.GetHighRegister().GetValue();
+	m_MMU.Write(addr, highVal);
 
 	SP.Decrement();
 	addr = SP.GetValue();
-	byte highVal = i_RegisterPair.GetLowRegister().GetValue();
-	m_MMU.Write(addr, highVal);
+	byte lowVal = i_RegisterPair.GetLowRegister().GetValue();
+	m_MMU.Write(addr, lowVal);
 }
 
 /*
@@ -156,15 +159,31 @@ void CPU::PUSH(Pair8BRegisters& i_RegisterPair)
 */
 void CPU::POP(Pair8BRegisters& i_RegisterPair)
 {
-	SP.Increment();
 	word addr = SP.GetValue();
 	byte lowVal = m_MMU.Read(addr);
 	i_RegisterPair.GetLowRegister().SetValue(lowVal);
-
 	SP.Increment();
+
 	addr = SP.GetValue();
 	byte highVal = m_MMU.Read(addr);
 	i_RegisterPair.GetHighRegister().SetValue(highVal);
+	SP.Increment();
+}
+
+/*
+	Operation:
+	ADD A, n
+
+	Description:
+	Add n to A
+	Z - Set if result is zero
+	N - Reset
+	H - Set if carry from bit 3
+	C - Set if carry from bit 7
+*/
+void CPU::ADD(byte i_Value)
+{
+	byte aVal = A.GetValue();
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
