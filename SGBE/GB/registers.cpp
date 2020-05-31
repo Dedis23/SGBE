@@ -152,42 +152,42 @@ const ByteRegister& Pair8BRegisters::GetLowRegister() const
 
 FlagRegister::FlagRegister(byte i_Value) : ByteRegister(i_Value) {}
 
-void FlagRegister::SetZFlag(bool i_IsRaise)
+void FlagRegister::SetZ(bool i_IsRaise)
 {
 	SetBit(7, i_IsRaise);
 }
 
-bool FlagRegister::GetZFlag() const
+bool FlagRegister::GetZ() const
 {
 	return GetBit(7);
 }
 
-void FlagRegister::SetNFlag(bool i_IsRaise)
+void FlagRegister::SetN(bool i_IsRaise)
 {
 	SetBit(6, i_IsRaise);
 }
 
-bool FlagRegister::GetNFlag() const
+bool FlagRegister::GetN() const
 {
 	return GetBit(6);
 }
 
-void FlagRegister::SetHFlag(bool i_IsRaise)
+void FlagRegister::SetH(bool i_IsRaise)
 {
 	SetBit(5, i_IsRaise);
 }
 
-bool FlagRegister::GetHFlag() const
+bool FlagRegister::GetH() const
 {
 	return GetBit(5);
 }
 
-void FlagRegister::SetCFlag(bool i_IsRaise)
+void FlagRegister::SetC(bool i_IsRaise)
 {
 	SetBit(4, i_IsRaise);
 }
 
-bool FlagRegister::GetCFlag() const
+bool FlagRegister::GetC() const
 {
 	return GetBit(4);
 }

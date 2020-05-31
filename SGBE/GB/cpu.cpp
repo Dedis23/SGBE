@@ -41,6 +41,13 @@ word CPU::readNextWord()
 	return static_cast<word>(highByte << 8 | lowByte);
 }
 
+sbyte CPU::readNextSignedByte()
+{
+	sbyte nextSbyte = m_MMU.Read(PC.GetValue());
+	PC.Increment();
+	return nextSbyte;
+}
+
 /* OPCodes */
 
 /*
@@ -49,7 +56,6 @@ word CPU::readNextWord()
 
 	Description:
 	Put value n (byte from memory) into nn (register).
-	Put value nn (word from memory) into nn (register).
 */
 void CPU::LD_nn_n(IRegister& i_DestRegister)
 {
@@ -57,7 +63,14 @@ void CPU::LD_nn_n(IRegister& i_DestRegister)
 	i_DestRegister.SetValue(n);
 }
 
-void CPU::LD_nn_nn(IRegister& i_DestRegister)
+/*
+	Operation:
+	LD n, nn
+
+	Description:
+	Put value nn (word from memory) into n (16 bit register).
+*/
+void CPU::LD_n_nn(IRegister& i_DestRegister)
 {
 	word nn = readNextWord();
 	i_DestRegister.SetValue(nn);
@@ -197,6 +210,8 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_31, "LD SP, nn", 12 },
 
 	{ &OPCode_F9, "LD SP, HL", 8 },
+
+	{ &OPCode_F8, "LDHL SP, n", 12 },
 };
 
 void CPU::OPCode_06()
@@ -658,7 +673,7 @@ void CPU::OPCode_F0()
 
 void CPU::OPCode_01()
 {
-	LD_nn_n(BC);
+	LD_n_nn(BC);
 }
 
 void CPU::OPCode_11()
@@ -678,5 +693,22 @@ void CPU::OPCode_31()
 
 void CPU::OPCode_F9()
 {
-	//LD_r1_r2(SP, HL);
+	LD_r1_r2(SP, HL);
+}
+
+void CPU::OPCode_F8()
+{
+	// Put SP + n effective address into HL
+	// n = one byte signed immediate value
+
+	sbyte n = readNextSignedByte();
+	word res = SP.GetValue() + n;
+
+	word flagCheck = SP.GetValue() ^ n ^ (SP.GetValue() + n);
+	Flag.SetZ(false);
+	Flag.SetN(false);
+	(flagCheck & 0x10) == 0x10 ? Flag.SetH(true) : Flag.SetH(false);
+	(flagCheck & 0x100) == 0x100 ? Flag.SetC(true) : Flag.SetC(false);
+
+	HL.SetValue(res);
 }

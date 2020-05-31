@@ -18,7 +18,7 @@ class IRegister
 {
 public:
 	IRegister() = default;
-	IRegister(word i_Value);
+	explicit IRegister(word i_Value);
 	virtual void SetValue(word i_NewValue) = 0;
 	virtual word GetValue() const = 0;
 	virtual void SetBit(byte i_BitNumber, bool i_IsRaise);
@@ -106,14 +106,14 @@ public:
 	FlagRegister(const FlagRegister&) = delete;
 	FlagRegister& operator=(const FlagRegister&) = delete;
 
-	void SetZFlag(bool i_IsRaise);
-	bool GetZFlag() const;
-	void SetNFlag(bool i_IsRaise);
-	bool GetNFlag() const;
-	void SetHFlag(bool i_IsRaise);
-	bool GetHFlag() const;
-	void SetCFlag(bool i_IsRaise);
-	bool GetCFlag() const;
+	void SetZ(bool i_IsRaise);
+	bool GetZ() const;
+	void SetN(bool i_IsRaise);
+	bool GetN() const;
+	void SetH(bool i_IsRaise);
+	bool GetH() const;
+	void SetC(bool i_IsRaise);
+	bool GetC() const;
 };
 
 #endif

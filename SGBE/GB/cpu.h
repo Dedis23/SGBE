@@ -28,6 +28,7 @@ public:
 private:
 	byte readNextByte();
 	word readNextWord();
+	sbyte readNextSignedByte();
 
 private:
 	/* registers */
@@ -53,7 +54,7 @@ private:
 
 	/* CPU Operations */
 	void LD_nn_n(IRegister& i_DestRegister);
-	void LD_nn_nn(IRegister& i_DestRegister);
+	void LD_n_nn(IRegister& i_DestRegister);
 	void LD_r1_r2(IRegister& i_DestRegister, const IRegister& i_SrcRegister);
 	void LD_r1_r2(IRegister& i_DestRegister, const WordAddress& i_SrcMemory);
 	void LD_r1_r2(const WordAddress& i_DestMemory, const IRegister& i_SrcRegister);
@@ -165,6 +166,8 @@ private:
 	void OPCode_31();
 
 	void OPCode_F9();
+
+	void OPCode_F8();
 };
 
 #endif
