@@ -102,6 +102,71 @@ void CPU::LD_r1_r2(const WordAddress& i_DestMemory, const IRegister& i_SrcRegist
 	m_MMU.Write(i_DestMemory, val);
 }
 
+/*
+	Operation:
+	LDHL SP,n
+
+	Description:
+	Put SP + n effective address into HL
+	n = one byte signed immediate value
+
+*/
+void CPU::LD_HL_SP_n()
+{
+	sbyte n = readNextSignedByte();
+	word res = SP.GetValue() + n;
+
+	word flagCheck = SP.GetValue() ^ n ^ (SP.GetValue() + n);
+	Flag.SetZ(false);
+	Flag.SetN(false);
+	(flagCheck & 0x10) == 0x10 ? Flag.SetH(true) : Flag.SetH(false);
+	(flagCheck & 0x100) == 0x100 ? Flag.SetC(true) : Flag.SetC(false);
+
+	HL.SetValue(res);
+}
+
+/*
+	Operation:
+	PUSH nn
+
+	Description:
+	Push register pair nn onto stack
+	Decrement Stack Pointer (SP) twice
+*/
+void CPU::PUSH(Pair8BRegisters& i_RegisterPair)
+{
+	SP.Decrement();
+	word addr = SP.GetValue();
+	byte lowVal = i_RegisterPair.GetHighRegister().GetValue();
+	m_MMU.Write(addr, lowVal);
+
+	SP.Decrement();
+	addr = SP.GetValue();
+	byte highVal = i_RegisterPair.GetLowRegister().GetValue();
+	m_MMU.Write(addr, highVal);
+}
+
+/*
+	Operation:
+	POP nn
+
+	Description:
+	Pop two bytes off stack into register pair nn
+	Increment Stack Pointer (SP) twice
+*/
+void CPU::POP(Pair8BRegisters& i_RegisterPair)
+{
+	SP.Increment();
+	word addr = SP.GetValue();
+	byte lowVal = m_MMU.Read(addr);
+	i_RegisterPair.GetLowRegister().SetValue(lowVal);
+
+	SP.Increment();
+	addr = SP.GetValue();
+	byte highVal = m_MMU.Read(addr);
+	i_RegisterPair.GetHighRegister().SetValue(highVal);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8 },
@@ -214,6 +279,16 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_F8, "LDHL SP, n", 12 },
 
 	{ &OPCode_08, "LD (nn), SP", 20 },
+
+	{ &OPCode_F5, "PUSH AF", 16 },
+	{ &OPCode_C5, "PUSH BC", 16 },
+	{ &OPCode_D5, "PUSH DE", 16 },
+	{ &OPCode_E5, "PUSH HL", 16 },
+
+	{ &OPCode_F1, "POP AF", 12 },
+	{ &OPCode_C1, "POP BC", 12 },
+	{ &OPCode_D1, "POP DE", 12 },
+	{ &OPCode_E1, "POP HL", 12 },
 };
 
 void CPU::OPCode_06()
@@ -700,23 +775,51 @@ void CPU::OPCode_F9()
 
 void CPU::OPCode_F8()
 {
-	// Put SP + n effective address into HL
-	// n = one byte signed immediate value
-
-	sbyte n = readNextSignedByte();
-	word res = SP.GetValue() + n;
-
-	word flagCheck = SP.GetValue() ^ n ^ (SP.GetValue() + n);
-	Flag.SetZ(false);
-	Flag.SetN(false);
-	(flagCheck & 0x10) == 0x10 ? Flag.SetH(true) : Flag.SetH(false);
-	(flagCheck & 0x100) == 0x100 ? Flag.SetC(true) : Flag.SetC(false);
-
-	HL.SetValue(res);
+	LD_HL_SP_n();
 }
 
 void CPU::OPCode_08()
 {
 	word addr = readNextWord();
 	LD_r1_r2(addr, SP);
+}
+
+void CPU::OPCode_F5()
+{
+	PUSH(AF);
+}
+
+void CPU::OPCode_C5()
+{
+	PUSH(BC);
+}
+
+void CPU::OPCode_D5()
+{
+	PUSH(DE);
+}
+
+void CPU::OPCode_E5()
+{
+	PUSH(HL);
+}
+
+void CPU::OPCode_F1()
+{
+	POP(AF);
+}
+
+void CPU::OPCode_C1()
+{
+	POP(BC);
+}
+
+void CPU::OPCode_D1()
+{
+	POP(DE);
+}
+
+void CPU::OPCode_E1()
+{
+	POP(HL);
 }

@@ -82,8 +82,8 @@ public:
 	void Clear() override;
 	void Increment() override;
 	void Decrement() override;
-	const ByteRegister& GetHighRegister() const;
-	const ByteRegister& GetLowRegister() const;
+	ByteRegister& GetHighRegister();
+	ByteRegister& GetLowRegister();
 private:
 	ByteRegister& m_HighByteRegister;
 	ByteRegister& m_LowByteRegister;

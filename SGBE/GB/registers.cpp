@@ -140,12 +140,12 @@ void Pair8BRegisters::Decrement()
 	SetValue(GetValue() - 1);
 }
 
-const ByteRegister& Pair8BRegisters::GetHighRegister() const
+ByteRegister& Pair8BRegisters::GetHighRegister()
 {
 	return m_HighByteRegister;
 }
 
-const ByteRegister& Pair8BRegisters::GetLowRegister() const
+ByteRegister& Pair8BRegisters::GetLowRegister()
 {
 	return m_LowByteRegister;
 }

@@ -58,6 +58,9 @@ private:
 	void LD_r1_r2(IRegister& i_DestRegister, const IRegister& i_SrcRegister);
 	void LD_r1_r2(IRegister& i_DestRegister, const WordAddress& i_SrcMemory);
 	void LD_r1_r2(const WordAddress& i_DestMemory, const IRegister& i_SrcRegister);
+	void LD_HL_SP_n();
+	void PUSH(Pair8BRegisters& i_RegisterPair);
+	void POP(Pair8BRegisters& i_RegisterPair);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -170,6 +173,16 @@ private:
 	void OPCode_F8();
 
 	void OPCode_08();
+
+	void OPCode_F5();
+	void OPCode_C5();
+	void OPCode_D5();
+	void OPCode_E5();
+
+	void OPCode_F1();
+	void OPCode_C1();
+	void OPCode_D1();
+	void OPCode_E1();
 };
 
 #endif
