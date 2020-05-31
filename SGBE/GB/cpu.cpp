@@ -212,6 +212,8 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_F9, "LD SP, HL", 8 },
 
 	{ &OPCode_F8, "LDHL SP, n", 12 },
+
+	{ &OPCode_08, "LD (nn), SP", 20 },
 };
 
 void CPU::OPCode_06()
@@ -711,4 +713,10 @@ void CPU::OPCode_F8()
 	(flagCheck & 0x100) == 0x100 ? Flag.SetC(true) : Flag.SetC(false);
 
 	HL.SetValue(res);
+}
+
+void CPU::OPCode_08()
+{
+	word addr = readNextWord();
+	LD_r1_r2(addr, SP);
 }

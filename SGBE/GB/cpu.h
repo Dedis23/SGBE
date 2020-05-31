@@ -168,6 +168,8 @@ private:
 	void OPCode_F9();
 
 	void OPCode_F8();
+
+	void OPCode_08();
 };
 
 #endif
