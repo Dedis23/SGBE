@@ -62,6 +62,7 @@ private:
 	void PUSH(Pair8BRegisters& i_RegisterPair);
 	void POP(Pair8BRegisters& i_RegisterPair);
 	void ADD(byte i_Value);
+	void ADC(byte i_Value);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -184,6 +185,38 @@ private:
 	void OPCode_C1();
 	void OPCode_D1();
 	void OPCode_E1();
+
+	void OPCode_87();
+	void OPCode_80();
+	void OPCode_81();
+	void OPCode_82();
+	void OPCode_83();
+	void OPCode_84();
+	void OPCode_85();
+	void OPCode_86();
+	void OPCode_C6();
+
+	void OPCode_8F();
+	void OPCode_88();
+	void OPCode_89();
+	void OPCode_8A();
+	void OPCode_8B();
+	void OPCode_8C();
+	void OPCode_8D();
+	void OPCode_8E();
+	void OPCode_CE();
+
+/*
+	ADC A, A	8F 4
+	ADC A, B	88 4
+	ADC A, C	89 4
+	ADC A, D	8A 4
+	ADC A, E	8B 4
+	ADC A, H	8C 4
+	ADC A, L	8D 4
+	ADC A, (HL) 8E 8
+	ADC A, #	CE 8
+*/
 };
 
 #endif

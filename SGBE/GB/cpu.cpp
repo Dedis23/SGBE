@@ -98,7 +98,7 @@ void CPU::LD_r1_r2(IRegister& i_DestRegister, const WordAddress& i_SrcMemory)
 
 void CPU::LD_r1_r2(const WordAddress& i_DestMemory, const IRegister& i_SrcRegister)
 {
-	byte val = i_SrcRegister.GetValue();
+	byte val = static_cast<byte>(i_SrcRegister.GetValue());
 	m_MMU.Write(i_DestMemory, val);
 }
 
@@ -140,12 +140,12 @@ void CPU::PUSH(Pair8BRegisters& i_RegisterPair)
 {
 	SP.Decrement();
 	word addr = SP.GetValue();
-	byte highVal = i_RegisterPair.GetHighRegister().GetValue();
+	byte highVal = static_cast<byte>(i_RegisterPair.GetHighRegister().GetValue());
 	m_MMU.Write(addr, highVal);
 
 	SP.Decrement();
 	addr = SP.GetValue();
-	byte lowVal = i_RegisterPair.GetLowRegister().GetValue();
+	byte lowVal = static_cast<byte>(i_RegisterPair.GetLowRegister().GetValue());
 	m_MMU.Write(addr, lowVal);
 }
 
@@ -183,7 +183,38 @@ void CPU::POP(Pair8BRegisters& i_RegisterPair)
 */
 void CPU::ADD(byte i_Value)
 {
-	byte aVal = A.GetValue();
+	byte aVal = static_cast<byte>(A.GetValue());
+	byte res = aVal + i_Value;
+	A.SetValue(res);
+
+	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	(((aVal & 0xF) + (i_Value & 0xF)) > 0xF) ? Flag.SetH(true) : Flag.SetH(false);
+	(((aVal & 0xFF) + (i_Value & 0xFF)) > 0xFF) ? Flag.SetC(true) : Flag.SetC(false);
+}
+
+/*
+	Operation:
+	ADC A, n
+
+	Description:
+	Add n + Carry flag to A
+	Z - Set if result is zero
+	N - Reset
+	H - Set if carry from bit 3
+	C - Set if carry from bit 7
+*/
+void CPU::ADC(byte i_Value)
+{
+	byte aVal = static_cast<byte>(A.GetValue());
+	byte carry = Flag.GetC();
+	byte res = aVal + i_Value + carry;
+	A.SetValue(res);
+
+	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	(((aVal & 0xF) + (i_Value & 0xF) + carry) > 0xF) ? Flag.SetH(true) : Flag.SetH(false);
+	(((aVal & 0xFF) + (i_Value & 0xFF) + carry) > 0xFF) ? Flag.SetC(true) : Flag.SetC(false);
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
@@ -308,6 +339,26 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_C1, "POP BC", 12 },
 	{ &OPCode_D1, "POP DE", 12 },
 	{ &OPCode_E1, "POP HL", 12 },
+
+	{ &OPCode_87, "ADD A, A", 4 },
+	{ &OPCode_80, "ADD A, B", 4 },
+	{ &OPCode_81, "ADD A, C", 4 },
+	{ &OPCode_82, "ADD A, D", 4 },
+	{ &OPCode_83, "ADD A, E", 4 },
+	{ &OPCode_84, "ADD A, H", 4 },
+	{ &OPCode_85, "ADD A, L", 4 },
+	{ &OPCode_86, "ADD A, (HL)", 8 },
+	{ &OPCode_C6, "ADD A, n", 8 },
+
+	{ &OPCode_8F, "ADC A, A", 4 },
+	{ &OPCode_88, "ADC A, B", 4 },
+	{ &OPCode_89, "ADC A, C", 4 },
+	{ &OPCode_8A, "ADC A, D", 4 },
+	{ &OPCode_8B, "ADC A, E", 4 },
+	{ &OPCode_8C, "ADC A, H", 4 },
+	{ &OPCode_8D, "ADC A, L", 4 },
+	{ &OPCode_8E, "ADC A, (HL)", 8 },
+	{ &OPCode_CE, "ADC A, n", 8 },
 };
 
 void CPU::OPCode_06()
@@ -841,4 +892,114 @@ void CPU::OPCode_D1()
 void CPU::OPCode_E1()
 {
 	POP(HL);
+}
+
+void CPU::OPCode_87()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	ADD(val);
+}
+
+void CPU::OPCode_80()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	ADD(val);
+}
+
+void CPU::OPCode_81()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	ADD(val);
+}
+
+void CPU::OPCode_82()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	ADD(val);
+}
+
+void CPU::OPCode_83()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	ADD(val);
+}
+
+void CPU::OPCode_84()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	ADD(val);
+}
+
+void CPU::OPCode_85()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	ADD(val);
+}
+
+void CPU::OPCode_86()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	ADD(val);
+}
+
+void CPU::OPCode_C6()
+{
+	byte val = readNextByte();
+	ADD(val);
+}
+
+void CPU::OPCode_8F()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	ADC(val);
+}
+
+void CPU::OPCode_88()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	ADC(val);
+}
+
+void CPU::OPCode_89()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	ADC(val);
+}
+
+void CPU::OPCode_8A()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	ADC(val);
+}
+
+void CPU::OPCode_8B()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	ADC(val);
+}
+
+void CPU::OPCode_8C()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	ADC(val);
+}
+
+void CPU::OPCode_8D()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	ADC(val);
+}
+
+void CPU::OPCode_8E()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	ADC(val);
+}
+
+void CPU::OPCode_CE()
+{
+	byte val = readNextByte();
+	ADC(val);
 }
