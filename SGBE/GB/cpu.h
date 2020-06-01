@@ -65,6 +65,8 @@ private:
 	void ADC(byte i_Value);
 	void SUB(byte i_Value);
 	void SBC(byte i_Value);
+	void AND(byte i_Value);
+	void OR(byte i_Value);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -227,6 +229,26 @@ private:
 	void OPCode_9D();
 	void OPCode_9E();
 	void OPCode_DE();
+
+	void OPCode_A7();
+	void OPCode_A0();
+	void OPCode_A1();
+	void OPCode_A2();
+	void OPCode_A3();
+	void OPCode_A4();
+	void OPCode_A5();
+	void OPCode_A6();
+	void OPCode_E6();
+
+	void OPCode_B7();
+	void OPCode_B0();
+	void OPCode_B1();
+	void OPCode_B2();
+	void OPCode_B3();
+	void OPCode_B4();
+	void OPCode_B5();
+	void OPCode_B6();
+	void OPCode_F6();
 };
 
 #endif

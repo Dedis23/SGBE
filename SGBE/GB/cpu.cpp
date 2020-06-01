@@ -264,6 +264,52 @@ void CPU::SBC(byte i_Value)
 	aVal < i_Value + carry ? Flag.SetC(true) : Flag.SetC(false);
 }
 
+/*
+	Operation:
+	AND n
+
+	Description:
+	Logically AND n with A, result in A
+	Z - Set if result is zero
+	N - Reset
+	H - Set
+	C - Reset
+*/
+void CPU::AND(byte i_Value)
+{
+	byte aVal = static_cast<byte>(A.GetValue());
+	byte res = aVal & i_Value;
+	A.SetValue(res);
+
+	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(true);
+	Flag.SetC(false);
+}
+
+/*
+	Operation:
+	OR n
+
+	Description:
+	Logical OR n with A, result in A
+	Z - Set if result is zero
+	N - Reset
+	H - Reset
+	C - Reset
+*/
+void CPU::OR(byte i_Value)
+{
+	byte aVal = static_cast<byte>(A.GetValue());
+	byte res = aVal | i_Value;
+	A.SetValue(res);
+
+	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(false);
+	Flag.SetC(false);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8 },
@@ -426,6 +472,26 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_9D, "SBC A, L", 4 },
 	{ &OPCode_9E, "SBC A, (HL)", 8 },
 	{ &OPCode_DE, "SBC A, n", 8 },
+
+	{ &OPCode_A7, "AND A", 4 },
+	{ &OPCode_A0, "AND B", 4 },
+	{ &OPCode_A1, "AND C", 4 },
+	{ &OPCode_A2, "AND D", 4 },
+	{ &OPCode_A3, "AND E", 4 },
+	{ &OPCode_A4, "AND H", 4 },
+	{ &OPCode_A5, "AND L", 4 },
+	{ &OPCode_A6, "AND (HL)", 8 },
+	{ &OPCode_E6, "AND n", 8 },
+
+	{ &OPCode_B7, "OR A", 4 },
+	{ &OPCode_B0, "OR B", 4 },
+	{ &OPCode_B1, "OR C", 4 },
+	{ &OPCode_B2, "OR D", 4 },
+	{ &OPCode_B3, "OR E", 4 },
+	{ &OPCode_B4, "OR H", 4 },
+	{ &OPCode_B5, "OR L", 4 },
+	{ &OPCode_B6, "OR (HL)", 8 },
+	{ &OPCode_F6, "OR n", 8 },
 };
 
 void CPU::OPCode_06()
@@ -1179,4 +1245,114 @@ void CPU::OPCode_DE()
 {
 	byte val = readNextByte();
 	SBC(val);
+}
+
+void CPU::OPCode_A7()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	AND(val);
+}
+
+void CPU::OPCode_A0()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	AND(val);
+}
+
+void CPU::OPCode_A1()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	AND(val);
+}
+
+void CPU::OPCode_A2()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	AND(val);
+}
+
+void CPU::OPCode_A3()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	AND(val);
+}
+
+void CPU::OPCode_A4()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	AND(val);
+}
+
+void CPU::OPCode_A5()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	AND(val);
+}
+
+void CPU::OPCode_A6()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	AND(val);
+}
+
+void CPU::OPCode_E6()
+{
+	byte val = readNextByte();
+	AND(val);
+}
+
+void CPU::OPCode_B7()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	OR(val);
+}
+
+void CPU::OPCode_B0()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	OR(val);
+}
+
+void CPU::OPCode_B1()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	OR(val);
+}
+
+void CPU::OPCode_B2()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	OR(val);
+}
+
+void CPU::OPCode_B3()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	OR(val);
+}
+
+void CPU::OPCode_B4()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	OR(val);
+}
+
+void CPU::OPCode_B5()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	OR(val);
+}
+
+void CPU::OPCode_B6()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	OR(val);
+}
+
+void CPU::OPCode_F6()
+{
+	byte val = readNextByte();
+	OR(val);
 }
