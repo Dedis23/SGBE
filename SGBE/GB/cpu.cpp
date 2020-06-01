@@ -189,8 +189,8 @@ void CPU::ADD(byte i_Value)
 
 	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
 	Flag.SetN(false);
-	(((aVal & 0xF) + (i_Value & 0xF)) > 0xF) ? Flag.SetH(true) : Flag.SetH(false);
-	(((aVal & 0xFF) + (i_Value & 0xFF)) > 0xFF) ? Flag.SetC(true) : Flag.SetC(false);
+	((aVal & 0xF) + (i_Value & 0xF)) > 0xF ? Flag.SetH(true) : Flag.SetH(false);
+	((aVal & 0xFF) + (i_Value & 0xFF)) > 0xFF ? Flag.SetC(true) : Flag.SetC(false);
 }
 
 /*
@@ -213,8 +213,55 @@ void CPU::ADC(byte i_Value)
 
 	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
 	Flag.SetN(false);
-	(((aVal & 0xF) + (i_Value & 0xF) + carry) > 0xF) ? Flag.SetH(true) : Flag.SetH(false);
-	(((aVal & 0xFF) + (i_Value & 0xFF) + carry) > 0xFF) ? Flag.SetC(true) : Flag.SetC(false);
+	((aVal & 0xF) + (i_Value & 0xF) + carry) > 0xF ? Flag.SetH(true) : Flag.SetH(false);
+	((aVal & 0xFF) + (i_Value & 0xFF) + carry) > 0xFF ? Flag.SetC(true) : Flag.SetC(false);
+}
+
+/*
+	Operation:
+	SUB n
+
+	Description:
+	Subtract n to A
+	Z - Set if result is zero
+	N - Set
+	H - Set if no borrow from bit 4
+	C - Set if no borrow
+*/
+void CPU::SUB(byte i_Value)
+{
+	byte aVal = static_cast<byte>(A.GetValue());
+	byte res = aVal - i_Value;
+	A.SetValue(res);
+
+	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(true);
+	((aVal & 0xF) - (i_Value & 0xF)) < 0x0 ? Flag.SetH(true) : Flag.SetH(false);
+	aVal < i_Value ? Flag.SetC(true) : Flag.SetC(false);
+}
+
+/*
+	Operation:
+	SBC A, n
+
+	Description:
+	Subtract n + Carry flag from A
+	Z - Set if result is zero
+	N - Set
+	H - Set if no borrow from bit 4
+	C - Set if no borrow
+*/
+void CPU::SBC(byte i_Value)
+{
+	byte aVal = static_cast<byte>(A.GetValue());
+	byte carry = Flag.GetC();
+	byte res = aVal - carry - i_Value;
+	A.SetValue(res);
+
+	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(true);
+	((aVal & 0xF) - (i_Value & 0xF) - carry) < 0x0 ? Flag.SetH(true) : Flag.SetH(false);
+	aVal < i_Value + carry ? Flag.SetC(true) : Flag.SetC(false);
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
@@ -359,6 +406,26 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_8D, "ADC A, L", 4 },
 	{ &OPCode_8E, "ADC A, (HL)", 8 },
 	{ &OPCode_CE, "ADC A, n", 8 },
+
+	{ &OPCode_97, "SUB A", 4 },
+	{ &OPCode_90, "SUB B", 4 },
+	{ &OPCode_91, "SUB C", 4 },
+	{ &OPCode_92, "SUB D", 4 },
+	{ &OPCode_93, "SUB E", 4 },
+	{ &OPCode_94, "SUB H", 4 },
+	{ &OPCode_95, "SUB L", 4 },
+	{ &OPCode_96, "SUB (HL)", 8 },
+	{ &OPCode_D6, "SUB n", 8 },
+
+	{ &OPCode_9F, "SBC A, A", 4 },
+	{ &OPCode_98, "SBC A, B", 4 },
+	{ &OPCode_99, "SBC A, C", 4 },
+	{ &OPCode_9A, "SBC A, D", 4 },
+	{ &OPCode_9B, "SBC A, E", 4 },
+	{ &OPCode_9C, "SBC A, H", 4 },
+	{ &OPCode_9D, "SBC A, L", 4 },
+	{ &OPCode_9E, "SBC A, (HL)", 8 },
+	{ &OPCode_DE, "SBC A, n", 8 },
 };
 
 void CPU::OPCode_06()
@@ -1002,4 +1069,114 @@ void CPU::OPCode_CE()
 {
 	byte val = readNextByte();
 	ADC(val);
+}
+
+void CPU::OPCode_97()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	SUB(val);
+}
+
+void CPU::OPCode_90()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	SUB(val);
+}
+
+void CPU::OPCode_91()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	SUB(val);
+}
+
+void CPU::OPCode_92()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	SUB(val);
+}
+
+void CPU::OPCode_93()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	SUB(val);
+}
+
+void CPU::OPCode_94()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	SUB(val);
+}
+
+void CPU::OPCode_95()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	SUB(val);
+}
+
+void CPU::OPCode_96()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	SUB(val);
+}
+
+void CPU::OPCode_D6()
+{
+	byte val = readNextByte();
+	SUB(val);
+}
+
+void CPU::OPCode_9F()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	SBC(val);
+}
+
+void CPU::OPCode_98()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	SBC(val);
+}
+
+void CPU::OPCode_99()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	SBC(val);
+}
+
+void CPU::OPCode_9A()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	SBC(val);
+}
+
+void CPU::OPCode_9B()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	SBC(val);
+}
+
+void CPU::OPCode_9C()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	SBC(val);
+}
+
+void CPU::OPCode_9D()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	SBC(val);
+}
+
+void CPU::OPCode_9E()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	SBC(val);
+}
+
+void CPU::OPCode_DE()
+{
+	byte val = readNextByte();
+	SBC(val);
 }
