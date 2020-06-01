@@ -310,6 +310,53 @@ void CPU::OR(byte i_Value)
 	Flag.SetC(false);
 }
 
+/*
+	Operation:
+	XOR n
+
+	Description:
+	Logical exclusive OR n with register A, result in A
+	Z - Set if result is zero
+	N - Reset
+	H - Reset
+	C - Reset
+*/
+void CPU::XOR(byte i_Value)
+{
+	byte aVal = static_cast<byte>(A.GetValue());
+	byte res = aVal ^ i_Value;
+	A.SetValue(res);
+
+	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(false);
+	Flag.SetC(false);
+}
+
+/*
+	Operation:
+	CP n
+
+	Description:
+	Compare A with n. This is basically an A - n
+	subtraction instruction but the results are thrown
+	away
+	Z - Set if result is zero
+	N - Set
+	H - Set if no borrow from bit 4
+	C - Set if no borrow
+*/
+void CPU::CP(byte i_Value)
+{
+	byte aVal = static_cast<byte>(A.GetValue());
+	byte res = aVal - i_Value;
+
+	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(true);
+	((aVal & 0xF) - (i_Value & 0xF)) < 0x0 ? Flag.SetH(true) : Flag.SetH(false);
+	aVal < i_Value ? Flag.SetC(true) : Flag.SetC(false);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8 },
@@ -492,6 +539,26 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_B5, "OR L", 4 },
 	{ &OPCode_B6, "OR (HL)", 8 },
 	{ &OPCode_F6, "OR n", 8 },
+
+	{ &OPCode_AF, "XOR A", 4 },
+	{ &OPCode_A8, "XOR B", 4 },
+	{ &OPCode_A9, "XOR C", 4 },
+	{ &OPCode_AA, "XOR D", 4 },
+	{ &OPCode_AB, "XOR E", 4 },
+	{ &OPCode_AC, "XOR H", 4 },
+	{ &OPCode_AD, "XOR L", 4 },
+	{ &OPCode_AE, "XOR (HL)", 8 },
+	{ &OPCode_EE, "XOR n", 8 },
+
+	{ &OPCode_BF, "CP A	", 4 },
+	{ &OPCode_B8, "CP B	", 4 },
+	{ &OPCode_B9, "CP C	", 4 },
+	{ &OPCode_BA, "CP D	", 4 },
+	{ &OPCode_BB, "CP E	", 4 },
+	{ &OPCode_BC, "CP H	", 4 },
+	{ &OPCode_BD, "CP L	", 4 },
+	{ &OPCode_BE, "CP (HL)", 8 },
+	{ &OPCode_FE, "CP n	", 8 },
 };
 
 void CPU::OPCode_06()
@@ -1355,4 +1422,114 @@ void CPU::OPCode_F6()
 {
 	byte val = readNextByte();
 	OR(val);
+}
+
+void CPU::OPCode_AF()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	XOR(val);
+}
+
+void CPU::OPCode_A8()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	XOR(val);
+}
+
+void CPU::OPCode_A9()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	XOR(val);
+}
+
+void CPU::OPCode_AA()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	XOR(val);
+}
+
+void CPU::OPCode_AB()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	XOR(val);
+}
+
+void CPU::OPCode_AC()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	XOR(val);
+}
+
+void CPU::OPCode_AD()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	XOR(val);
+}
+
+void CPU::OPCode_AE()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	XOR(val);
+}
+
+void CPU::OPCode_EE()
+{
+	byte val = readNextByte();
+	XOR(val);
+}
+
+void CPU::OPCode_BF()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	CP(val);
+}
+
+void CPU::OPCode_B8()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	CP(val);
+}
+
+void CPU::OPCode_B9()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	CP(val);
+}
+
+void CPU::OPCode_BA()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	CP(val);
+}
+
+void CPU::OPCode_BB()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	CP(val);
+}
+
+void CPU::OPCode_BC()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	CP(val);
+}
+
+void CPU::OPCode_BD()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	CP(val);
+}
+
+void CPU::OPCode_BE()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	CP(val);
+}
+
+void CPU::OPCode_FE()
+{
+	byte val = readNextByte();
+	CP(val);
 }
