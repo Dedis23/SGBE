@@ -339,8 +339,7 @@ void CPU::XOR(byte i_Value)
 
 	Description:
 	Compare A with n. This is basically an A - n
-	subtraction instruction but the results are thrown
-	away
+	subtraction instruction but the results are thrown away
 	Z - Set if result is zero
 	N - Set
 	H - Set if no borrow from bit 4
@@ -355,6 +354,48 @@ void CPU::CP(byte i_Value)
 	Flag.SetN(true);
 	((aVal & 0xF) - (i_Value & 0xF)) < 0x0 ? Flag.SetH(true) : Flag.SetH(false);
 	aVal < i_Value ? Flag.SetC(true) : Flag.SetC(false);
+}
+
+/*
+	Operation:
+	INC n
+
+	Description:
+	Increment register n
+	Z - Set if result is zero
+	N - Reset
+	H - Set if carry from bit 4 (it is written to be 3 in the gb cpu manual but i think its not correct)
+	C - Not affected
+*/
+void CPU::INC(IRegister& i_DestRegister)
+{
+	i_DestRegister.Increment();
+	word regVal = i_DestRegister.GetValue();
+
+	regVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	(regVal & 0xF) == 0x0 ? Flag.SetH(true) : Flag.SetH(false);
+}
+
+/*
+	Operation:
+	DEC n
+
+	Description:
+	Decrement register n
+	Z - Set if result is zero
+	N - Reset
+	H - Set if carry from bit 4
+	C - Not affected
+*/
+void CPU::DEC(IRegister& i_DestRegister)
+{
+	i_DestRegister.Decrement();
+	word regVal = i_DestRegister.GetValue();
+
+	regVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	(regVal & 0xF) == 0x0 ? Flag.SetH(true) : Flag.SetH(false);
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
@@ -550,15 +591,33 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_AE, "XOR (HL)", 8 },
 	{ &OPCode_EE, "XOR n", 8 },
 
-	{ &OPCode_BF, "CP A	", 4 },
-	{ &OPCode_B8, "CP B	", 4 },
-	{ &OPCode_B9, "CP C	", 4 },
-	{ &OPCode_BA, "CP D	", 4 },
-	{ &OPCode_BB, "CP E	", 4 },
-	{ &OPCode_BC, "CP H	", 4 },
-	{ &OPCode_BD, "CP L	", 4 },
+	{ &OPCode_BF, "CP A", 4 },
+	{ &OPCode_B8, "CP B", 4 },
+	{ &OPCode_B9, "CP C", 4 },
+	{ &OPCode_BA, "CP D", 4 },
+	{ &OPCode_BB, "CP E", 4 },
+	{ &OPCode_BC, "CP H", 4 },
+	{ &OPCode_BD, "CP L", 4 },
 	{ &OPCode_BE, "CP (HL)", 8 },
-	{ &OPCode_FE, "CP n	", 8 },
+	{ &OPCode_FE, "CP n", 8 },
+
+	{ &OPCode_3C, "INC A", 4 },
+	{ &OPCode_04, "INC B", 4 },
+	{ &OPCode_0C, "INC C", 4 },
+	{ &OPCode_14, "INC D", 4 },
+	{ &OPCode_1C, "INC E", 4 },
+	{ &OPCode_24, "INC H", 4 },
+	{ &OPCode_2C, "INC L", 4 },
+	{ &OPCode_34, "INC (HL)", 12 },
+
+	{ &OPCode_3D, "DEC A", 4 },
+	{ &OPCode_05, "DEC B", 4 },
+	{ &OPCode_0D, "DEC C", 4 },
+	{ &OPCode_15, "DEC D", 4 },
+	{ &OPCode_1D, "DEC E", 4 },
+	{ &OPCode_25, "DEC H", 4 },
+	{ &OPCode_2D, "DEC L", 4 },
+	{ &OPCode_35, "DEC (HL)", 12 },
 };
 
 void CPU::OPCode_06()
@@ -1532,4 +1591,97 @@ void CPU::OPCode_FE()
 {
 	byte val = readNextByte();
 	CP(val);
+}
+
+void CPU::OPCode_3C()
+{
+	INC(A);
+}
+
+void CPU::OPCode_04()
+{
+	INC(B);
+}
+
+void CPU::OPCode_0C()
+{
+	INC(C);
+}
+
+
+void CPU::OPCode_14()
+{
+	INC(D);
+}
+
+
+void CPU::OPCode_1C()
+{
+	INC(E);
+}
+
+
+void CPU::OPCode_24()
+{
+	INC(H);
+}
+
+
+void CPU::OPCode_2C()
+{
+	INC(L);
+}
+
+
+void CPU::OPCode_34()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	INC((ByteRegister&)val); // the incremented value will be lost as its just a copy, however this call will adjust the cpu flag register
+	val += 1;
+	m_MMU.Write(addr, val);
+}
+
+void CPU::OPCode_3D()
+{
+	DEC(A);
+}
+
+void CPU::OPCode_05()
+{
+	DEC(B);
+}
+
+void CPU::OPCode_0D()
+{
+	DEC(C);
+}
+
+void CPU::OPCode_15()
+{
+	DEC(D);
+}
+
+void CPU::OPCode_1D()
+{
+	DEC(E);
+}
+
+void CPU::OPCode_25()
+{
+	DEC(H);
+}
+
+void CPU::OPCode_2D()
+{
+	DEC(L);
+}
+
+void CPU::OPCode_35()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	DEC((ByteRegister&)val); // the decremented value will be lost as its just a copy, however this call will adjust the cpu flag register
+	val -= 1;
+	m_MMU.Write(addr, val);
 }

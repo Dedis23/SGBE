@@ -69,6 +69,8 @@ private:
 	void OR(byte i_Value);
 	void XOR(byte i_Value);
 	void CP(byte i_Value);
+	void INC(IRegister& i_DestRegister);
+	void DEC(IRegister& i_DestRegister);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -271,6 +273,24 @@ private:
 	void OPCode_BD();
 	void OPCode_BE();
 	void OPCode_FE();
+
+	void OPCode_3C();
+	void OPCode_04();
+	void OPCode_0C();
+	void OPCode_14();
+	void OPCode_1C();
+	void OPCode_24();
+	void OPCode_2C();
+	void OPCode_34();
+
+	void OPCode_3D();
+	void OPCode_05();
+	void OPCode_0D();
+	void OPCode_15();
+	void OPCode_1D();
+	void OPCode_25();
+	void OPCode_2D();
+	void OPCode_35();
 };
 
 #endif
