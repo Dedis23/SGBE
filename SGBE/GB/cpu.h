@@ -85,6 +85,10 @@ private:
 	void STOP();
 	void DI();
 	void EI();
+	void RLCA();
+	void RLA();
+	void RRCA();
+	void RRA();
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -340,6 +344,14 @@ private:
 	void OPCode_F3();
 				
 	void OPCode_FB();
+
+	void OPCode_07();
+
+	void OPCode_17();
+
+	void OPCode_0F();
+
+	void OPCode_1F();
 };
 
 #endif

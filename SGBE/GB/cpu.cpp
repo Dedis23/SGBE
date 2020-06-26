@@ -9,6 +9,23 @@ void CPU::Step()
 	OPCodeData OPCodeData = m_OPCodeDataMap[OPCode];
 	LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << PC.GetValue() - 1);
 	OPCodeData.Operation;
+	Flag.SetC(true);
+	A.SetValue(4);
+	cout << "Carry flag is: " << Flag.GetC();
+	cout << endl;
+	for (int i = 7; i >= 0; i--)
+	{
+		cout << A.GetBit(i);
+	}
+	cout << endl;
+	RRA();
+	for (int i = 7; i >= 0; i--)
+	{
+		cout << A.GetBit(i);
+	}
+	cout << endl;
+	cout << "Carry flag is: " << Flag.GetC();
+	cout << endl;
 }
 
 void CPU::Reset()
@@ -662,6 +679,110 @@ void CPU::EI()
 	m_IME = true;
 }
 
+/*
+	Operation:
+	RLCA
+
+	Description:
+	Rotate A left. Old bit 7 to Carry flag
+	Z - Set if result is zero
+	N - Reset
+	H - Reset
+	C - Contains old bit 7 data
+*/
+void CPU::RLCA()
+{
+	byte aVal = A.GetValue();
+	A.GetBit(7) ? Flag.SetC(true) : Flag.SetC(false);
+	
+	aVal = (aVal << 1) | Flag.GetC(); // rotate left and add carry to bit 0
+	A.SetValue(aVal);
+
+	aVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(false);
+}
+
+/*
+	Operation:
+	RLA
+
+	Description:
+	Rotate A left through Carry flag
+	Z - Set if result is zero
+	N - Reset
+	H - Reset
+	C - Contains old bit 7 data
+*/
+void CPU::RLA()
+{
+	byte aVal = A.GetValue();
+	// save bit 7 from A
+	bool bit7 = A.GetBit(7);
+
+	aVal = (aVal << 1) | Flag.GetC(); // rotate left and add carry to bit 0
+	A.SetValue(aVal);
+
+	// set old bit 7 into carry flag
+	bit7 ? Flag.SetC(true) : Flag.SetC(false);
+
+	aVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(false);
+}
+
+/*
+	Operation:
+	RLCA
+
+	Description:
+	Rotate A right. Old bit 0 to Carry flag
+	Z - Set if result is zero
+	N - Reset
+	H - Reset
+	C - Contains old bit 0 data
+*/
+void CPU::RRCA()
+{
+	byte aVal = A.GetValue();
+	A.GetBit(0) ? Flag.SetC(true) : Flag.SetC(false);
+
+	aVal = (aVal >> 1) | (Flag.GetC() << 7); // rotate right and add carry to bit 7
+	A.SetValue(aVal);
+
+	aVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(false);
+}
+
+/*
+	Operation:
+	RLA
+
+	Description:
+	Rotate A right through Carry flag
+	Z - Set if result is zero
+	N - Reset
+	H - Reset
+	C - Contains old bit 0 data
+*/
+void CPU::RRA()
+{
+	byte aVal = A.GetValue();
+	// save bit 0 from A
+	bool bit0 = A.GetBit(0);
+
+	aVal = (aVal >> 1) | (Flag.GetC() << 7); // rotate left and add carry to bit 7
+	A.SetValue(aVal);
+
+	// set old bit 0 into carry flag
+	bit0 ? Flag.SetC(true) : Flag.SetC(false);
+
+	aVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(false);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8 },
@@ -917,6 +1038,14 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_F3, "DI", 4 },
 
 	{ &OPCode_FB, "EI", 4 },
+
+	{ &OPCode_07, "RLCA", 4 },
+
+	{ &OPCode_17, "RLA", 4 },
+
+	{ &OPCode_0F, "RRCA", 4 },
+
+	{ &OPCode_1F, "RRA", 4 },
 };
 
 void CPU::OPCode_06()
@@ -1907,30 +2036,25 @@ void CPU::OPCode_0C()
 	INC(C);
 }
 
-
 void CPU::OPCode_14()
 {
 	INC(D);
 }
-
 
 void CPU::OPCode_1C()
 {
 	INC(E);
 }
 
-
 void CPU::OPCode_24()
 {
 	INC(H);
 }
 
-
 void CPU::OPCode_2C()
 {
 	INC(L);
 }
-
 
 void CPU::OPCode_34()
 {
@@ -2097,4 +2221,24 @@ void CPU::OPCode_F3()
 void CPU::OPCode_FB()
 {
 	EI();
+}
+
+void CPU::OPCode_07()
+{
+	RLCA();
+}
+
+void CPU::OPCode_17()
+{
+	RLA();
+}
+
+void CPU::OPCode_0F()
+{
+	RRCA();
+}
+
+void CPU::OPCode_1F()
+{
+	RRA();
 }
