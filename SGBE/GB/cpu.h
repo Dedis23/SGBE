@@ -75,6 +75,7 @@ private:
 	void INC_no_flags(IRegister& i_DestRegister);
 	void DEC(IRegister& i_DestRegister);
 	void DEC_no_flags(IRegister& i_DestRegister);
+	void DAA();
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -312,6 +313,8 @@ private:
 	void OPCode_1B();
 	void OPCode_2B();
 	void OPCode_3B();
+
+	void OPCode_27();
 };
 
 #endif

@@ -480,6 +480,64 @@ void CPU::DEC_no_flags(IRegister& i_DestRegister)
 	i_DestRegister.Decrement();
 }
 
+/*
+	Operation:
+	DAA
+
+	Description:
+	Decimal adjust register A.
+	This instruction adjusts register A so that the
+	correct representation of Binary Coded Decimal (BCD)
+	is obtained.
+	Z - Set if register A is zero.
+	N - Not affected.
+	H - Reset.
+	C - Set or reset according to operation.
+
+	a youtube video explaining the operation:
+	https://www.youtube.com/watch?v=tvGWNLY3BOE
+*/
+void CPU::DAA()
+{
+	byte aVal = static_cast<byte>(A.GetValue());
+	int correctionVal = 0x0;
+
+	if (Flag.GetN())
+	{
+		if (Flag.GetH())
+		{
+			correctionVal -= 0x06;
+		}
+
+		if (Flag.GetC())
+		{
+			correctionVal -= 0x60;
+		}
+	}
+	else
+	{
+		// if high nibble is greater than 9 or carry is set, add 0x60 to correction
+		if ((((aVal & 0xF0) >> 4) > 0x9) || Flag.GetC())
+		{
+			correctionVal += 0x60;
+		}
+
+		// if low nibble is greater than 9 or half carry is set, add 0x6 to correction
+		if (((aVal & 0xF) > 0x9) || Flag.GetH())
+		{
+			correctionVal += 0x6;
+		}
+	}
+
+	int res = aVal + correctionVal;
+	
+	(res == 0x0) ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetH(false);
+	((aVal & 0xFF) + (correctionVal & 0xFF)) > 0xFF ? Flag.SetC(true) : Flag.SetC(false);
+
+	A.SetValue(static_cast<word>(res));
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8 },
@@ -717,6 +775,8 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_1B, "DEC DE", 8 },
 	{ &OPCode_2B, "DEC HL", 8 },
 	{ &OPCode_3B, "DEC SP", 8 },
+
+	{ &OPCode_27, "DAA", 4 },
 };
 
 void CPU::OPCode_06()
@@ -1852,4 +1912,9 @@ void CPU::OPCode_2B()
 void CPU::OPCode_3B()
 {
 	DEC_no_flags(SP);
+}
+
+void CPU::OPCode_27()
+{
+	DAA();
 }
