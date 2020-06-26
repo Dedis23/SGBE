@@ -62,6 +62,8 @@ private:
 	void PUSH(Pair8BRegisters& i_RegisterPair);
 	void POP(Pair8BRegisters& i_RegisterPair);
 	void ADD(byte i_Value);
+	void ADD_HL(word i_Value);
+	void ADD_SP();
 	void ADC(byte i_Value);
 	void SUB(byte i_Value);
 	void SBC(byte i_Value);
@@ -70,7 +72,9 @@ private:
 	void XOR(byte i_Value);
 	void CP(byte i_Value);
 	void INC(IRegister& i_DestRegister);
+	void INC_no_flags(IRegister& i_DestRegister);
 	void DEC(IRegister& i_DestRegister);
+	void DEC_no_flags(IRegister& i_DestRegister);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -291,6 +295,23 @@ private:
 	void OPCode_25();
 	void OPCode_2D();
 	void OPCode_35();
+
+	void OPCode_09();
+	void OPCode_19();
+	void OPCode_29();
+	void OPCode_39();
+
+	void OPCode_E8();
+
+	void OPCode_03();
+	void OPCode_13();
+	void OPCode_23();
+	void OPCode_33();
+
+	void OPCode_0B();
+	void OPCode_1B();
+	void OPCode_2B();
+	void OPCode_3B();
 };
 
 #endif

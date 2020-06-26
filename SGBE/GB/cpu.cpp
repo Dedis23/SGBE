@@ -195,6 +195,60 @@ void CPU::ADD(byte i_Value)
 
 /*
 	Operation:
+	ADD HL, n
+
+	Description:
+	Add n to HL
+	Z - Not affected
+	N - Reset
+	H - Set if carry from bit 11
+	C - Set if carry from bit 15
+*/
+void CPU::ADD_HL(word i_Value)
+{
+	word hlVal = HL.GetValue();
+	word res = hlVal + i_Value;
+	HL.SetValue(res);
+
+	Flag.SetN(false);
+	((hlVal & 0xFFF) + (i_Value & 0xFFF)) > 0xFFF ? Flag.SetH(true) : Flag.SetH(false);
+	((hlVal & 0xFFFF) + (i_Value & 0xFFFF)) > 0xFFFF ? Flag.SetC(true) : Flag.SetC(false);
+}
+
+/*
+	Operation:
+	ADD SP, n
+
+	Description:
+	Add n to SP
+	n = one byte signed immediate value (#).
+	Z - Reset
+	N - Reset
+	H - Set or reset according to operation
+	C - Set or reset according to operation
+*/
+void CPU::ADD_SP()
+{
+	sbyte val = readNextSignedByte();
+	word spVal = SP.GetValue();
+	int res = static_cast<int>(spVal + val);
+
+	Flag.SetZ(false);
+	Flag.SetN(false);
+	if (val >= 0)
+	{
+		((spVal & 0xF) + (val & 0xF)) > 0xF ? Flag.SetH(true) : Flag.SetH(false);
+		((spVal & 0xFF) + (val)) > 0xFF ? Flag.SetC(true) : Flag.SetC(false);
+	}
+	else
+	{
+		(res & 0xF) <= (spVal & 0xF) ? Flag.SetH(true) : Flag.SetH(false);
+		(res & 0xFF) <= (spVal & 0xFF) ? Flag.SetC(true) : Flag.SetC(false);
+	}
+}
+
+/*
+	Operation:
 	ADC A, n
 
 	Description:
@@ -364,7 +418,7 @@ void CPU::CP(byte i_Value)
 	Increment register n
 	Z - Set if result is zero
 	N - Reset
-	H - Set if carry from bit 4 (it is written to be 3 in the gb cpu manual but i think its not correct)
+	H - Set if carry from bit 3
 	C - Not affected
 */
 void CPU::INC(IRegister& i_DestRegister)
@@ -379,13 +433,27 @@ void CPU::INC(IRegister& i_DestRegister)
 
 /*
 	Operation:
+	INC nn
+
+	Description:
+	Increment register nn
+	nn = BC, DE, HL, SP
+	No flags affected
+*/
+void CPU::INC_no_flags(IRegister& i_DestRegister)
+{
+	i_DestRegister.Increment();
+}
+
+/*
+	Operation:
 	DEC n
 
 	Description:
 	Decrement register n
 	Z - Set if result is zero
 	N - Reset
-	H - Set if carry from bit 4
+	H - Set if carry from bit 3
 	C - Not affected
 */
 void CPU::DEC(IRegister& i_DestRegister)
@@ -396,6 +464,20 @@ void CPU::DEC(IRegister& i_DestRegister)
 	regVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
 	Flag.SetN(false);
 	(regVal & 0xF) == 0x0 ? Flag.SetH(true) : Flag.SetH(false);
+}
+
+/*
+	Operation:
+	DEC nn
+
+	Description:
+	Decrement register nn
+	nn = BC, DE, HL, SP
+	No flags affected
+*/
+void CPU::DEC_no_flags(IRegister& i_DestRegister)
+{
+	i_DestRegister.Decrement();
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
@@ -618,6 +700,23 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_25, "DEC H", 4 },
 	{ &OPCode_2D, "DEC L", 4 },
 	{ &OPCode_35, "DEC (HL)", 12 },
+
+	{ &OPCode_09, "ADD HL, BC", 8 },
+	{ &OPCode_19, "ADD HL, DE", 8 },
+	{ &OPCode_29, "ADD HL, HL", 8 },
+	{ &OPCode_39, "ADD HL, SP", 8 },
+
+	{ &OPCode_E8, "ADD SP, #", 16 },
+
+	{ &OPCode_03, "INC BC", 8 },
+	{ &OPCode_13, "INC DE", 8 },
+	{ &OPCode_23, "INC HL", 8 },
+	{ &OPCode_33, "INC SP", 8 },
+
+	{ &OPCode_0B, "DEC BC", 8 },
+	{ &OPCode_1B, "DEC DE", 8 },
+	{ &OPCode_2B, "DEC HL", 8 },
+	{ &OPCode_3B, "DEC SP", 8 },
 };
 
 void CPU::OPCode_06()
@@ -1684,4 +1783,73 @@ void CPU::OPCode_35()
 	DEC((ByteRegister&)val); // the decremented value will be lost as its just a copy, however this call will adjust the cpu flag register
 	val -= 1;
 	m_MMU.Write(addr, val);
+}
+
+void CPU::OPCode_09()
+{
+	word val = BC.GetValue();
+	ADD_HL(val);
+}
+
+void CPU::OPCode_19()
+{
+	word val = DE.GetValue();
+	ADD_HL(val);
+}
+
+void CPU::OPCode_29()
+{
+	word val = HL.GetValue();
+	ADD_HL(val);
+}
+
+void CPU::OPCode_39()
+{
+	word val = SP.GetValue();
+	ADD_HL(val);
+}
+
+void CPU::OPCode_E8()
+{
+	ADD_SP();
+}
+
+void CPU::OPCode_03()
+{
+	INC_no_flags(BC);
+}
+
+void CPU::OPCode_13()
+{
+	INC_no_flags(DE);
+}
+
+void CPU::OPCode_23()
+{
+	INC_no_flags(HL);
+}
+
+void CPU::OPCode_33()
+{
+	INC_no_flags(SP);
+}
+
+void CPU::OPCode_0B()
+{
+	DEC_no_flags(BC);
+}
+
+void CPU::OPCode_1B()
+{
+	DEC_no_flags(DE);
+}
+
+void CPU::OPCode_2B()
+{
+	DEC_no_flags(HL);
+}
+
+void CPU::OPCode_3B()
+{
+	DEC_no_flags(SP);
 }
