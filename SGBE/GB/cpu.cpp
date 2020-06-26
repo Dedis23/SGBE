@@ -638,6 +638,30 @@ void CPU::STOP()
 	HALT();
 }
 
+/*
+	Operation:
+	DI
+
+	Description:
+	This instruction disables interrupts
+*/
+void CPU::DI()
+{
+	m_IME = false;
+}
+
+/*
+	Operation:
+	EI
+
+	Description:
+	This intruction enables interrupts
+*/
+void CPU::EI()
+{
+	m_IME = true;
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8 },
@@ -889,6 +913,10 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_76, "HALT", 4 },
 
 	{ &OPCode_10, "STOP", 4 },
+
+	{ &OPCode_F3, "DI", 4 },
+
+	{ &OPCode_FB, "EI", 4 },
 };
 
 void CPU::OPCode_06()
@@ -2059,4 +2087,14 @@ void CPU::OPCode_76()
 void CPU::OPCode_10()
 {
 	STOP();
+}
+
+void CPU::OPCode_F3()
+{
+	DI();
+}
+
+void CPU::OPCode_FB()
+{
+	EI();
 }

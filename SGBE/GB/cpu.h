@@ -83,6 +83,8 @@ private:
 	void _NOP();
 	void HALT();
 	void STOP();
+	void DI();
+	void EI();
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -334,6 +336,10 @@ private:
 	void OPCode_76();
 
 	void OPCode_10();
+
+	void OPCode_F3();
+				
+	void OPCode_FB();
 };
 
 #endif
