@@ -37,6 +37,7 @@ private:
 	FlagRegister Flag; // flag register, high nible is affected: Z N H C 0 0 0 0
 	Pair8BRegisters AF, BC, DE, HL; // 2x8-bit registers paired together
 	bool m_IME; // Interrupt master enable
+	bool m_HALT; // is cpu halted boolean (wait until an interrupt occurs)
 
 	/* components */
 	MMU& m_MMU;
@@ -79,6 +80,9 @@ private:
 	void CPL();
 	void CCF();
 	void SCF();
+	void _NOP();
+	void HALT();
+	void STOP();
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -324,6 +328,12 @@ private:
 	void OPCode_3F();
 
 	void OPCode_37();
+
+	void OPCode_00();
+
+	void OPCode_76();
+
+	void OPCode_10();
 };
 
 #endif

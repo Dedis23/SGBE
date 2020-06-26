@@ -1,6 +1,6 @@
 #include "cpu.h"
 
-CPU::CPU(MMU& i_MMU) : m_MMU(i_MMU), AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false) {}
+CPU::CPU(MMU& i_MMU) : m_MMU(i_MMU), AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false) {}
 
 void CPU::Step()
 {
@@ -25,6 +25,7 @@ void CPU::Reset()
 	PC.SetValue(0);
 	Flag.SetValue(0);
 	m_IME = false;
+	m_HALT = false;
 }
 
 byte CPU::readNextByte()
@@ -599,6 +600,44 @@ void CPU::SCF()
 	Flag.SetH(false);
 }
 
+/*
+	Operation:
+	NOP
+
+	Description:
+	No operation
+*/
+void CPU::_NOP()
+{
+	// Do nothing
+}
+
+/*
+	Operation:
+	HALT
+
+	Description:
+	Power down CPU until an interrupt occurs. Use this
+	when ever possible to reduce energy consumption.
+*/
+void CPU::HALT()
+{
+	m_HALT = true;
+}
+
+/*
+	Operation:
+	NOP
+
+	Description:
+	Halt CPU & LCD display until button pressed.
+*/
+void CPU::STOP()
+{
+	// nothing to do regarding lcd so its just like HALT
+	HALT();
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8 },
@@ -844,6 +883,12 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_3F, "CCF", 4 },
 
 	{ &OPCode_37, "SCF", 4 },
+
+	{ &OPCode_00, "NOP", 4 },
+
+	{ &OPCode_76, "HALT", 4 },
+
+	{ &OPCode_10, "STOP", 4 },
 };
 
 void CPU::OPCode_06()
@@ -1999,4 +2044,19 @@ void CPU::OPCode_3F()
 void CPU::OPCode_37()
 {
 	SCF();
+}
+
+void CPU::OPCode_00()
+{
+	_NOP();
+}
+
+void CPU::OPCode_76()
+{
+	HALT();
+}
+
+void CPU::OPCode_10()
+{
+	STOP();
 }
