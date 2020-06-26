@@ -538,6 +538,27 @@ void CPU::DAA()
 	A.SetValue(static_cast<word>(res));
 }
 
+/*
+	Operation:
+	CPL
+
+	Description:
+	Complement A register. (Flip all bits.)
+	Z - Not affected
+	N - Set
+	H - Set
+	C - Not affected
+*/
+void CPU::CPL()
+{
+	byte aVal = A.GetValue();
+	aVal = ~aVal;
+	A.SetValue(aVal);
+
+	Flag.SetN(true);
+	Flag.SetH(true);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8 },
@@ -777,6 +798,8 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_3B, "DEC SP", 8 },
 
 	{ &OPCode_27, "DAA", 4 },
+
+	{ &OPCode_2F, "CPL", 4 },
 };
 
 void CPU::OPCode_06()
@@ -1917,4 +1940,9 @@ void CPU::OPCode_3B()
 void CPU::OPCode_27()
 {
 	DAA();
+}
+
+void CPU::OPCode_2F()
+{
+	CPL();
 }
