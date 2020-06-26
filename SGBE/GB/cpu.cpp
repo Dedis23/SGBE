@@ -559,6 +559,46 @@ void CPU::CPL()
 	Flag.SetH(true);
 }
 
+/*
+	Operation:
+	CCF
+
+	Description:
+	Complement carry flag.
+	If C flag is set, then reset it.
+	If C flag is reset, then set it.
+	Z - Not affected
+	N - Reset
+	H - Reset
+	C - Complemented
+*/
+void CPU::CCF()
+{
+	Flag.GetC() ? Flag.SetC(false) : Flag.SetC(true);
+
+	Flag.SetN(false);
+	Flag.SetH(false);
+}
+
+/*
+	Operation:
+	SCF
+
+	Description:
+	Set Carry flag.
+	Z - Not affected
+	N - Reset
+	H - Reset
+	C - Set
+*/
+void CPU::SCF()
+{
+	Flag.SetC(true);
+	
+	Flag.SetN(false);
+	Flag.SetH(false);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8 },
@@ -800,6 +840,10 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_27, "DAA", 4 },
 
 	{ &OPCode_2F, "CPL", 4 },
+
+	{ &OPCode_3F, "CCF", 4 },
+
+	{ &OPCode_37, "SCF", 4 },
 };
 
 void CPU::OPCode_06()
@@ -1945,4 +1989,14 @@ void CPU::OPCode_27()
 void CPU::OPCode_2F()
 {
 	CPL();
+}
+
+void CPU::OPCode_3F()
+{
+	CCF();
+}
+
+void CPU::OPCode_37()
+{
+	SCF();
 }

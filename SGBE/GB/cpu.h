@@ -77,6 +77,8 @@ private:
 	void DEC_no_flags(IRegister& i_DestRegister);
 	void DAA();
 	void CPL();
+	void CCF();
+	void SCF();
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -318,6 +320,10 @@ private:
 	void OPCode_27();
 
 	void OPCode_2F();
+
+	void OPCode_3F();
+
+	void OPCode_37();
 };
 
 #endif
