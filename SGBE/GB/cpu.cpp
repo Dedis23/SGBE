@@ -791,9 +791,10 @@ void CPU::RRA()
 	Jump to address nn
 	nn = two byte immediate value. (LS byte first.)
 */
-void CPU::JP_nn(word i_AddressValue)
+void CPU::JP_nn()
 {
-	PC.SetValue(i_AddressValue);
+	word addr = readNextWord();
+	PC.SetValue(addr);
 }
 
 /*
@@ -807,27 +808,69 @@ void CPU::JP_nn(word i_AddressValue)
 	cc = NC, Jump if C flag is reset
 	cc = C, Jump if C flag is set
 */
-void CPU::JP_cc_nn(JumpConditions i_Condition, word i_AddressValue)
+void CPU::JP_cc_nn(JumpConditions i_Condition)
 {
+	word addr = readNextWord();
 	switch (i_Condition)
 	{
 	case CPU::JumpConditions::NZ:
 		if (!Flag.GetN())
-			return JP_nn(i_AddressValue);
+		{
+			PC.SetValue(addr);
+		}
 		break;
 	case CPU::JumpConditions::Z:
 		if (Flag.GetZ())
-			return JP_nn(i_AddressValue);
+		{
+			PC.SetValue(addr);
+		}
 		break;
 	case CPU::JumpConditions::NC:
 		if (!Flag.GetC())
-			return JP_nn(i_AddressValue);
+		{
+			PC.SetValue(addr);
+		}
 		break;
 	case CPU::JumpConditions::C:
 		if (Flag.GetC())
-			return JP_nn(i_AddressValue);
+		{
+			PC.SetValue(addr);
+		}
 		break;
 	}
+}
+
+/*
+	Operation:
+	JP (HL)
+
+	Description:
+	Jump to address contained in HL
+*/
+void CPU::JP_hl()
+{
+	word addr = HL.GetValue();
+	JP_nn(addr);
+}
+
+/*
+	Operation:
+	JR n
+
+	Description:
+	Add n to current address and jump to it
+*/
+void CPU::JR_n()
+{
+	sbyte val = readNextSignedByte();
+	word pcVal = PC.GetValue();
+	pcVal += val;
+	PC.SetValue(pcVal);
+}
+
+void JR_cc_n()
+{
+
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
@@ -1100,6 +1143,10 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_CA, "JP Z, nn", 12, 16 },
 	{ &OPCode_D2, "JP NC, nn", 12, 16 },
 	{ &OPCode_DA, "JP C, nn", 12, 16 },
+
+	{ &OPCode_E9, "JP (HL)", 4, 4 },
+
+	{ &OPCode_18, "JR n", 12, 12 },
 };
 
 void CPU::OPCode_06()
@@ -2299,30 +2346,38 @@ void CPU::OPCode_1F()
 
 void CPU::OPCode_C3()
 {
-	word addr = readNextWord();
-	JP_nn(addr);
+	JP_nn();
 }
 
 void CPU::OPCode_C2()
 {
-	word addr = readNextWord();
-	JP_cc_nn(JumpConditions::NZ, addr);
+	JP_cc_nn(JumpConditions::NZ);
 }
 
 void CPU::OPCode_CA()
 {
 	word addr = readNextWord();
-	JP_cc_nn(JumpConditions::Z, addr);
+	JP_cc_nn(JumpConditions::Z);
 }
 
 void CPU::OPCode_D2()
 {
 	word addr = readNextWord();
-	JP_cc_nn(JumpConditions::NC, addr);
+	JP_cc_nn(JumpConditions::NC);
 }
 
 void CPU::OPCode_DA()
 {
 	word addr = readNextWord();
-	JP_cc_nn(JumpConditions::C, addr);
+	JP_cc_nn(JumpConditions::C);
+}
+
+void CPU::OPCode_E9()
+{
+	JP_hl();
+}
+
+void CPU::OPCode_18()
+{
+	JR_n();
 }

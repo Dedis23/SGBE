@@ -98,8 +98,11 @@ private:
 	void RLA();
 	void RRCA();
 	void RRA();
-	void JP_nn(word i_AddressValue);
-	void JP_cc_nn(JumpConditions i_Condition, word i_AddressValue);
+	void JP_nn();
+	void JP_cc_nn(JumpConditions i_Condition);
+	void JP_hl();
+	void JR_n();
+	void JR_cc_n(JumpConditions i_Condition);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -370,6 +373,10 @@ private:
 	void OPCode_CA();
 	void OPCode_D2();
 	void OPCode_DA();
+
+	void OPCode_E9();
+
+	void OPCode_18();
 };
 
 #endif
