@@ -103,6 +103,38 @@ sbyte CPU::readNextSignedByte()
 	return nextSbyte;
 }
 
+bool CPU::checkJumpCondition(JumpConditions i_Condition)
+{
+	switch (i_Condition)
+	{
+	case CPU::JumpConditions::NZ:
+		if (!Flag.GetZ())
+		{
+			return true;
+		}
+		break;
+	case CPU::JumpConditions::Z:
+		if (Flag.GetZ())
+		{
+			return true;
+		}
+		break;
+	case CPU::JumpConditions::NC:
+		if (!Flag.GetC())
+		{
+			return true;
+		}
+		break;
+	case CPU::JumpConditions::C:
+		if (Flag.GetC())
+		{
+			return true;
+		}
+		break;
+	}
+	return false;
+}
+
 /* OPCodes */
 
 /*
@@ -848,36 +880,10 @@ void CPU::JP_nn()
 void CPU::JP_cc_nn(JumpConditions i_Condition)
 {
 	word addr = readNextWord();
-	switch (i_Condition)
+	if (checkJumpCondition(i_Condition))
 	{
-	case CPU::JumpConditions::NZ:
-		if (!Flag.GetZ())
-		{
-			PC.SetValue(addr);
-			m_IsCCJump = true;
-		}
-		break;
-	case CPU::JumpConditions::Z:
-		if (Flag.GetZ())
-		{
-			PC.SetValue(addr);
-			m_IsCCJump = true;
-		}
-		break;
-	case CPU::JumpConditions::NC:
-		if (!Flag.GetC())
-		{
-			PC.SetValue(addr);
-			m_IsCCJump = true;
-		}
-		break;
-	case CPU::JumpConditions::C:
-		if (Flag.GetC())
-		{
-			PC.SetValue(addr);
-			m_IsCCJump = true;
-		}
-		break;
+		PC.SetValue(addr);
+		m_IsCCJump = true;
 	}
 }
 
@@ -926,40 +932,11 @@ void CPU::JR_cc_n(JumpConditions i_Condition)
 {
 	sbyte val = readNextSignedByte();
 	word pcVal = PC.GetValue();
-	switch (i_Condition)
+	if (checkJumpCondition(i_Condition))
 	{
-	case CPU::JumpConditions::NZ:
-		if (!Flag.GetZ())
-		{
-			pcVal += val;
-			PC.SetValue(pcVal);
-			m_IsCCJump = true;
-		}
-		break;
-	case CPU::JumpConditions::Z:
-		if (Flag.GetZ())
-		{
-			pcVal += val;
-			PC.SetValue(pcVal);
-			m_IsCCJump = true;
-		}
-		break;
-	case CPU::JumpConditions::NC:
-		if (!Flag.GetC())
-		{
-			pcVal += val;
-			PC.SetValue(pcVal);
-			m_IsCCJump = true;
-		}
-		break;
-	case CPU::JumpConditions::C:
-		if (Flag.GetC())
-		{
-			pcVal += val;
-			PC.SetValue(pcVal);
-			m_IsCCJump = true;
-		}
-		break;
+		pcVal += val;
+		PC.SetValue(pcVal);
+		m_IsCCJump = true;
 	}
 }
 
@@ -993,40 +970,11 @@ void CPU::CALL_cc_nn(JumpConditions i_Condition)
 {
 	word addr = readNextWord(); // addr = nn, pc now is post instruction CALL cc nn
 	word pcVal = PC.GetValue();
-	switch (i_Condition)
+	if (checkJumpCondition(i_Condition))
 	{
-	case CPU::JumpConditions::NZ:
-		if (!Flag.GetZ())
-		{
-			PUSH(pcVal); // store PC in the stack
-			PC.SetValue(addr); // jump to nn
-			m_IsCCJump = true;
-		}
-		break;
-	case CPU::JumpConditions::Z:
-		if (Flag.GetZ())
-		{
-			PUSH(pcVal); // store PC in the stack
-			PC.SetValue(addr); // jump to nn
-			m_IsCCJump = true;
-		}
-		break;
-	case CPU::JumpConditions::NC:
-		if (!Flag.GetC())
-		{
-			PUSH(pcVal); // store PC in the stack
-			PC.SetValue(addr); // jump to nn
-			m_IsCCJump = true;
-		}
-		break;
-	case CPU::JumpConditions::C:
-		if (Flag.GetC())
-		{
-			PUSH(pcVal); // store PC in the stack
-			PC.SetValue(addr); // jump to nn
-			m_IsCCJump = true;
-		}
-		break;
+		PUSH(pcVal); // store PC in the stack
+		PC.SetValue(addr); // jump to nn
+		m_IsCCJump = true;
 	}
 }
 
@@ -1057,6 +1005,22 @@ void CPU::RET()
 	word val = 0x0;
 	POP(val);
 	PC.SetValue(val);
+}
+
+/*
+	Operation:
+	RET cc
+
+	Description:
+	Return if following condition is true:
+	cc = NZ, Return if Z flag is reset
+	cc = Z, Return if Z flag is set
+	cc = NC, Return if C flag is reset
+	cc = C, Return if C flag is set
+*/
+void CPU::RET_cc(JumpConditions i_Condition)
+{
+
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
@@ -1356,6 +1320,11 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_FF, "RST 38H", 16, 16 },
 
 	{ &OPCode_C9, "RET", 16, 16 },
+
+	{ &OPCode_C0, "RET NZ", 8, 20 },
+	{ &OPCode_C8, "RET Z", 8, 20 },
+	{ &OPCode_D0, "RET NC", 8, 20 },
+	{ &OPCode_D8, "RET C", 8, 20 },
 };
 
 void CPU::OPCode_06()
@@ -2691,4 +2660,24 @@ void CPU::OPCode_FF()
 void CPU::OPCode_C9()
 {
 	RET();
+}
+
+void CPU::OPCode_C0()
+{
+	RET_cc(JumpConditions::NZ);
+}
+
+void CPU::OPCode_C8()
+{
+	RET_cc(JumpConditions::Z);
+}
+
+void CPU::OPCode_D0()
+{
+	RET_cc(JumpConditions::NC);
+}
+
+void CPU::OPCode_D8()
+{
+	RET_cc(JumpConditions::C);
 }

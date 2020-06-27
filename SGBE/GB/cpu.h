@@ -26,9 +26,18 @@ public:
 	void Reset();
 
 private:
+	enum class JumpConditions
+	{
+		NZ,
+		Z,
+		NC,
+		C,
+	};
+
 	byte readNextByte();
 	word readNextWord();
 	sbyte readNextSignedByte();
+	bool checkJumpCondition(JumpConditions i_Condition);
 
 private:
 	/* registers */
@@ -56,14 +65,6 @@ private:
 	static const std::vector<OPCodeData> m_OPCodeDataMap;
 
 	/* CPU Operations */
-	enum class JumpConditions
-	{
-		NZ,
-		Z,
-		NC,
-		C,
-	};
-
 	void LD_nn_n(IRegister& i_DestRegister);
 	void LD_n_nn(IRegister& i_DestRegister);
 	void LD_r1_r2(IRegister& i_DestRegister, const IRegister& i_SrcRegister);
@@ -108,6 +109,7 @@ private:
 	void CALL_cc_nn(JumpConditions i_Condition);
 	void RST_n(word i_Value);
 	void RET();
+	void RET_cc(JumpConditions i_Condition);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -405,6 +407,11 @@ private:
 	void OPCode_FF();
 
 	void OPCode_C9();
+
+	void OPCode_C0();
+	void OPCode_C8();
+	void OPCode_D0();
+	void OPCode_D8();
 };
 
 #endif
