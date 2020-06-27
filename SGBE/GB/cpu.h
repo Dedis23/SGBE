@@ -110,6 +110,7 @@ private:
 	void RST_n(word i_Value);
 	void RET();
 	void RET_cc(JumpConditions i_Condition);
+	void RETI();
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -412,6 +413,8 @@ private:
 	void OPCode_C8();
 	void OPCode_D0();
 	void OPCode_D8();
+
+	void OPCode_D9();
 };
 
 #endif

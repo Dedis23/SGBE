@@ -1027,6 +1027,19 @@ void CPU::RET_cc(JumpConditions i_Condition)
 	}
 }
 
+/*
+	Operation:
+	RETI
+
+	Description:
+	Pop two bytes from stack & jump to that address then enable interrupts
+*/
+void CPU::RETI()
+{
+	m_IME = true;
+	RET();
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8, 8 },
@@ -1329,6 +1342,8 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_C8, "RET Z", 8, 20 },
 	{ &OPCode_D0, "RET NC", 8, 20 },
 	{ &OPCode_D8, "RET C", 8, 20 },
+
+	{ &OPCode_D9, "RETI", 16, 16 },
 };
 
 void CPU::OPCode_06()
@@ -2684,4 +2699,9 @@ void CPU::OPCode_D0()
 void CPU::OPCode_D8()
 {
 	RET_cc(JumpConditions::C);
+}
+
+void CPU::OPCode_D9()
+{
+	RETI();
 }
