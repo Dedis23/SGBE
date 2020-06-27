@@ -97,7 +97,6 @@ private:
 	void STOP();
 	void DI();
 	void EI();
-	void RLCA();
 	void RLA();
 	void RRCA();
 	void RRA();
@@ -113,6 +112,7 @@ private:
 	void RET_cc(JumpConditions i_Condition);
 	void RETI();
 	void SWAP(IRegister& i_DestRegister);
+	void RLC(IRegister& i_DestRegister);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -426,6 +426,15 @@ private:
 	void OPCode_CB_34();
 	void OPCode_CB_35();
 	void OPCode_CB_36();
+
+	void OPCode_CB_07();
+	void OPCode_CB_00();
+	void OPCode_CB_01();
+	void OPCode_CB_02();
+	void OPCode_CB_03();
+	void OPCode_CB_04();
+	void OPCode_CB_05();
+	void OPCode_CB_06();
 };
 
 #endif
