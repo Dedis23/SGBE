@@ -1030,6 +1030,21 @@ void CPU::CALL_cc_nn(JumpConditions i_Condition)
 	}
 }
 
+/*
+	Operation:
+	RST n
+
+	Description:
+	Push present address onto stack
+	Jump to address $0000 + n
+*/
+void CPU::RST_n(word i_Value)
+{
+	word pcVal = PC.GetValue();
+	PUSH(pcVal);
+	PC.SetValue(i_Value);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8, 8 },
@@ -1316,6 +1331,15 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_CC, "CALL Z, nn", 12, 24 },
 	{ &OPCode_D4, "CALL NC, nn", 12, 24 },
 	{ &OPCode_DC, "CALL C, nn", 12, 24 },
+
+	{ &OPCode_C7, "RST 00H", 16, 16 },
+	{ &OPCode_CF, "RST 08H", 16, 16 },
+	{ &OPCode_D7, "RST 10H", 16, 16 },
+	{ &OPCode_DF, "RST 18H", 16, 16 },
+	{ &OPCode_E7, "RST 20H", 16, 16 },
+	{ &OPCode_EF, "RST 28H", 16, 16 },
+	{ &OPCode_F7, "RST 30H", 16, 16 },
+	{ &OPCode_FF, "RST 38H", 16, 16 },
 };
 
 void CPU::OPCode_06()
@@ -2606,4 +2630,44 @@ void CPU::OPCode_D4()
 void CPU::OPCode_DC()
 {
 	CALL_cc_nn(JumpConditions::C);
+}
+
+void CPU::OPCode_C7()
+{
+	RST_n(0x00);
+}
+
+void CPU::OPCode_CF()
+{
+	RST_n(0x08);
+}
+
+void CPU::OPCode_D7()
+{
+	RST_n(0x10);
+}
+
+void CPU::OPCode_DF()
+{
+	RST_n(0x18);
+}
+
+void CPU::OPCode_E7()
+{
+	RST_n(0x20);
+}
+
+void CPU::OPCode_EF()
+{
+	RST_n(0x28);
+}
+
+void CPU::OPCode_F7()
+{
+	RST_n(0x30);
+}
+
+void CPU::OPCode_FF()
+{
+	RST_n(0x38);
 }

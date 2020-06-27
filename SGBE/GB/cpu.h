@@ -106,6 +106,7 @@ private:
 	void JR_cc_n(JumpConditions i_Condition);
 	void CALL_nn();
 	void CALL_cc_nn(JumpConditions i_Condition);
+	void RST_n(word i_Value);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -392,6 +393,15 @@ private:
 	void OPCode_CC();
 	void OPCode_D4();
 	void OPCode_DC();
+
+	void OPCode_C7();
+	void OPCode_CF();
+	void OPCode_D7();
+	void OPCode_DF();
+	void OPCode_E7();
+	void OPCode_EF();
+	void OPCode_F7();
+	void OPCode_FF();
 };
 
 #endif
