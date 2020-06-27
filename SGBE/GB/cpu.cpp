@@ -761,58 +761,6 @@ void CPU::EI()
 
 /*
 	Operation:
-	RRCA
-
-	Description:
-	Rotate A right. Old bit 0 to Carry flag
-	Z - Set if result is zero
-	N - Reset
-	H - Reset
-	C - Contains old bit 0 data
-*/
-void CPU::RRCA()
-{
-	byte aVal = A.GetValue();
-	A.GetBit(0) ? Flag.SetC(true) : Flag.SetC(false);
-
-	aVal = (aVal >> 1) | (Flag.GetC() << 7); // rotate right and add carry to bit 7
-	A.SetValue(aVal);
-
-	aVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
-}
-
-/*
-	Operation:
-	RRA
-
-	Description:
-	Rotate A right through Carry flag
-	Z - Set if result is zero
-	N - Reset
-	H - Reset
-	C - Contains old bit 0 data
-*/
-void CPU::RRA()
-{
-	byte aVal = A.GetValue();
-	// save bit 0 from A
-	bool bit0 = A.GetBit(0);
-
-	aVal = (aVal >> 1) | (Flag.GetC() << 7); // rotate left and add carry to bit 7
-	A.SetValue(aVal);
-
-	// set old bit 0 into carry flag
-	bit0 ? Flag.SetC(true) : Flag.SetC(false);
-
-	aVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
-}
-
-/*
-	Operation:
 	JP nn
 
 	Description:
@@ -1039,7 +987,7 @@ void CPU::RLC_n(IRegister& i_DestRegister)
 	byte val = i_DestRegister.GetValue();
 	i_DestRegister.GetBit(7) ? Flag.SetC(true) : Flag.SetC(false);
 	
-	val = (val << 1) | Flag.GetC(); // rotate left and add carry to bit 0
+	val = (val << 1) | Flag.GetC(); // rotate left and add bit 7 to bit 0
 	i_DestRegister.SetValue(val);
 	
 	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
@@ -1074,6 +1022,59 @@ void CPU::RL_n(IRegister& i_DestRegister)
 	Flag.SetN(false);
 	Flag.SetH(false);
 }
+
+/*
+	Operation:
+	RRC n
+
+	Description:
+	Rotate n right. Old bit 0 to Carry flag
+	Z - Set if result is zero
+	N - Reset
+	H - Reset
+	C - Contains old bit 0 data
+*/
+void CPU::RRC_n(IRegister& i_DestRegister)
+{
+	byte val = i_DestRegister.GetValue();
+	i_DestRegister.GetBit(0) ? Flag.SetC(true) : Flag.SetC(false);
+
+	val = (val >> 1) | (Flag.GetC() << 7); // rotate right and add bit 0 to bit 7
+	i_DestRegister.SetValue(val);
+
+	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(false);
+}
+
+/*
+	Operation:
+	RR n
+
+	Description:
+	Rotate n right through Carry flag
+	Z - Set if result is zero
+	N - Reset
+	H - Reset
+	C - Contains old bit 0 data
+*/
+void CPU::RR_n(IRegister& i_DestRegister)
+{
+	byte val = i_DestRegister.GetValue();
+	// save bit 0 from n
+	bool bit0 = i_DestRegister.GetBit(0);
+
+	val = (val >> 1) | (Flag.GetC() << 7); // rotate left and add carry to bit 7
+	i_DestRegister.SetValue(val);
+
+	// set old bit 0 into carry flag
+	bit0 ? Flag.SetC(true) : Flag.SetC(false);
+
+	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(false);
+}
+
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
@@ -1363,6 +1364,24 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_14, "RL H", 8, 8 },
 	{ &OPCode_CB_15, "RL L", 8, 8 },
 	{ &OPCode_CB_16, "RL (HL)", 16, 16 },
+
+	{ &OPCode_CB_0F, "RRC A", 8, 8 },
+	{ &OPCode_CB_08, "RRC B", 8, 8 },
+	{ &OPCode_CB_09, "RRC C", 8, 8 },
+	{ &OPCode_CB_0A, "RRC D", 8, 8 },
+	{ &OPCode_CB_0B, "RRC E", 8, 8 },
+	{ &OPCode_CB_0C, "RRC H", 8, 8 },
+	{ &OPCode_CB_0D, "RRC L", 8, 8 },
+	{ &OPCode_CB_0E, "RRC (HL)", 16, 16 },
+
+	{ &OPCode_CB_1F, "RR A", 8, 8 },
+	{ &OPCode_CB_18, "RR B", 8, 8 },
+	{ &OPCode_CB_19, "RR C", 8, 8 },
+	{ &OPCode_CB_1A, "RR D", 8, 8 },
+	{ &OPCode_CB_1B, "RR E", 8, 8 },
+	{ &OPCode_CB_1C, "RR H", 8, 8 },
+	{ &OPCode_CB_1D, "RR L", 8, 8 },
+	{ &OPCode_CB_1E, "RR (HL)", 16, 16 },
 };
 
 void CPU::OPCode_06()
@@ -2564,12 +2583,12 @@ void CPU::OPCode_17()
 
 void CPU::OPCode_0F()
 {
-	RRCA();
+	RRC_n(A);
 }
 
 void CPU::OPCode_1F()
 {
-	RRA();
+	RR_n(A);
 }
 
 void CPU::OPCode_C3()
@@ -2856,6 +2875,96 @@ void CPU::OPCode_CB_16()
 	byte val = m_MMU.Read(addr);
 	ByteRegister temp(val);
 	RL_n(temp);
+	val = static_cast<byte>(temp.GetValue());
+	m_MMU.Write(addr, val);
+}
+
+void CPU::OPCode_CB_0F()
+{
+	RRC_n(A);
+}
+
+void CPU::OPCode_CB_08()
+{
+	RRC_n(B);
+}
+
+void CPU::OPCode_CB_09()
+{
+	RRC_n(C);
+}
+
+void CPU::OPCode_CB_0A()
+{
+	RRC_n(D);
+}
+
+void CPU::OPCode_CB_0B()
+{
+	RRC_n(E);
+}
+
+void CPU::OPCode_CB_0C()
+{
+	RRC_n(H);
+}
+
+void CPU::OPCode_CB_0D()
+{
+	RRC_n(L);
+}
+
+void CPU::OPCode_CB_0E()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	ByteRegister temp(val);
+	RRC_n(temp);
+	val = static_cast<byte>(temp.GetValue());
+	m_MMU.Write(addr, val);
+}
+
+void CPU::OPCode_CB_1F()
+{
+	RR_n(A);
+}
+
+void CPU::OPCode_CB_18()
+{
+	RR_n(B);
+}
+
+void CPU::OPCode_CB_19()
+{
+	RR_n(C);
+}
+
+void CPU::OPCode_CB_1A()
+{
+	RR_n(D);
+}
+
+void CPU::OPCode_CB_1B()
+{
+	RR_n(E);
+}
+
+void CPU::OPCode_CB_1C()
+{
+	RR_n(H);
+}
+
+void CPU::OPCode_CB_1D()
+{
+	RR_n(L);
+}
+
+void CPU::OPCode_CB_1E()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	ByteRegister temp(val);
+	RR_n(temp);
 	val = static_cast<byte>(temp.GetValue());
 	m_MMU.Write(addr, val);
 }
