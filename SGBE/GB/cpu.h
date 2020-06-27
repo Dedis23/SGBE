@@ -377,6 +377,11 @@ private:
 	void OPCode_E9();
 
 	void OPCode_18();
+
+	void OPCode_20();
+	void OPCode_28();
+	void OPCode_30();
+	void OPCode_38();
 };
 
 #endif

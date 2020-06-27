@@ -868,9 +868,54 @@ void CPU::JR_n()
 	PC.SetValue(pcVal);
 }
 
-void JR_cc_n()
-{
+/*
+	Operation:
+	JR cc, n
 
+	Description:
+	If following condition is true then add n to current
+	address and jump to it:
+	n = one byte signed immediate value
+	cc = NZ, Jump if Z flag is reset
+	cc = Z, Jump if Z flag is set
+	cc = NC, Jump if C flag is reset
+	cc = C, Jump if C flag is set
+*/
+void CPU::JR_cc_n(JumpConditions i_Condition)
+{
+	sbyte val = readNextSignedByte();
+	word pcVal = PC.GetValue();
+	switch (i_Condition)
+	{
+	case CPU::JumpConditions::NZ:
+		if (!Flag.GetN())
+		{
+			pcVal += val;
+			PC.SetValue(pcVal);
+		}
+		break;
+	case CPU::JumpConditions::Z:
+		if (Flag.GetZ())
+		{
+			pcVal += val;
+			PC.SetValue(pcVal);
+		}
+		break;
+	case CPU::JumpConditions::NC:
+		if (!Flag.GetC())
+		{
+			pcVal += val;
+			PC.SetValue(pcVal);
+		}
+		break;
+	case CPU::JumpConditions::C:
+		if (Flag.GetC())
+		{
+			pcVal += val;
+			PC.SetValue(pcVal);
+		}
+		break;
+	}
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
@@ -1147,6 +1192,11 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_E9, "JP (HL)", 4, 4 },
 
 	{ &OPCode_18, "JR n", 12, 12 },
+
+	{ &OPCode_20, "JR N, n", 8, 12 },
+	{ &OPCode_28, "JR Z, n", 8, 12 },
+	{ &OPCode_30, "JR NC, n", 8, 12 },
+	{ &OPCode_38, "JR C, n", 8, 12 },
 };
 
 void CPU::OPCode_06()
@@ -2380,4 +2430,24 @@ void CPU::OPCode_E9()
 void CPU::OPCode_18()
 {
 	JR_n();
+}
+
+void CPU::OPCode_20()
+{
+	JR_cc_n(JumpConditions::NZ);
+}
+
+void CPU::OPCode_28()
+{
+	JR_cc_n(JumpConditions::Z);
+}
+
+void CPU::OPCode_30()
+{
+	JR_cc_n(JumpConditions::NC);
+}
+
+void CPU::OPCode_38()
+{
+	JR_cc_n(JumpConditions::C);
 }
