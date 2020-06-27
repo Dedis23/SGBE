@@ -40,6 +40,7 @@ bool SGBE::Initialize(int argc, char* argv[])
 	LOG_CRITICAL(m_Interpreter == nullptr , return false, "Failed to allocate memory for the interpreter");
 	res = m_Interpreter->Initialize(s_ROMFileName);
 	LOG_CRITICAL(res == false, return false, "Failed to initialize the interpreter");
+	LOG_INFO(true, NOP, "SGBE initialized successfully." << endl);
 
 	return true;
 }

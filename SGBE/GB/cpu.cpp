@@ -62,6 +62,17 @@ void CPU::Step()
 	//OPCode_F1();	
 	//cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
 	//cout << endl;
+
+	//E.SetValue(0b11010000);
+	//m_MMU.Write(0xFFFE, 0xA);
+	//byte val = m_MMU.Read(0xFFFE);
+	//OPCode_CB_33();
+	//cout << "Value at 0xFFFE is: " << (int)m_MMU.Read(0xFFFE) << endl;
+	//HL.SetValue(0xFFFE);
+	//OPCode_CB_36();
+	//val = m_MMU.Read(0xFFFE);
+	//cout << "Value at 0xFFE is: " << (int)m_MMU.Read(0xFFFE) << endl;
+	//cout << endl;
 }
 
 void CPU::Reset()
@@ -1040,6 +1051,30 @@ void CPU::RETI()
 	RET();
 }
 
+/*
+	Operation:
+	SWAP
+
+	Description:
+	Swap upper & lower nibles of n
+	Z - Set if result is zero
+	N - Reset
+	H - Reset
+	C - Reset
+*/
+void CPU::SWAP(IRegister& i_DestRegister)
+{
+	byte val = static_cast<byte>(i_DestRegister.GetValue());
+	byte res = (val >> 4) | (val << 4);
+
+	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(false);
+	Flag.SetC(false);
+
+	i_DestRegister.SetValue(res);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_00, "NOP", 4, 4 },
@@ -1298,6 +1333,18 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &_NOP, "", 0, 0 }, /* FD is undefined in the gb cpu */
 	{ &OPCode_FE, "CP n", 8, 8 },
 	{ &OPCode_FF, "RST 38H", 16, 16 },
+};
+
+const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
+{
+	{ &OPCode_CB_37, "SWAP A", 8, 8 },
+	{ &OPCode_CB_30, "SWAP B", 8, 8 },
+	{ &OPCode_CB_31, "SWAP C", 8, 8 },
+	{ &OPCode_CB_32, "SWAP D", 8, 8 },
+	{ &OPCode_CB_33, "SWAP E", 8, 8 },
+	{ &OPCode_CB_34, "SWAP H", 8, 8 },
+	{ &OPCode_CB_35, "SWAP L", 8, 8 },
+	{ &OPCode_CB_36, "SWAP (HL)", 16, 16 },
 };
 
 void CPU::OPCode_06()
@@ -2658,4 +2705,49 @@ void CPU::OPCode_D8()
 void CPU::OPCode_D9()
 {
 	RETI();
+}
+
+void CPU::OPCode_CB_37()
+{
+	SWAP(A);
+}
+
+void CPU::OPCode_CB_30()
+{
+	SWAP(B);
+}
+
+void CPU::OPCode_CB_31()
+{
+	SWAP(C);
+}
+
+void CPU::OPCode_CB_32()
+{
+	SWAP(D);
+}
+
+void CPU::OPCode_CB_33()
+{
+	SWAP(E);
+}
+
+void CPU::OPCode_CB_34()
+{
+	SWAP(H);
+}
+
+void CPU::OPCode_CB_35()
+{
+	SWAP(L);
+}
+
+void CPU::OPCode_CB_36()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	ByteRegister temp(val);
+	SWAP(temp);
+	val = static_cast<byte>(temp.GetValue());
+	m_MMU.Write(addr, val);
 }

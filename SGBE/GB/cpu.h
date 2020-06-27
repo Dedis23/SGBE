@@ -63,6 +63,7 @@ private:
 		uint32_t ConditionalCycles; // some conditional jump instructions will require more cycles if the condition is met
 	};
 	static const std::vector<OPCodeData> m_OPCodeDataMap;
+	static const std::vector<OPCodeData> m_CB_OPCodeDataMap;
 
 	/* CPU Operations */
 	void LD_nn_n(IRegister& i_DestRegister);
@@ -111,6 +112,7 @@ private:
 	void RET();
 	void RET_cc(JumpConditions i_Condition);
 	void RETI();
+	void SWAP(IRegister& i_DestRegister);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -415,6 +417,15 @@ private:
 	void OPCode_D8();
 
 	void OPCode_D9();
+
+	void OPCode_CB_37();
+	void OPCode_CB_30();
+	void OPCode_CB_31();
+	void OPCode_CB_32();
+	void OPCode_CB_33();
+	void OPCode_CB_34();
+	void OPCode_CB_35();
+	void OPCode_CB_36();
 };
 
 #endif

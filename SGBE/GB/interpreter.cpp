@@ -22,6 +22,7 @@ bool Interpreter::Initialize(const std::string& i_RomFileName)
 
 	res = m_CartridgeHeader->VerifyChecksum();
 	LOG_ERROR(res == false, return true, "Failed to verify cartridge checksum");
+	LOG_INFO(true, NOP, "Cartridge checksum verified successfully.");
 
 	res = initializeCartridge();
 	LOG_CRITICAL(res == false, return false, "Failed to initialzie cartridge");
