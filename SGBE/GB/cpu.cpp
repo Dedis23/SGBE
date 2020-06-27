@@ -850,7 +850,7 @@ void CPU::JP_cc_nn(JumpConditions i_Condition)
 void CPU::JP_hl()
 {
 	word addr = HL.GetValue();
-	JP_nn(addr);
+	PC.SetValue(addr);
 }
 
 /*
