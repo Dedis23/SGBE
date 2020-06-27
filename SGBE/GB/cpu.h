@@ -50,10 +50,19 @@ private:
 		OPCodeFuntion Operation;
 		std::string Name;
 		uint32_t Cycles;
+		uint32_t ConditionalCycles; // some conditional jump instructions will require more cycles if the condition is met
 	};
 	static const std::vector<OPCodeData> m_OPCodeDataMap;
 
 	/* CPU Operations */
+	enum class JumpConditions
+	{
+		NZ,
+		Z,
+		NC,
+		C,
+	};
+
 	void LD_nn_n(IRegister& i_DestRegister);
 	void LD_n_nn(IRegister& i_DestRegister);
 	void LD_r1_r2(IRegister& i_DestRegister, const IRegister& i_SrcRegister);
@@ -89,6 +98,8 @@ private:
 	void RLA();
 	void RRCA();
 	void RRA();
+	void JP_nn(word i_AddressValue);
+	void JP_cc_nn(JumpConditions i_Condition, word i_AddressValue);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -352,6 +363,13 @@ private:
 	void OPCode_0F();
 
 	void OPCode_1F();
+
+	void OPCode_C3();
+
+	void OPCode_C2();
+	void OPCode_CA();
+	void OPCode_D2();
+	void OPCode_DA();
 };
 
 #endif
