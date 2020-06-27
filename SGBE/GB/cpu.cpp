@@ -8,7 +8,7 @@ void CPU::Step()
 	byte OPCode = readNextByte();
 	OPCodeData OPCodeData = m_OPCodeDataMap[OPCode];
 	LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << PC.GetValue() - 1);
-	OPCodeData.Operation;
+	(this->*OPCodeData.Operation)();
 
 	uint32_t cycles = 0x0;
 	if (m_IsCCJump)
@@ -1245,7 +1245,7 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_C8, "RET Z", 8, 20 },
 	{ &OPCode_C9, "RET", 16, 16 },
 	{ &OPCode_CA, "JP Z, nn", 12, 16 },
-	/* CB - Extended OPcodes */
+	{ &_NOP, "", 0, 0 }, // CB - Extended OPcodes
 	{ &OPCode_CC, "CALL Z, nn", 12, 24 },
 	{ &OPCode_CD, "CALL nn", 24, 24 },
 	{ &OPCode_CE, "ADC A, n", 8, 8 },
@@ -1253,7 +1253,7 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_D0, "RET NC", 8, 20 },
 	{ &OPCode_D1, "POP DE", 12, 12 },
 	{ &OPCode_D2, "JP NC, nn", 12, 16 },
-	/* D3 is undefined in Z80 */
+	{ &_NOP, "", 0, 0 }, /* D3 is undefined in the gb cpu */
 	{ &OPCode_D4, "CALL NC, nn", 12, 24 },
 	{ &OPCode_D5, "PUSH DE", 16, 16 },
 	{ &OPCode_D6, "SUB n", 8, 8 },
@@ -1261,32 +1261,32 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_D8, "RET C", 8, 20 },
 	{ &OPCode_D9, "RETI", 16, 16 },
 	{ &OPCode_DA, "JP C, nn", 12, 16 },
-	/* DB is undefined in Z80 */
+	{ &_NOP, "", 0, 0 }, /* DB is undefined in the gb cpu */
 	{ &OPCode_DC, "CALL C, nn", 12, 24 },
-	/* DD is undefined in Z80 */
+	{ &_NOP, "", 0, 0 }, /* DD is undefined in the gb cpu */
 	{ &OPCode_DE, "SBC A, n", 8, 8 },
 	{ &OPCode_DF, "RST 18H", 16, 16 },
 	{ &OPCode_E0, "LDH (n), A", 12, 12 },
 	{ &OPCode_E1, "POP HL", 12, 12 },
 	{ &OPCode_E2, "LD (C), A", 8, 8 },
-	/* E3 is undefined in Z80 */
-	/* E4 is undefined in Z80 */
+	{ &_NOP, "", 0, 0 }, /* E3 is undefined in the gb cpu */
+	{ &_NOP, "", 0, 0 }, /* E4 is undefined in the gb cpu */
 	{ &OPCode_E5, "PUSH HL", 16, 16 },
 	{ &OPCode_E6, "AND n", 8, 8 },
 	{ &OPCode_E7, "RST 20H", 16, 16 },
 	{ &OPCode_E8, "ADD SP, #", 16, 16 },
 	{ &OPCode_E9, "JP (HL)", 4, 4 },
 	{ &OPCode_EA, "LD (nn), A", 16, 16 },
-	/* EB is undefined in Z80 */
-	/* EC is undefined in Z80 */
-	/* ED is undefined in Z80 */
+	{ &_NOP, "", 0, 0 }, /* EB is undefined in the gb cpu */
+	{ &_NOP, "", 0, 0 }, /* EC is undefined in the gb cpu */
+	{ &_NOP, "", 0, 0 }, /* ED is undefined in the gb cpu */
 	{ &OPCode_EE, "XOR n", 8, 8 },
 	{ &OPCode_EF, "RST 28H", 16, 16 },
 	{ &OPCode_F0, "LDH A, (n)", 12, 12 },
 	{ &OPCode_F1, "POP AF", 12, 12 },
 	{ &OPCode_F2, "LD A, (C)", 8, 8 },
 	{ &OPCode_F3, "DI", 4, 4 },
-	/* F4 is undefined in Z80 */
+	{ &_NOP, "", 0, 0 }, /* F4 is undefined in the gb cpu */
 	{ &OPCode_F5, "PUSH AF", 16, 16 },
 	{ &OPCode_F6, "OR n", 8, 8 },
 	{ &OPCode_F7, "RST 30H", 16, 16 },
@@ -1294,6 +1294,8 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_F9, "LD SP, HL", 8, 8 },
 	{ &OPCode_FA, "LD A, (nn)", 16, 16 },
 	{ &OPCode_FB, "EI", 4, 4 },
+	{ &_NOP, "", 0, 0 }, /* FC is undefined in the gb cpu */
+	{ &_NOP, "", 0, 0 }, /* FD is undefined in the gb cpu */
 	{ &OPCode_FE, "CP n", 8, 8 },
 	{ &OPCode_FF, "RST 38H", 16, 16 },
 };
@@ -1762,17 +1764,17 @@ void CPU::OPCode_01()
 
 void CPU::OPCode_11()
 {
-	LD_nn_n(DE);
+	LD_n_nn(DE);
 }
 
 void CPU::OPCode_21()
 {
-	LD_nn_n(HL);
+	LD_n_nn(HL);
 }
 
 void CPU::OPCode_31()
 {
-	LD_nn_n(SP);
+	LD_n_nn(SP);
 }
 
 void CPU::OPCode_F9()
