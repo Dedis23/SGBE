@@ -838,7 +838,7 @@ void CPU::JP_cc_nn(JumpConditions i_Condition)
 	switch (i_Condition)
 	{
 	case CPU::JumpConditions::NZ:
-		if (!Flag.GetN())
+		if (!Flag.GetZ())
 		{
 			PC.SetValue(addr);
 		}
@@ -912,7 +912,7 @@ void CPU::JR_cc_n(JumpConditions i_Condition)
 	switch (i_Condition)
 	{
 	case CPU::JumpConditions::NZ:
-		if (!Flag.GetN())
+		if (!Flag.GetZ())
 		{
 			pcVal += val;
 			PC.SetValue(pcVal);
@@ -951,9 +951,58 @@ void CPU::JR_cc_n(JumpConditions i_Condition)
 */
 void CPU::CALL_nn()
 {
-	word addr = readNextWord(); // addr = nn, pc now is after CALL nn
-	word pcVal = PC.GetValue(); // storing PC in the stack
-	PC.SetValue(addr); // jumping to nn
+	word addr = readNextWord(); // addr = nn, pc now is post instruction CALL nn
+	word pcVal = PC.GetValue();
+	PUSH(pcVal); // store PC in the stack
+	PC.SetValue(addr); // jump to nn
+}
+
+/*
+	Operation:
+	CALL cc nn
+
+	Description:
+	Call address nn if following condition is true:
+	cc = NZ, Call if Z flag is reset
+	cc = Z, Call if Z flag is set
+	cc = NC, Call if C flag is reset
+	cc = C, Call if C flag is set
+*/
+void CPU::CALL_cc_nn(JumpConditions i_Condition)
+{
+	word addr = readNextWord(); // addr = nn, pc now is post instruction CALL cc nn
+	word pcVal = PC.GetValue();
+	switch (i_Condition)
+	{
+	case CPU::JumpConditions::NZ:
+		if (!Flag.GetZ())
+		{
+			PUSH(pcVal); // store PC in the stack
+			PC.SetValue(addr); // jump to nn
+		}
+		break;
+	case CPU::JumpConditions::Z:
+		if (Flag.GetZ())
+		{
+			PUSH(pcVal); // store PC in the stack
+			PC.SetValue(addr); // jump to nn
+		}
+		break;
+	case CPU::JumpConditions::NC:
+		if (!Flag.GetC())
+		{
+			PUSH(pcVal); // store PC in the stack
+			PC.SetValue(addr); // jump to nn
+		}
+		break;
+	case CPU::JumpConditions::C:
+		if (Flag.GetC())
+		{
+			PUSH(pcVal); // store PC in the stack
+			PC.SetValue(addr); // jump to nn
+		}
+		break;
+	}
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
@@ -1237,6 +1286,11 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_38, "JR C, n", 8, 12 },
 
 	{ &OPCode_CD, "CALL nn", 24, 24 },
+
+	{ &OPCode_C4, "CALL NZ, nn", 12, 24 },
+	{ &OPCode_CC, "CALL Z, nn", 12, 24 },
+	{ &OPCode_D4, "CALL NC, nn", 12, 24 },
+	{ &OPCode_DC, "CALL C, nn", 12, 24 },
 };
 
 void CPU::OPCode_06()
@@ -2507,4 +2561,24 @@ void CPU::OPCode_38()
 void CPU::OPCode_CD()
 {
 	CALL_nn();
+}
+
+void CPU::OPCode_C4()
+{
+	CALL_cc_nn(JumpConditions::NZ);
+}
+
+void CPU::OPCode_CC()
+{
+	CALL_cc_nn(JumpConditions::Z);
+}
+
+void CPU::OPCode_D4()
+{
+	CALL_cc_nn(JumpConditions::NC);
+}
+
+void CPU::OPCode_DC()
+{
+	CALL_cc_nn(JumpConditions::C);
 }
