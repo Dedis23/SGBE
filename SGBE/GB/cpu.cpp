@@ -29,27 +29,27 @@ void CPU::Step()
 	//cout << "Carry flag is: " << Flag.GetC();
 	//cout << endl;
 
-	AF.SetValue(111);
-	BC.SetValue(222);
-	DE.SetValue(333);
-	HL.SetValue(444);
-	SP.SetValue(0xFFFE);
-	cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
-	OPCode_F5();
-	OPCode_C5();
-	OPCode_D5();
-	OPCode_E5();
-	AF.SetValue(0x0);
-	BC.SetValue(0x0);
-	DE.SetValue(0x0);
-	HL.SetValue(0x0);
-	cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
-	OPCode_E1();
-	OPCode_D1();
-	OPCode_C1();
-	OPCode_F1();	
-	cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
-	cout << endl;
+	//AF.SetValue(111);
+	//BC.SetValue(222);
+	//DE.SetValue(333);
+	//HL.SetValue(444);
+	//SP.SetValue(0xFFFE);
+	//cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
+	//OPCode_F5();
+	//OPCode_C5();
+	//OPCode_D5();
+	//OPCode_E5();
+	//AF.SetValue(0x0);
+	//BC.SetValue(0x0);
+	//DE.SetValue(0x0);
+	//HL.SetValue(0x0);
+	//cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
+	//OPCode_E1();
+	//OPCode_D1();
+	//OPCode_C1();
+	//OPCode_F1();	
+	//cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
+	//cout << endl;
 }
 
 void CPU::Reset()
@@ -947,12 +947,13 @@ void CPU::JR_cc_n(JumpConditions i_Condition)
 	CALL nn
 
 	Description:
-	Push address of next instruction onto stack and then
-	jump to address nn.
+	Push address of next instruction onto stack and then jump to address nn
 */
 void CPU::CALL_nn()
 {
-
+	word addr = readNextWord(); // addr = nn, pc now is after CALL nn
+	word pcVal = PC.GetValue(); // storing PC in the stack
+	PC.SetValue(addr); // jumping to nn
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
