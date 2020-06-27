@@ -1020,7 +1020,11 @@ void CPU::RET()
 */
 void CPU::RET_cc(JumpConditions i_Condition)
 {
-
+	if (checkJumpCondition(i_Condition))
+	{
+		m_IsCCJump = true;
+		RET();
+	}
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
