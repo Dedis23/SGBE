@@ -1045,6 +1045,20 @@ void CPU::RST_n(word i_Value)
 	PC.SetValue(i_Value);
 }
 
+/*
+	Operation:
+	RET
+
+	Description:
+	Pop two bytes from stack & jump to that address
+*/
+void CPU::RET()
+{
+	word val = 0x0;
+	POP(val);
+	PC.SetValue(val);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8, 8 },
@@ -1340,6 +1354,8 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_EF, "RST 28H", 16, 16 },
 	{ &OPCode_F7, "RST 30H", 16, 16 },
 	{ &OPCode_FF, "RST 38H", 16, 16 },
+
+	{ &OPCode_C9, "RET", 16, 16 },
 };
 
 void CPU::OPCode_06()
@@ -2670,4 +2686,9 @@ void CPU::OPCode_F7()
 void CPU::OPCode_FF()
 {
 	RST_n(0x38);
+}
+
+void CPU::OPCode_C9()
+{
+	RET();
 }

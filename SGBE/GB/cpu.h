@@ -107,6 +107,7 @@ private:
 	void CALL_nn();
 	void CALL_cc_nn(JumpConditions i_Condition);
 	void RST_n(word i_Value);
+	void RET();
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -402,6 +403,8 @@ private:
 	void OPCode_EF();
 	void OPCode_F7();
 	void OPCode_FF();
+
+	void OPCode_C9();
 };
 
 #endif
