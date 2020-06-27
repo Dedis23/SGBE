@@ -69,8 +69,8 @@ private:
 	void LD_r1_r2(IRegister& i_DestRegister, const WordAddress& i_SrcMemory);
 	void LD_r1_r2(const WordAddress& i_DestMemory, const IRegister& i_SrcRegister);
 	void LD_HL_SP_n();
-	void PUSH(Pair8BRegisters& i_RegisterPair);
-	void POP(Pair8BRegisters& i_RegisterPair);
+	void PUSH(word i_Value);
+	void POP(word& i_Value);
 	void ADD(byte i_Value);
 	void ADD_HL(word i_Value);
 	void ADD_SP();
@@ -103,6 +103,7 @@ private:
 	void JP_hl();
 	void JR_n();
 	void JR_cc_n(JumpConditions i_Condition);
+	void CALL_nn();
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -382,6 +383,8 @@ private:
 	void OPCode_28();
 	void OPCode_30();
 	void OPCode_38();
+
+	void OPCode_CD();
 };
 
 #endif

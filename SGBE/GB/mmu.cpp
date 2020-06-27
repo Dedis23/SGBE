@@ -75,7 +75,81 @@ byte MMU::Read(const WordAddress& i_Address) const
 
 void MMU::Write(const WordAddress& i_Address, byte i_Value)
 {
-	// TODO
+    /* more info about the sections is in the h file */
+
+    if (i_Address.checkRangeBounds(0x00, 0xFF))
+    {
+        /* bootstrap */
+        if (!isBootstrapDone())
+        {
+            LOG_ERROR(true, return, "Attempting to write to address: 0x" << i_Address.GetValue() << " while bootstrap is not done!");
+        }
+    }
+
+    /* Cartridge ROM banks */
+    if (i_Address.checkRangeBounds(0x0000, 0x7FFF))
+    {
+        LOG_ERROR(true, return, "Attempting to write to address: 0x" << i_Address.GetValue() << " which is a cartridge ROM bank address!");
+    }
+
+    /* Video RAM */
+    if (i_Address.checkRangeBounds(0x8000, 0x9FFF))
+    {
+        m_VRAM[i_Address.GetValue() - 0x8000] = i_Value;
+        return;
+    }
+
+    /* External RAM (RAM on specific cartridge types which supported this) */
+    if (i_Address.checkRangeBounds(0xA000, 0xBFFF))
+    {
+        m_Cartridge.Write(i_Address.GetValue() - 0xA000, i_Value);
+        return;
+    }
+
+    /* Internal RAM */
+    if (i_Address.checkRangeBounds(0xC000, 0xDFFF))
+    {
+        m_RAM[i_Address.GetValue() - 0xC000] = i_Value;
+        return;
+    }
+
+    /* Shadow RAM */
+    if (i_Address.checkRangeBounds(0xE000, 0xFDFF))
+    {
+        /* writing in the Shadow RAM is like writing in the internal RAM banks. the shadow ram is an exact copy from the internal RAM which is 0x2000 addresses below */
+        /* i.e writing to 0xE000 is like writing to 0xC000, so 0x2000 is reduced and then 0xC000 (0xE000 total) to get to the place in the m_RAM array */
+        m_RAM[i_Address.GetValue() - 0xE000] = i_Value;
+        return;
+    }
+
+    /* OAM */
+    if (i_Address.checkRangeBounds(0xFE00, 0xFE9F))
+    {
+        m_OAM[i_Address.GetValue() - 0xFE00] = i_Value;
+        return;
+    }
+
+    /* Unusable area - shouldn't get here */
+    if (i_Address.checkRangeBounds(0xFEA0, 0xFEFF))
+    {
+        LOG_ERROR(true, return, "Attempting to write to an unusable memory address: 0x" << i_Address.GetValue());
+    }
+
+    /* Mapped IO */
+    if (i_Address.checkRangeBounds(0xFF00, 0xFF7F))
+    {
+        m_MappedIO[i_Address.GetValue() - 0xFF00] = i_Value;
+        return;
+    }
+
+    /* Zero Page RAM */
+    if (i_Address.checkRangeBounds(0xFF80, 0xFFFF))
+    {
+        m_ZeroPageRAM[i_Address.GetValue() - 0xFF80] = i_Value;
+        return;
+    }
+
+    LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address.GetValue());
 }
 
 bool MMU::isBootstrapDone() const

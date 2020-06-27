@@ -9,22 +9,46 @@ void CPU::Step()
 	OPCodeData OPCodeData = m_OPCodeDataMap[OPCode];
 	LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << PC.GetValue() - 1);
 	OPCodeData.Operation;
-	Flag.SetC(true);
-	A.SetValue(4);
-	cout << "Carry flag is: " << Flag.GetC();
-	cout << endl;
-	for (int i = 7; i >= 0; i--)
-	{
-		cout << A.GetBit(i);
-	}
-	cout << endl;
-	RRA();
-	for (int i = 7; i >= 0; i--)
-	{
-		cout << A.GetBit(i);
-	}
-	cout << endl;
-	cout << "Carry flag is: " << Flag.GetC();
+
+	// tests - to be deleted
+	//Flag.SetC(true);
+	//A.SetValue(4);
+	//cout << "Carry flag is: " << Flag.GetC();
+	//cout << endl;
+	//for (int i = 7; i >= 0; i--)
+	//{
+	//	cout << A.GetBit(i);
+	//}
+	//cout << endl;
+	//RRA();
+	//for (int i = 7; i >= 0; i--)
+	//{
+	//	cout << A.GetBit(i);
+	//}
+	//cout << endl;
+	//cout << "Carry flag is: " << Flag.GetC();
+	//cout << endl;
+
+	AF.SetValue(111);
+	BC.SetValue(222);
+	DE.SetValue(333);
+	HL.SetValue(444);
+	SP.SetValue(0xFFFE);
+	cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
+	OPCode_F5();
+	OPCode_C5();
+	OPCode_D5();
+	OPCode_E5();
+	AF.SetValue(0x0);
+	BC.SetValue(0x0);
+	DE.SetValue(0x0);
+	HL.SetValue(0x0);
+	cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
+	OPCode_E1();
+	OPCode_D1();
+	OPCode_C1();
+	OPCode_F1();	
+	cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
 	cout << endl;
 }
 
@@ -151,19 +175,19 @@ void CPU::LD_HL_SP_n()
 	PUSH nn
 
 	Description:
-	Push register pair nn onto stack
+	Push nn onto stack
 	Decrement Stack Pointer (SP) twice
 */
-void CPU::PUSH(Pair8BRegisters& i_RegisterPair)
+void CPU::PUSH(word i_Value)
 {
 	SP.Decrement();
 	word addr = SP.GetValue();
-	byte highVal = static_cast<byte>(i_RegisterPair.GetHighRegister().GetValue());
+	byte highVal = static_cast<byte>(i_Value >> 8);
 	m_MMU.Write(addr, highVal);
 
 	SP.Decrement();
 	addr = SP.GetValue();
-	byte lowVal = static_cast<byte>(i_RegisterPair.GetLowRegister().GetValue());
+	byte lowVal = static_cast<byte>(i_Value);
 	m_MMU.Write(addr, lowVal);
 }
 
@@ -172,20 +196,20 @@ void CPU::PUSH(Pair8BRegisters& i_RegisterPair)
 	POP nn
 
 	Description:
-	Pop two bytes off stack into register pair nn
+	Pop two bytes off stack into nn
 	Increment Stack Pointer (SP) twice
 */
-void CPU::POP(Pair8BRegisters& i_RegisterPair)
+void CPU::POP(word& i_Value)
 {
 	word addr = SP.GetValue();
 	byte lowVal = m_MMU.Read(addr);
-	i_RegisterPair.GetLowRegister().SetValue(lowVal);
 	SP.Increment();
 
 	addr = SP.GetValue();
 	byte highVal = m_MMU.Read(addr);
-	i_RegisterPair.GetHighRegister().SetValue(highVal);
 	SP.Increment();
+
+	i_Value = static_cast<word>(highVal << 8 | lowVal);
 }
 
 /*
@@ -918,6 +942,19 @@ void CPU::JR_cc_n(JumpConditions i_Condition)
 	}
 }
 
+/*
+	Operation:
+	CALL nn
+
+	Description:
+	Push address of next instruction onto stack and then
+	jump to address nn.
+*/
+void CPU::CALL_nn()
+{
+
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_06, "LD B, n", 8, 8 },
@@ -1197,6 +1234,8 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_28, "JR Z, n", 8, 12 },
 	{ &OPCode_30, "JR NC, n", 8, 12 },
 	{ &OPCode_38, "JR C, n", 8, 12 },
+
+	{ &OPCode_CD, "CALL nn", 24, 24 },
 };
 
 void CPU::OPCode_06()
@@ -1694,42 +1733,54 @@ void CPU::OPCode_08()
 
 void CPU::OPCode_F5()
 {
-	PUSH(AF);
+	word val = AF.GetValue();
+	PUSH(val);
 }
 
 void CPU::OPCode_C5()
 {
-	PUSH(BC);
+	word val = BC.GetValue();
+	PUSH(val);
 }
 
 void CPU::OPCode_D5()
 {
-	PUSH(DE);
+	word val = DE.GetValue();
+	PUSH(val);
 }
 
 void CPU::OPCode_E5()
 {
-	PUSH(HL);
+	word val = HL.GetValue();
+	PUSH(val);
 }
 
 void CPU::OPCode_F1()
 {
-	POP(AF);
+	word val = 0x0;
+	POP(val);
+	AF.SetValue(val);
 }
 
 void CPU::OPCode_C1()
 {
-	POP(BC);
+	word val = 0x0;
+	POP(val);
+	BC.SetValue(val);
 }
 
 void CPU::OPCode_D1()
 {
-	POP(DE);
+	word val = 0x0;
+	POP(val);
+	DE.SetValue(val);
 }
 
 void CPU::OPCode_E1()
 {
-	POP(HL);
+	word val = 0x0;
+	POP(val);
+	HL.SetValue(val);
 }
 
 void CPU::OPCode_87()
@@ -2450,4 +2501,9 @@ void CPU::OPCode_30()
 void CPU::OPCode_38()
 {
 	JR_cc_n(JumpConditions::C);
+}
+
+void CPU::OPCode_CD()
+{
+	CALL_nn();
 }
