@@ -1,6 +1,6 @@
 #include "cpu.h"
 
-CPU::CPU(MMU& i_MMU) : m_MMU(i_MMU), AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false) {}
+CPU::CPU(MMU& i_MMU) : m_MMU(i_MMU), AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false), m_IsCCJump(false) {}
 
 void CPU::Step()
 {
@@ -9,6 +9,18 @@ void CPU::Step()
 	OPCodeData OPCodeData = m_OPCodeDataMap[OPCode];
 	LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << PC.GetValue() - 1);
 	OPCodeData.Operation;
+
+	uint32_t cycles = 0x0;
+	if (m_IsCCJump)
+	{
+		cycles += OPCodeData.ConditionalCycles;
+	}
+	else
+	{
+		cycles += OPCodeData.Cycles;
+	}
+
+	m_IsCCJump = false; // restore is cc jump flag to false state before next step
 
 	// tests - to be deleted
 	//Flag.SetC(true);
@@ -67,6 +79,7 @@ void CPU::Reset()
 	Flag.SetValue(0);
 	m_IME = false;
 	m_HALT = false;
+	m_IsCCJump = false;
 }
 
 byte CPU::readNextByte()
@@ -841,24 +854,28 @@ void CPU::JP_cc_nn(JumpConditions i_Condition)
 		if (!Flag.GetZ())
 		{
 			PC.SetValue(addr);
+			m_IsCCJump = true;
 		}
 		break;
 	case CPU::JumpConditions::Z:
 		if (Flag.GetZ())
 		{
 			PC.SetValue(addr);
+			m_IsCCJump = true;
 		}
 		break;
 	case CPU::JumpConditions::NC:
 		if (!Flag.GetC())
 		{
 			PC.SetValue(addr);
+			m_IsCCJump = true;
 		}
 		break;
 	case CPU::JumpConditions::C:
 		if (Flag.GetC())
 		{
 			PC.SetValue(addr);
+			m_IsCCJump = true;
 		}
 		break;
 	}
@@ -916,6 +933,7 @@ void CPU::JR_cc_n(JumpConditions i_Condition)
 		{
 			pcVal += val;
 			PC.SetValue(pcVal);
+			m_IsCCJump = true;
 		}
 		break;
 	case CPU::JumpConditions::Z:
@@ -923,6 +941,7 @@ void CPU::JR_cc_n(JumpConditions i_Condition)
 		{
 			pcVal += val;
 			PC.SetValue(pcVal);
+			m_IsCCJump = true;
 		}
 		break;
 	case CPU::JumpConditions::NC:
@@ -930,6 +949,7 @@ void CPU::JR_cc_n(JumpConditions i_Condition)
 		{
 			pcVal += val;
 			PC.SetValue(pcVal);
+			m_IsCCJump = true;
 		}
 		break;
 	case CPU::JumpConditions::C:
@@ -937,6 +957,7 @@ void CPU::JR_cc_n(JumpConditions i_Condition)
 		{
 			pcVal += val;
 			PC.SetValue(pcVal);
+			m_IsCCJump = true;
 		}
 		break;
 	}
@@ -979,6 +1000,7 @@ void CPU::CALL_cc_nn(JumpConditions i_Condition)
 		{
 			PUSH(pcVal); // store PC in the stack
 			PC.SetValue(addr); // jump to nn
+			m_IsCCJump = true;
 		}
 		break;
 	case CPU::JumpConditions::Z:
@@ -986,6 +1008,7 @@ void CPU::CALL_cc_nn(JumpConditions i_Condition)
 		{
 			PUSH(pcVal); // store PC in the stack
 			PC.SetValue(addr); // jump to nn
+			m_IsCCJump = true;
 		}
 		break;
 	case CPU::JumpConditions::NC:
@@ -993,6 +1016,7 @@ void CPU::CALL_cc_nn(JumpConditions i_Condition)
 		{
 			PUSH(pcVal); // store PC in the stack
 			PC.SetValue(addr); // jump to nn
+			m_IsCCJump = true;
 		}
 		break;
 	case CPU::JumpConditions::C:
@@ -1000,6 +1024,7 @@ void CPU::CALL_cc_nn(JumpConditions i_Condition)
 		{
 			PUSH(pcVal); // store PC in the stack
 			PC.SetValue(addr); // jump to nn
+			m_IsCCJump = true;
 		}
 		break;
 	}

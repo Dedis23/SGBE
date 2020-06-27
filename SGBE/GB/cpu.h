@@ -38,6 +38,7 @@ private:
 	Pair8BRegisters AF, BC, DE, HL; // 2x8-bit registers paired together
 	bool m_IME; // Interrupt master enable
 	bool m_HALT; // is cpu halted boolean (wait until an interrupt occurs)
+	bool m_IsCCJump;
 
 	/* components */
 	MMU& m_MMU;
