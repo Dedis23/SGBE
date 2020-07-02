@@ -602,6 +602,42 @@ private:
 	void OPCode_CB_DC();
 	void OPCode_CB_DD();
 	void OPCode_CB_DE();
+
+	void OPCode_CB_E7();
+	void OPCode_CB_E0();
+	void OPCode_CB_E1();
+	void OPCode_CB_E2();
+	void OPCode_CB_E3();
+	void OPCode_CB_E4();
+	void OPCode_CB_E5();
+	void OPCode_CB_E6();
+
+	void OPCode_CB_EF();
+	void OPCode_CB_E8();
+	void OPCode_CB_E9();
+	void OPCode_CB_EA();
+	void OPCode_CB_EB();
+	void OPCode_CB_EC();
+	void OPCode_CB_ED();
+	void OPCode_CB_EE();
+
+	void OPCode_CB_F7();
+	void OPCode_CB_F0();
+	void OPCode_CB_F1();
+	void OPCode_CB_F2();
+	void OPCode_CB_F3();
+	void OPCode_CB_F4();
+	void OPCode_CB_F5();
+	void OPCode_CB_F6();
+
+	void OPCode_CB_FF();
+	void OPCode_CB_F8();
+	void OPCode_CB_F9();
+	void OPCode_CB_FA();
+	void OPCode_CB_FB();
+	void OPCode_CB_FC();
+	void OPCode_CB_FD();
+	void OPCode_CB_FE();
 };
 
 #endif
