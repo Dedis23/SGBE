@@ -1708,6 +1708,42 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_9C, "RES 3, H", 8, 8 },
 	{ &OPCode_CB_9D, "RES 3, L", 8, 8 },
 	{ &OPCode_CB_9E, "RES 3, (HL)", 16, 16 },
+
+	{ &OPCode_CB_A7, "RES 4, A", 8, 8 },
+	{ &OPCode_CB_A0, "RES 4, B", 8, 8 },
+	{ &OPCode_CB_A1, "RES 4, C", 8, 8 },
+	{ &OPCode_CB_A2, "RES 4, D", 8, 8 },
+	{ &OPCode_CB_A3, "RES 4, E", 8, 8 },
+	{ &OPCode_CB_A4, "RES 4, H", 8, 8 },
+	{ &OPCode_CB_A5, "RES 4, L", 8, 8 },
+	{ &OPCode_CB_A6, "RES 4, (HL)", 16, 16 },
+
+	{ &OPCode_CB_AF, "RES 5, A", 8, 8 },
+	{ &OPCode_CB_A8, "RES 5, B", 8, 8 },
+	{ &OPCode_CB_A9, "RES 5, C", 8, 8 },
+	{ &OPCode_CB_AA, "RES 5, D", 8, 8 },
+	{ &OPCode_CB_AB, "RES 5, E", 8, 8 },
+	{ &OPCode_CB_AC, "RES 5, H", 8, 8 },
+	{ &OPCode_CB_AD, "RES 5, L", 8, 8 },
+	{ &OPCode_CB_AE, "RES 5, (HL)", 16, 16 },
+
+	{ &OPCode_CB_B7, "RES 6, A", 8, 8 },
+	{ &OPCode_CB_B0, "RES 6, B", 8, 8 },
+	{ &OPCode_CB_B1, "RES 6, C", 8, 8 },
+	{ &OPCode_CB_B2, "RES 6, D", 8, 8 },
+	{ &OPCode_CB_B3, "RES 6, E", 8, 8 },
+	{ &OPCode_CB_B4, "RES 6, H", 8, 8 },
+	{ &OPCode_CB_B5, "RES 6, L", 8, 8 },
+	{ &OPCode_CB_B6, "RES 6, (HL)", 16, 16 },
+
+	{ &OPCode_CB_BF, "RES 7, A", 8, 8 },
+	{ &OPCode_CB_B8, "RES 7, B", 8, 8 },
+	{ &OPCode_CB_B9, "RES 7, C", 8, 8 },
+	{ &OPCode_CB_BA, "RES 7, D", 8, 8 },
+	{ &OPCode_CB_BB, "RES 7, E", 8, 8 },
+	{ &OPCode_CB_BC, "RES 7, H", 8, 8 },
+	{ &OPCode_CB_BD, "RES 7, L", 8, 8 },
+	{ &OPCode_CB_BE, "RES 7, (HL)", 16, 16 },
 };
 
 void CPU::OPCode_06()
@@ -4503,5 +4539,233 @@ void CPU::OPCode_CB_9E()
 	word addr = HL.GetValue();
 	byte val = m_MMU.Read(addr);
 	RES_b_r(3, val);
+	m_MMU.Write(addr, val);
+}
+
+void CPU::OPCode_CB_A7()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	RES_b_r(4, val);
+	A.SetValue(val);
+}
+
+void CPU::OPCode_CB_A0()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	RES_b_r(4, val);
+	B.SetValue(val);
+}
+
+void CPU::OPCode_CB_A1()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	RES_b_r(4, val);
+	C.SetValue(val);
+}
+
+void CPU::OPCode_CB_A2()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	RES_b_r(4, val);
+	D.SetValue(val);
+}
+
+void CPU::OPCode_CB_A3()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	RES_b_r(4, val);
+	E.SetValue(val);
+}
+
+void CPU::OPCode_CB_A4()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	RES_b_r(4, val);
+	H.SetValue(val);
+}
+
+void CPU::OPCode_CB_A5()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	RES_b_r(4, val);
+	L.SetValue(val);
+}
+
+void CPU::OPCode_CB_A6()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	RES_b_r(4, val);
+	m_MMU.Write(addr, val);
+}
+
+void CPU::OPCode_CB_AF()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	RES_b_r(5, val);
+	A.SetValue(val);
+}
+
+void CPU::OPCode_CB_A8()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	RES_b_r(5, val);
+	B.SetValue(val);
+}
+
+void CPU::OPCode_CB_A9()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	RES_b_r(5, val);
+	C.SetValue(val);
+}
+
+void CPU::OPCode_CB_AA()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	RES_b_r(5, val);
+	D.SetValue(val);
+}
+
+void CPU::OPCode_CB_AB()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	RES_b_r(5, val);
+	E.SetValue(val);
+}
+
+void CPU::OPCode_CB_AC()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	RES_b_r(5, val);
+	H.SetValue(val);
+}
+
+void CPU::OPCode_CB_AD()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	RES_b_r(5, val);
+	L.SetValue(val);
+}
+
+void CPU::OPCode_CB_AE()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	RES_b_r(5, val);
+	m_MMU.Write(addr, val);
+}
+
+void CPU::OPCode_CB_B7()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	RES_b_r(6, val);
+	A.SetValue(val);
+}
+
+void CPU::OPCode_CB_B0()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	RES_b_r(6, val);
+	B.SetValue(val);
+}
+
+void CPU::OPCode_CB_B1()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	RES_b_r(6, val);
+	C.SetValue(val);
+}
+
+void CPU::OPCode_CB_B2()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	RES_b_r(6, val);
+	D.SetValue(val);
+}
+
+void CPU::OPCode_CB_B3()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	RES_b_r(6, val);
+	E.SetValue(val);
+}
+
+void CPU::OPCode_CB_B4()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	RES_b_r(6, val);
+	H.SetValue(val);
+}
+
+void CPU::OPCode_CB_B5()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	RES_b_r(6, val);
+	L.SetValue(val);
+}
+
+void CPU::OPCode_CB_B6()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	RES_b_r(6, val);
+	m_MMU.Write(addr, val);
+}
+
+void CPU::OPCode_CB_BF()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	RES_b_r(7, val);
+	A.SetValue(val);
+}
+
+void CPU::OPCode_CB_B8()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	RES_b_r(7, val);
+	B.SetValue(val);
+}
+
+void CPU::OPCode_CB_B9()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	RES_b_r(7, val);
+	C.SetValue(val);
+}
+
+void CPU::OPCode_CB_BA()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	RES_b_r(7, val);
+	D.SetValue(val);
+}
+
+void CPU::OPCode_CB_BB()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	RES_b_r(7, val);
+	E.SetValue(val);
+}
+
+void CPU::OPCode_CB_BC()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	RES_b_r(7, val);
+	H.SetValue(val);
+}
+
+void CPU::OPCode_CB_BD()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	RES_b_r(7, val);
+	L.SetValue(val);
+}
+
+void CPU::OPCode_CB_BE()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	RES_b_r(7, val);
 	m_MMU.Write(addr, val);
 }
