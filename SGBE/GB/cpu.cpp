@@ -1128,6 +1128,29 @@ void CPU::SRA_n(IRegister& i_DestRegister)
 	Flag.SetH(false);
 }
 
+/*
+	Operation:
+	SRL n
+
+	Description:
+	Shift n right into Carry. MSB set to 0
+	Z - Set if result is zero
+	N - Reset
+	H - Reset
+	C - Contains old bit 0 data
+*/
+void CPU::SRL_n(IRegister& i_DestRegister)
+{
+	byte val = i_DestRegister.GetValue();
+	Flag.SetC(i_DestRegister.GetBit(0)); // set carry to be bit 0
+	val = val >> 1; // shift n right, MSB is 0 now
+	i_DestRegister.SetValue(val);
+
+	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
+	Flag.SetN(false);
+	Flag.SetH(false);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_00, "NOP", 4, 4 },
@@ -1453,6 +1476,14 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_2D, "SRA L", 8, 8 },
 	{ &OPCode_CB_2E, "SRA (HL)", 16, 16 },
 
+	{ &OPCode_CB_3F, "SRL A", 8, 8 },
+	{ &OPCode_CB_38, "SRL B", 8, 8 },
+	{ &OPCode_CB_39, "SRL C", 8, 8 },
+	{ &OPCode_CB_3A, "SRL D", 8, 8 },
+	{ &OPCode_CB_3B, "SRL E", 8, 8 },
+	{ &OPCode_CB_3C, "SRL H", 8, 8 },
+	{ &OPCode_CB_3D, "SRL L", 8, 8 },
+	{ &OPCode_CB_3E, "SRL (HL)", 16, 16 },
 };
 
 void CPU::OPCode_06()
@@ -3126,6 +3157,51 @@ void CPU::OPCode_CB_2E()
 	byte val = m_MMU.Read(addr);
 	ByteRegister temp(val);
 	SRA_n(temp);
+	val = static_cast<byte>(temp.GetValue());
+	m_MMU.Write(addr, val);
+}
+
+void CPU::OPCode_CB_3F()
+{
+	SRL_n(A);
+}
+
+void CPU::OPCode_CB_38()
+{
+	SRL_n(B);
+}
+
+void CPU::OPCode_CB_39()
+{
+	SRL_n(C);
+}
+
+void CPU::OPCode_CB_3A()
+{
+	SRL_n(D);
+}
+
+void CPU::OPCode_CB_3B()
+{
+	SRL_n(E);
+}
+
+void CPU::OPCode_CB_3C()
+{
+	SRL_n(H);
+}
+
+void CPU::OPCode_CB_3D()
+{
+	SRL_n(L);
+}
+
+void CPU::OPCode_CB_3E()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	ByteRegister temp(val);
+	SRL_n(temp);
 	val = static_cast<byte>(temp.GetValue());
 	m_MMU.Write(addr, val);
 }

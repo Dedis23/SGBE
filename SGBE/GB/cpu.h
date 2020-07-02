@@ -115,6 +115,7 @@ private:
 	void RR_n(IRegister& i_DestRegister);
 	void SLA_n(IRegister& i_DestRegister);
 	void SRA_n(IRegister& i_DestRegister);
+	void SRL_n(IRegister& i_DestRegister);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -482,6 +483,15 @@ private:
 	void OPCode_CB_2C();
 	void OPCode_CB_2D();
 	void OPCode_CB_2E();
+
+	void OPCode_CB_3F();
+	void OPCode_CB_38();
+	void OPCode_CB_39();
+	void OPCode_CB_3A();
+	void OPCode_CB_3B();
+	void OPCode_CB_3C();
+	void OPCode_CB_3D();
+	void OPCode_CB_3E();
 };
 
 #endif
