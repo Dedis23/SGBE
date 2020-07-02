@@ -683,7 +683,7 @@ void CPU::CCF()
 	SCF
 
 	Description:
-	Set Carry flag.
+	Set Carry flag
 	Z - Not affected
 	N - Reset
 	H - Reset
@@ -1151,6 +1151,26 @@ void CPU::SRL_n(IRegister& i_DestRegister)
 	Flag.SetH(false);
 }
 
+/*
+	Operation:
+	BIT b, r
+
+	Description:
+	Copies the complement of the contents of the specified bit in register r to the Z flag
+	Z - Complement of bit b in r
+	N - Reset
+	H - Set
+	C - Not affected
+*/
+void CPU::BIT_b_r(byte i_BitNumber, byte i_Value)
+{
+	bool res = ~(i_Value & (1 << i_BitNumber));
+	
+	Flag.SetZ(res);
+	Flag.SetN(false);
+	Flag.SetH(true);
+}
+
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 {
 	{ &OPCode_00, "NOP", 4, 4 },
@@ -1484,6 +1504,42 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_3C, "SRL H", 8, 8 },
 	{ &OPCode_CB_3D, "SRL L", 8, 8 },
 	{ &OPCode_CB_3E, "SRL (HL)", 16, 16 },
+
+	{ &OPCode_CB_47, "BIT 0, A", 8, 8 },
+	{ &OPCode_CB_40, "BIT 0, B", 8, 8 },
+	{ &OPCode_CB_41, "BIT 0, C", 8, 8 },
+	{ &OPCode_CB_42, "BIT 0, D", 8, 8 },
+	{ &OPCode_CB_43, "BIT 0, E", 8, 8 },
+	{ &OPCode_CB_44, "BIT 0, H", 8, 8 },
+	{ &OPCode_CB_45, "BIT 0, L", 8, 8 },
+	{ &OPCode_CB_46, "BIT 0, (HL)", 12, 12 },
+
+	{ &OPCode_CB_4F, "BIT 1, A", 8, 8 },
+	{ &OPCode_CB_48, "BIT 1, B", 8, 8 },
+	{ &OPCode_CB_49, "BIT 1, C", 8, 8 },
+	{ &OPCode_CB_4A, "BIT 1, D", 8, 8 },
+	{ &OPCode_CB_4B, "BIT 1, E", 8, 8 },
+	{ &OPCode_CB_4C, "BIT 1, H", 8, 8 },
+	{ &OPCode_CB_4D, "BIT 1, L", 8, 8 },
+	{ &OPCode_CB_4E, "BIT 1, (HL)", 12, 12 },
+
+	{ &OPCode_CB_57, "BIT 2, A", 8, 8 },
+	{ &OPCode_CB_50, "BIT 2, B", 8, 8 },
+	{ &OPCode_CB_51, "BIT 2, C", 8, 8 },
+	{ &OPCode_CB_52, "BIT 2, D", 8, 8 },
+	{ &OPCode_CB_53, "BIT 2, E", 8, 8 },
+	{ &OPCode_CB_54, "BIT 2, H", 8, 8 },
+	{ &OPCode_CB_55, "BIT 2, L", 8, 8 },
+	{ &OPCode_CB_56, "BIT 2, (HL)", 12, 12 },
+
+	{ &OPCode_CB_5F, "BIT 3, A", 8, 8 },
+	{ &OPCode_CB_58, "BIT 3, B", 8, 8 },
+	{ &OPCode_CB_59, "BIT 3, C", 8, 8 },
+	{ &OPCode_CB_5A, "BIT 3, D", 8, 8 },
+	{ &OPCode_CB_5B, "BIT 3, E", 8, 8 },
+	{ &OPCode_CB_5C, "BIT 3, H", 8, 8 },
+	{ &OPCode_CB_5D, "BIT 3, L", 8, 8 },
+	{ &OPCode_CB_5E, "BIT 3, (HL)", 12, 12 },
 };
 
 void CPU::OPCode_06()
@@ -3204,4 +3260,200 @@ void CPU::OPCode_CB_3E()
 	SRL_n(temp);
 	val = static_cast<byte>(temp.GetValue());
 	m_MMU.Write(addr, val);
+}
+
+void CPU::OPCode_CB_47()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	BIT_b_r(0, val);
+}
+
+void CPU::OPCode_CB_40()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	BIT_b_r(0, val);
+}
+
+void CPU::OPCode_CB_41()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	BIT_b_r(0, val);
+}
+
+void CPU::OPCode_CB_42()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	BIT_b_r(0, val);
+}
+
+void CPU::OPCode_CB_43()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	BIT_b_r(0, val);
+}
+
+void CPU::OPCode_CB_44()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	BIT_b_r(0, val);
+}
+
+void CPU::OPCode_CB_45()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	BIT_b_r(0, val);
+}
+
+void CPU::OPCode_CB_46()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	BIT_b_r(0, val);
+}
+
+void CPU::OPCode_CB_4F()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	BIT_b_r(1, val);
+}
+
+void CPU::OPCode_CB_48()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	BIT_b_r(1, val);
+}
+
+void CPU::OPCode_CB_49()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	BIT_b_r(1, val);
+}
+
+void CPU::OPCode_CB_4A()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	BIT_b_r(1, val);
+}
+
+void CPU::OPCode_CB_4B()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	BIT_b_r(1, val);
+}
+
+void CPU::OPCode_CB_4C()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	BIT_b_r(1, val);
+}
+
+void CPU::OPCode_CB_4D()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	BIT_b_r(1, val);
+}
+
+void CPU::OPCode_CB_4E()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	BIT_b_r(1, val);
+}
+
+void CPU::OPCode_CB_57()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	BIT_b_r(2, val);
+}
+
+void CPU::OPCode_CB_50()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	BIT_b_r(2, val);
+}
+
+void CPU::OPCode_CB_51()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	BIT_b_r(2, val);
+}
+
+void CPU::OPCode_CB_52()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	BIT_b_r(2, val);
+}
+
+void CPU::OPCode_CB_53()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	BIT_b_r(2, val);
+}
+
+void CPU::OPCode_CB_54()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	BIT_b_r(2, val);
+}
+
+void CPU::OPCode_CB_55()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	BIT_b_r(2, val);
+}
+
+void CPU::OPCode_CB_56()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	BIT_b_r(2, val);
+}
+
+void CPU::OPCode_CB_5F()
+{
+	byte val = static_cast<byte>(A.GetValue());
+	BIT_b_r(3, val);
+}
+
+void CPU::OPCode_CB_58()
+{
+	byte val = static_cast<byte>(B.GetValue());
+	BIT_b_r(3, val);
+}
+
+void CPU::OPCode_CB_59()
+{
+	byte val = static_cast<byte>(C.GetValue());
+	BIT_b_r(3, val);
+}
+
+void CPU::OPCode_CB_5A()
+{
+	byte val = static_cast<byte>(D.GetValue());
+	BIT_b_r(3, val);
+}
+
+void CPU::OPCode_CB_5B()
+{
+	byte val = static_cast<byte>(E.GetValue());
+	BIT_b_r(3, val);
+}
+
+void CPU::OPCode_CB_5C()
+{
+	byte val = static_cast<byte>(H.GetValue());
+	BIT_b_r(3, val);
+}
+
+void CPU::OPCode_CB_5D()
+{
+	byte val = static_cast<byte>(L.GetValue());
+	BIT_b_r(3, val);
+}
+
+void CPU::OPCode_CB_5E()
+{
+	word addr = HL.GetValue();
+	byte val = m_MMU.Read(addr);
+	BIT_b_r(3, val);
 }
