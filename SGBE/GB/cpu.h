@@ -118,6 +118,7 @@ private:
 	void SRL_n(IRegister& i_DestRegister);
 	void BIT_b_r(byte i_BitNumber, byte i_Value);
 	void SET_b_r(byte i_BitNumber, byte& o_Value);
+	void RES_b_r(byte i_BitNumber, byte& o_Value);
 
 	/* OPCode Functions */
 	void OPCode_06();
@@ -638,6 +639,42 @@ private:
 	void OPCode_CB_FC();
 	void OPCode_CB_FD();
 	void OPCode_CB_FE();
+
+	void OPCode_CB_87();
+	void OPCode_CB_80();
+	void OPCode_CB_81();
+	void OPCode_CB_82();
+	void OPCode_CB_83();
+	void OPCode_CB_84();
+	void OPCode_CB_85();
+	void OPCode_CB_86();
+
+	void OPCode_CB_8F();
+	void OPCode_CB_88();
+	void OPCode_CB_89();
+	void OPCode_CB_8A();
+	void OPCode_CB_8B();
+	void OPCode_CB_8C();
+	void OPCode_CB_8D();
+	void OPCode_CB_8E();
+
+	void OPCode_CB_97();
+	void OPCode_CB_90();
+	void OPCode_CB_91();
+	void OPCode_CB_92();
+	void OPCode_CB_93();
+	void OPCode_CB_94();
+	void OPCode_CB_95();
+	void OPCode_CB_96();
+
+	void OPCode_CB_9F();
+	void OPCode_CB_98();
+	void OPCode_CB_99();
+	void OPCode_CB_9A();
+	void OPCode_CB_9B();
+	void OPCode_CB_9C();
+	void OPCode_CB_9D();
+	void OPCode_CB_9E();
 };
 
 #endif
