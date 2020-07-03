@@ -6,10 +6,24 @@ void CPU::Step()
 {
 	// read next instruction opcode
 	byte OPCode = readNextByte();
-	OPCodeData OPCodeData = m_OPCodeDataMap[OPCode];
+
+	// get opcode data from the opcode data map or the CB opcode data map
+	OPCodeData OPCodeData;
+	if (OPCode == 0xCB)
+	{
+		byte cbOPCode = readNextByte();
+		OPCodeData = m_CB_OPCodeDataMap[cbOPCode];
+	}
+	else
+	{
+		OPCodeData = m_OPCodeDataMap[OPCode];
+	}
+
+	// execute
 	LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << PC.GetValue() - 1);
 	(this->*OPCodeData.Operation)();
 
+	// calculate cycles
 	uint32_t cycles = 0x0;
 	if (m_IsCCJump)
 	{
@@ -21,58 +35,6 @@ void CPU::Step()
 	}
 
 	m_IsCCJump = false; // restore is cc jump flag to false state before next step
-
-	// tests - to be deleted
-	//Flag.SetC(true);
-	//A.SetValue(4);
-	//cout << "Carry flag is: " << Flag.GetC();
-	//cout << endl;
-	//for (int i = 7; i >= 0; i--)
-	//{
-	//	cout << A.GetBit(i);
-	//}
-	//cout << endl;
-	//RRA();
-	//for (int i = 7; i >= 0; i--)
-	//{
-	//	cout << A.GetBit(i);
-	//}
-	//cout << endl;
-	//cout << "Carry flag is: " << Flag.GetC();
-	//cout << endl;
-
-	//AF.SetValue(111);
-	//BC.SetValue(222);
-	//DE.SetValue(333);
-	//HL.SetValue(444);
-	//SP.SetValue(0xFFFE);
-	//cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
-	//OPCode_F5();
-	//OPCode_C5();
-	//OPCode_D5();
-	//OPCode_E5();
-	//AF.SetValue(0x0);
-	//BC.SetValue(0x0);
-	//DE.SetValue(0x0);
-	//HL.SetValue(0x0);
-	//cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
-	//OPCode_E1();
-	//OPCode_D1();
-	//OPCode_C1();
-	//OPCode_F1();	
-	//cout << "AF: " << AF.GetValue() << " BC: " << BC.GetValue() << " DE: " << DE.GetValue() << " HL: " << HL.GetValue() << endl;
-	//cout << endl;
-
-	//E.SetValue(0b11010000);
-	//m_MMU.Write(0xFFFE, 0xA);
-	//byte val = m_MMU.Read(0xFFFE);
-	//OPCode_CB_33();
-	//cout << "Value at 0xFFFE is: " << (int)m_MMU.Read(0xFFFE) << endl;
-	//HL.SetValue(0xFFFE);
-	//OPCode_CB_36();
-	//val = m_MMU.Read(0xFFFE);
-	//cout << "Value at 0xFFE is: " << (int)m_MMU.Read(0xFFFE) << endl;
-	//cout << endl;
 }
 
 void CPU::Reset()
@@ -1457,16 +1419,6 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 
 const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 {
-	{ &OPCode_CB_37, "SWAP A", 8, 8 },
-	{ &OPCode_CB_30, "SWAP B", 8, 8 },
-	{ &OPCode_CB_31, "SWAP C", 8, 8 },
-	{ &OPCode_CB_32, "SWAP D", 8, 8 },
-	{ &OPCode_CB_33, "SWAP E", 8, 8 },
-	{ &OPCode_CB_34, "SWAP H", 8, 8 },
-	{ &OPCode_CB_35, "SWAP L", 8, 8 },
-	{ &OPCode_CB_36, "SWAP (HL)", 16, 16 },
-
-	{ &OPCode_CB_07, "RLC A", 8, 8 },
 	{ &OPCode_CB_00, "RLC B", 8, 8 },
 	{ &OPCode_CB_01, "RLC C", 8, 8 },
 	{ &OPCode_CB_02, "RLC D", 8, 8 },
@@ -1474,17 +1426,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_04, "RLC H", 8, 8 },
 	{ &OPCode_CB_05, "RLC L", 8, 8 },
 	{ &OPCode_CB_06, "RLC (HL)", 16, 16 },
-
-	{ &OPCode_CB_17, "RL A", 8, 8 },
-	{ &OPCode_CB_10, "RL B", 8, 8 },
-	{ &OPCode_CB_11, "RL C", 8, 8 },
-	{ &OPCode_CB_12, "RL D", 8, 8 },
-	{ &OPCode_CB_13, "RL E", 8, 8 },
-	{ &OPCode_CB_14, "RL H", 8, 8 },
-	{ &OPCode_CB_15, "RL L", 8, 8 },
-	{ &OPCode_CB_16, "RL (HL)", 16, 16 },
-
-	{ &OPCode_CB_0F, "RRC A", 8, 8 },
+	{ &OPCode_CB_07, "RLC A", 8, 8 },
 	{ &OPCode_CB_08, "RRC B", 8, 8 },
 	{ &OPCode_CB_09, "RRC C", 8, 8 },
 	{ &OPCode_CB_0A, "RRC D", 8, 8 },
@@ -1492,8 +1434,15 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_0C, "RRC H", 8, 8 },
 	{ &OPCode_CB_0D, "RRC L", 8, 8 },
 	{ &OPCode_CB_0E, "RRC (HL)", 16, 16 },
-
-	{ &OPCode_CB_1F, "RR A", 8, 8 },
+	{ &OPCode_CB_0F, "RRC A", 8, 8 },
+	{ &OPCode_CB_10, "RL B", 8, 8 },
+	{ &OPCode_CB_11, "RL C", 8, 8 },
+	{ &OPCode_CB_12, "RL D", 8, 8 },
+	{ &OPCode_CB_13, "RL E", 8, 8 },
+	{ &OPCode_CB_14, "RL H", 8, 8 },
+	{ &OPCode_CB_15, "RL L", 8, 8 },
+	{ &OPCode_CB_16, "RL (HL)", 16, 16 },
+	{ &OPCode_CB_17, "RL A", 8, 8 },
 	{ &OPCode_CB_18, "RR B", 8, 8 },
 	{ &OPCode_CB_19, "RR C", 8, 8 },
 	{ &OPCode_CB_1A, "RR D", 8, 8 },
@@ -1501,8 +1450,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_1C, "RR H", 8, 8 },
 	{ &OPCode_CB_1D, "RR L", 8, 8 },
 	{ &OPCode_CB_1E, "RR (HL)", 16, 16 },
-
-	{ &OPCode_CB_27, "SLA A", 8, 8 },
+	{ &OPCode_CB_1F, "RR A", 8, 8 },
 	{ &OPCode_CB_20, "SLA B", 8, 8 },
 	{ &OPCode_CB_21, "SLA C", 8, 8 },
 	{ &OPCode_CB_22, "SLA D", 8, 8 },
@@ -1510,8 +1458,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_24, "SLA H", 8, 8 },
 	{ &OPCode_CB_25, "SLA L", 8, 8 },
 	{ &OPCode_CB_26, "SLA (HL)", 16, 16 },
-
-	{ &OPCode_CB_2F, "SRA A", 8, 8 },
+	{ &OPCode_CB_27, "SLA A", 8, 8 },
 	{ &OPCode_CB_28, "SRA B", 8, 8 },
 	{ &OPCode_CB_29, "SRA C", 8, 8 },
 	{ &OPCode_CB_2A, "SRA D", 8, 8 },
@@ -1519,8 +1466,15 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_2C, "SRA H", 8, 8 },
 	{ &OPCode_CB_2D, "SRA L", 8, 8 },
 	{ &OPCode_CB_2E, "SRA (HL)", 16, 16 },
-
-	{ &OPCode_CB_3F, "SRL A", 8, 8 },
+	{ &OPCode_CB_2F, "SRA A", 8, 8 },
+	{ &OPCode_CB_30, "SWAP B", 8, 8 },
+	{ &OPCode_CB_31, "SWAP C", 8, 8 },
+	{ &OPCode_CB_32, "SWAP D", 8, 8 },
+	{ &OPCode_CB_33, "SWAP E", 8, 8 },
+	{ &OPCode_CB_34, "SWAP H", 8, 8 },
+	{ &OPCode_CB_35, "SWAP L", 8, 8 },
+	{ &OPCode_CB_36, "SWAP (HL)", 16, 16 },
+	{ &OPCode_CB_37, "SWAP A", 8, 8 },
 	{ &OPCode_CB_38, "SRL B", 8, 8 },
 	{ &OPCode_CB_39, "SRL C", 8, 8 },
 	{ &OPCode_CB_3A, "SRL D", 8, 8 },
@@ -1528,8 +1482,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_3C, "SRL H", 8, 8 },
 	{ &OPCode_CB_3D, "SRL L", 8, 8 },
 	{ &OPCode_CB_3E, "SRL (HL)", 16, 16 },
-
-	{ &OPCode_CB_47, "BIT 0, A", 8, 8 },
+	{ &OPCode_CB_3F, "SRL A", 8, 8 },
 	{ &OPCode_CB_40, "BIT 0, B", 8, 8 },
 	{ &OPCode_CB_41, "BIT 0, C", 8, 8 },
 	{ &OPCode_CB_42, "BIT 0, D", 8, 8 },
@@ -1537,8 +1490,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_44, "BIT 0, H", 8, 8 },
 	{ &OPCode_CB_45, "BIT 0, L", 8, 8 },
 	{ &OPCode_CB_46, "BIT 0, (HL)", 12, 12 },
-
-	{ &OPCode_CB_4F, "BIT 1, A", 8, 8 },
+	{ &OPCode_CB_47, "BIT 0, A", 8, 8 },
 	{ &OPCode_CB_48, "BIT 1, B", 8, 8 },
 	{ &OPCode_CB_49, "BIT 1, C", 8, 8 },
 	{ &OPCode_CB_4A, "BIT 1, D", 8, 8 },
@@ -1546,8 +1498,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_4C, "BIT 1, H", 8, 8 },
 	{ &OPCode_CB_4D, "BIT 1, L", 8, 8 },
 	{ &OPCode_CB_4E, "BIT 1, (HL)", 12, 12 },
-
-	{ &OPCode_CB_57, "BIT 2, A", 8, 8 },
+	{ &OPCode_CB_4F, "BIT 1, A", 8, 8 },
 	{ &OPCode_CB_50, "BIT 2, B", 8, 8 },
 	{ &OPCode_CB_51, "BIT 2, C", 8, 8 },
 	{ &OPCode_CB_52, "BIT 2, D", 8, 8 },
@@ -1555,8 +1506,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_54, "BIT 2, H", 8, 8 },
 	{ &OPCode_CB_55, "BIT 2, L", 8, 8 },
 	{ &OPCode_CB_56, "BIT 2, (HL)", 12, 12 },
-
-	{ &OPCode_CB_5F, "BIT 3, A", 8, 8 },
+	{ &OPCode_CB_57, "BIT 2, A", 8, 8 },
 	{ &OPCode_CB_58, "BIT 3, B", 8, 8 },
 	{ &OPCode_CB_59, "BIT 3, C", 8, 8 },
 	{ &OPCode_CB_5A, "BIT 3, D", 8, 8 },
@@ -1564,8 +1514,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_5C, "BIT 3, H", 8, 8 },
 	{ &OPCode_CB_5D, "BIT 3, L", 8, 8 },
 	{ &OPCode_CB_5E, "BIT 3, (HL)", 12, 12 },
-
-	{ &OPCode_CB_67, "BIT 4, A", 8, 8 },
+	{ &OPCode_CB_5F, "BIT 3, A", 8, 8 },
 	{ &OPCode_CB_60, "BIT 4, B", 8, 8 },
 	{ &OPCode_CB_61, "BIT 4, C", 8, 8 },
 	{ &OPCode_CB_62, "BIT 4, D", 8, 8 },
@@ -1573,8 +1522,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_64, "BIT 4, H", 8, 8 },
 	{ &OPCode_CB_65, "BIT 4, L", 8, 8 },
 	{ &OPCode_CB_66, "BIT 4, (HL)", 12, 12 },
-
-	{ &OPCode_CB_6F, "BIT 5, A", 8, 8 },
+	{ &OPCode_CB_67, "BIT 4, A", 8, 8 },
 	{ &OPCode_CB_68, "BIT 5, B", 8, 8 },
 	{ &OPCode_CB_69, "BIT 5, C", 8, 8 },
 	{ &OPCode_CB_6A, "BIT 5, D", 8, 8 },
@@ -1582,8 +1530,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_6C, "BIT 5, H", 8, 8 },
 	{ &OPCode_CB_6D, "BIT 5, L", 8, 8 },
 	{ &OPCode_CB_6E, "BIT 5, (HL)", 12, 12 },
-
-	{ &OPCode_CB_77, "BIT 6, A", 8, 8 },
+	{ &OPCode_CB_6F, "BIT 5, A", 8, 8 },
 	{ &OPCode_CB_70, "BIT 6, B", 8, 8 },
 	{ &OPCode_CB_71, "BIT 6, C", 8, 8 },
 	{ &OPCode_CB_72, "BIT 6, D", 8, 8 },
@@ -1591,8 +1538,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_74, "BIT 6, H", 8, 8 },
 	{ &OPCode_CB_75, "BIT 6, L", 8, 8 },
 	{ &OPCode_CB_76, "BIT 6, (HL)", 12, 12 },
-
-	{ &OPCode_CB_7F, "BIT 7, A", 8, 8 },
+	{ &OPCode_CB_77, "BIT 6, A", 8, 8 },
 	{ &OPCode_CB_78, "BIT 7, B", 8, 8 },
 	{ &OPCode_CB_79, "BIT 7, C", 8, 8 },
 	{ &OPCode_CB_7A, "BIT 7, D", 8, 8 },
@@ -1600,80 +1546,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_7C, "BIT 7, H", 8, 8 },
 	{ &OPCode_CB_7D, "BIT 7, L", 8, 8 },
 	{ &OPCode_CB_7E, "BIT 7, (HL)", 12, 12 },
-
-	{ &OPCode_CB_C7, "SET 0, A", 8, 8 },
-	{ &OPCode_CB_C0, "SET 0, B", 8, 8 },
-	{ &OPCode_CB_C1, "SET 0, C", 8, 8 },
-	{ &OPCode_CB_C2, "SET 0, D", 8, 8 },
-	{ &OPCode_CB_C3, "SET 0, E", 8, 8 },
-	{ &OPCode_CB_C4, "SET 0, H", 8, 8 },
-	{ &OPCode_CB_C5, "SET 0, L", 8, 8 },
-	{ &OPCode_CB_C6, "SET 0, (HL)", 16, 16 },
-
-	{ &OPCode_CB_CF, "SET 1, A", 8, 8 },
-	{ &OPCode_CB_C8, "SET 1, B", 8, 8 },
-	{ &OPCode_CB_C9, "SET 1, C", 8, 8 },
-	{ &OPCode_CB_CA, "SET 1, D", 8, 8 },
-	{ &OPCode_CB_CB, "SET 1, E", 8, 8 },
-	{ &OPCode_CB_CC, "SET 1, H", 8, 8 },
-	{ &OPCode_CB_CD, "SET 1, L", 8, 8 },
-	{ &OPCode_CB_CE, "SET 1, (HL)", 16, 16 },
-
-	{ &OPCode_CB_D7, "SET 2, A", 8, 8 },
-	{ &OPCode_CB_D0, "SET 2, B", 8, 8 },
-	{ &OPCode_CB_D1, "SET 2, C", 8, 8 },
-	{ &OPCode_CB_D2, "SET 2, D", 8, 8 },
-	{ &OPCode_CB_D3, "SET 2, E", 8, 8 },
-	{ &OPCode_CB_D4, "SET 2, H", 8, 8 },
-	{ &OPCode_CB_D5, "SET 2, L", 8, 8 },
-	{ &OPCode_CB_D6, "SET 2, (HL)", 16, 16 },
-
-	{ &OPCode_CB_DF, "SET 3, A", 8, 8 },
-	{ &OPCode_CB_D8, "SET 3, B", 8, 8 },
-	{ &OPCode_CB_D9, "SET 3, C", 8, 8 },
-	{ &OPCode_CB_DA, "SET 3, D", 8, 8 },
-	{ &OPCode_CB_DB, "SET 3, E", 8, 8 },
-	{ &OPCode_CB_DC, "SET 3, H", 8, 8 },
-	{ &OPCode_CB_DD, "SET 3, L", 8, 8 },
-	{ &OPCode_CB_DE, "SET 3, (HL)", 16, 16 },
-
-	{ &OPCode_CB_E7, "SET 4, A", 8, 8 },
-	{ &OPCode_CB_E0, "SET 4, B", 8, 8 },
-	{ &OPCode_CB_E1, "SET 4, C", 8, 8 },
-	{ &OPCode_CB_E2, "SET 4, D", 8, 8 },
-	{ &OPCode_CB_E3, "SET 4, E", 8, 8 },
-	{ &OPCode_CB_E4, "SET 4, H", 8, 8 },
-	{ &OPCode_CB_E5, "SET 4, L", 8, 8 },
-	{ &OPCode_CB_E6, "SET 4, (HL)", 16, 16 },
-
-	{ &OPCode_CB_EF, "SET 5, A", 8, 8 },
-	{ &OPCode_CB_E8, "SET 5, B", 8, 8 },
-	{ &OPCode_CB_E9, "SET 5, C", 8, 8 },
-	{ &OPCode_CB_EA, "SET 5, D", 8, 8 },
-	{ &OPCode_CB_EB, "SET 5, E", 8, 8 },
-	{ &OPCode_CB_EC, "SET 5, H", 8, 8 },
-	{ &OPCode_CB_ED, "SET 5, L", 8, 8 },
-	{ &OPCode_CB_EE, "SET 5, (HL)", 16, 16 },
-
-	{ &OPCode_CB_F7, "SET 6, A", 8, 8 },
-	{ &OPCode_CB_F0, "SET 6, B", 8, 8 },
-	{ &OPCode_CB_F1, "SET 6, C", 8, 8 },
-	{ &OPCode_CB_F2, "SET 6, D", 8, 8 },
-	{ &OPCode_CB_F3, "SET 6, E", 8, 8 },
-	{ &OPCode_CB_F4, "SET 6, H", 8, 8 },
-	{ &OPCode_CB_F5, "SET 6, L", 8, 8 },
-	{ &OPCode_CB_F6, "SET 6, (HL)", 16, 16 },
-
-	{ &OPCode_CB_FF, "SET 7, A", 8, 8 },
-	{ &OPCode_CB_F8, "SET 7, B", 8, 8 },
-	{ &OPCode_CB_F9, "SET 7, C", 8, 8 },
-	{ &OPCode_CB_FA, "SET 7, D", 8, 8 },
-	{ &OPCode_CB_FB, "SET 7, E", 8, 8 },
-	{ &OPCode_CB_FC, "SET 7, H", 8, 8 },
-	{ &OPCode_CB_FD, "SET 7, L", 8, 8 },
-	{ &OPCode_CB_FE, "SET 7, (HL)", 16, 16 },
-
-	{ &OPCode_CB_87, "RES 0, A", 8, 8 },
+	{ &OPCode_CB_7F, "BIT 7, A", 8, 8 },
 	{ &OPCode_CB_80, "RES 0, B", 8, 8 },
 	{ &OPCode_CB_81, "RES 0, C", 8, 8 },
 	{ &OPCode_CB_82, "RES 0, D", 8, 8 },
@@ -1681,8 +1554,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_84, "RES 0, H", 8, 8 },
 	{ &OPCode_CB_85, "RES 0, L", 8, 8 },
 	{ &OPCode_CB_86, "RES 0, (HL)", 16, 16 },
-
-	{ &OPCode_CB_8F, "RES 1, A", 8, 8 },
+	{ &OPCode_CB_87, "RES 0, A", 8, 8 },
 	{ &OPCode_CB_88, "RES 1, B", 8, 8 },
 	{ &OPCode_CB_89, "RES 1, C", 8, 8 },
 	{ &OPCode_CB_8A, "RES 1, D", 8, 8 },
@@ -1690,8 +1562,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_8C, "RES 1, H", 8, 8 },
 	{ &OPCode_CB_8D, "RES 1, L", 8, 8 },
 	{ &OPCode_CB_8E, "RES 1, (HL)", 16, 16 },
-
-	{ &OPCode_CB_97, "RES 2, A", 8, 8 },
+	{ &OPCode_CB_8F, "RES 1, A", 8, 8 },
 	{ &OPCode_CB_90, "RES 2, B", 8, 8 },
 	{ &OPCode_CB_91, "RES 2, C", 8, 8 },
 	{ &OPCode_CB_92, "RES 2, D", 8, 8 },
@@ -1699,8 +1570,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_94, "RES 2, H", 8, 8 },
 	{ &OPCode_CB_95, "RES 2, L", 8, 8 },
 	{ &OPCode_CB_96, "RES 2, (HL)", 16, 16 },
-
-	{ &OPCode_CB_9F, "RES 3, A", 8, 8 },
+	{ &OPCode_CB_97, "RES 2, A", 8, 8 },
 	{ &OPCode_CB_98, "RES 3, B", 8, 8 },
 	{ &OPCode_CB_99, "RES 3, C", 8, 8 },
 	{ &OPCode_CB_9A, "RES 3, D", 8, 8 },
@@ -1708,8 +1578,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_9C, "RES 3, H", 8, 8 },
 	{ &OPCode_CB_9D, "RES 3, L", 8, 8 },
 	{ &OPCode_CB_9E, "RES 3, (HL)", 16, 16 },
-
-	{ &OPCode_CB_A7, "RES 4, A", 8, 8 },
+	{ &OPCode_CB_9F, "RES 3, A", 8, 8 },
 	{ &OPCode_CB_A0, "RES 4, B", 8, 8 },
 	{ &OPCode_CB_A1, "RES 4, C", 8, 8 },
 	{ &OPCode_CB_A2, "RES 4, D", 8, 8 },
@@ -1717,8 +1586,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_A4, "RES 4, H", 8, 8 },
 	{ &OPCode_CB_A5, "RES 4, L", 8, 8 },
 	{ &OPCode_CB_A6, "RES 4, (HL)", 16, 16 },
-
-	{ &OPCode_CB_AF, "RES 5, A", 8, 8 },
+	{ &OPCode_CB_A7, "RES 4, A", 8, 8 },
 	{ &OPCode_CB_A8, "RES 5, B", 8, 8 },
 	{ &OPCode_CB_A9, "RES 5, C", 8, 8 },
 	{ &OPCode_CB_AA, "RES 5, D", 8, 8 },
@@ -1726,8 +1594,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_AC, "RES 5, H", 8, 8 },
 	{ &OPCode_CB_AD, "RES 5, L", 8, 8 },
 	{ &OPCode_CB_AE, "RES 5, (HL)", 16, 16 },
-
-	{ &OPCode_CB_B7, "RES 6, A", 8, 8 },
+	{ &OPCode_CB_AF, "RES 5, A", 8, 8 },
 	{ &OPCode_CB_B0, "RES 6, B", 8, 8 },
 	{ &OPCode_CB_B1, "RES 6, C", 8, 8 },
 	{ &OPCode_CB_B2, "RES 6, D", 8, 8 },
@@ -1735,8 +1602,7 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_B4, "RES 6, H", 8, 8 },
 	{ &OPCode_CB_B5, "RES 6, L", 8, 8 },
 	{ &OPCode_CB_B6, "RES 6, (HL)", 16, 16 },
-
-	{ &OPCode_CB_BF, "RES 7, A", 8, 8 },
+	{ &OPCode_CB_B7, "RES 6, A", 8, 8 },
 	{ &OPCode_CB_B8, "RES 7, B", 8, 8 },
 	{ &OPCode_CB_B9, "RES 7, C", 8, 8 },
 	{ &OPCode_CB_BA, "RES 7, D", 8, 8 },
@@ -1744,6 +1610,71 @@ const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
 	{ &OPCode_CB_BC, "RES 7, H", 8, 8 },
 	{ &OPCode_CB_BD, "RES 7, L", 8, 8 },
 	{ &OPCode_CB_BE, "RES 7, (HL)", 16, 16 },
+	{ &OPCode_CB_BF, "RES 7, A", 8, 8 },
+	{ &OPCode_CB_C0, "SET 0, B", 8, 8 },
+	{ &OPCode_CB_C1, "SET 0, C", 8, 8 },
+	{ &OPCode_CB_C2, "SET 0, D", 8, 8 },
+	{ &OPCode_CB_C3, "SET 0, E", 8, 8 },
+	{ &OPCode_CB_C4, "SET 0, H", 8, 8 },
+	{ &OPCode_CB_C5, "SET 0, L", 8, 8 },
+	{ &OPCode_CB_C6, "SET 0, (HL)", 16, 16 },
+	{ &OPCode_CB_C7, "SET 0, A", 8, 8 },
+	{ &OPCode_CB_C8, "SET 1, B", 8, 8 },
+	{ &OPCode_CB_C9, "SET 1, C", 8, 8 },
+	{ &OPCode_CB_CA, "SET 1, D", 8, 8 },
+	{ &OPCode_CB_CB, "SET 1, E", 8, 8 },
+	{ &OPCode_CB_CC, "SET 1, H", 8, 8 },
+	{ &OPCode_CB_CD, "SET 1, L", 8, 8 },
+	{ &OPCode_CB_CE, "SET 1, (HL)", 16, 16 },
+	{ &OPCode_CB_CF, "SET 1, A", 8, 8 },
+	{ &OPCode_CB_D0, "SET 2, B", 8, 8 },
+	{ &OPCode_CB_D1, "SET 2, C", 8, 8 },
+	{ &OPCode_CB_D2, "SET 2, D", 8, 8 },
+	{ &OPCode_CB_D3, "SET 2, E", 8, 8 },
+	{ &OPCode_CB_D4, "SET 2, H", 8, 8 },
+	{ &OPCode_CB_D5, "SET 2, L", 8, 8 },
+	{ &OPCode_CB_D6, "SET 2, (HL)", 16, 16 },
+	{ &OPCode_CB_D7, "SET 2, A", 8, 8 },
+	{ &OPCode_CB_D8, "SET 3, B", 8, 8 },
+	{ &OPCode_CB_D9, "SET 3, C", 8, 8 },
+	{ &OPCode_CB_DA, "SET 3, D", 8, 8 },
+	{ &OPCode_CB_DB, "SET 3, E", 8, 8 },
+	{ &OPCode_CB_DC, "SET 3, H", 8, 8 },
+	{ &OPCode_CB_DD, "SET 3, L", 8, 8 },
+	{ &OPCode_CB_DE, "SET 3, (HL)", 16, 16 },
+	{ &OPCode_CB_DF, "SET 3, A", 8, 8 },
+	{ &OPCode_CB_E0, "SET 4, B", 8, 8 },
+	{ &OPCode_CB_E1, "SET 4, C", 8, 8 },
+	{ &OPCode_CB_E2, "SET 4, D", 8, 8 },
+	{ &OPCode_CB_E3, "SET 4, E", 8, 8 },
+	{ &OPCode_CB_E4, "SET 4, H", 8, 8 },
+	{ &OPCode_CB_E5, "SET 4, L", 8, 8 },
+	{ &OPCode_CB_E6, "SET 4, (HL)", 16, 16 },
+	{ &OPCode_CB_E7, "SET 4, A", 8, 8 },
+	{ &OPCode_CB_E8, "SET 5, B", 8, 8 },
+	{ &OPCode_CB_E9, "SET 5, C", 8, 8 },
+	{ &OPCode_CB_EA, "SET 5, D", 8, 8 },
+	{ &OPCode_CB_EB, "SET 5, E", 8, 8 },
+	{ &OPCode_CB_EC, "SET 5, H", 8, 8 },
+	{ &OPCode_CB_ED, "SET 5, L", 8, 8 },
+	{ &OPCode_CB_EE, "SET 5, (HL)", 16, 16 },
+	{ &OPCode_CB_EF, "SET 5, A", 8, 8 },
+	{ &OPCode_CB_F0, "SET 6, B", 8, 8 },
+	{ &OPCode_CB_F1, "SET 6, C", 8, 8 },
+	{ &OPCode_CB_F2, "SET 6, D", 8, 8 },
+	{ &OPCode_CB_F3, "SET 6, E", 8, 8 },
+	{ &OPCode_CB_F4, "SET 6, H", 8, 8 },
+	{ &OPCode_CB_F5, "SET 6, L", 8, 8 },
+	{ &OPCode_CB_F6, "SET 6, (HL)", 16, 16 },
+	{ &OPCode_CB_F7, "SET 6, A", 8, 8 },
+	{ &OPCode_CB_F8, "SET 7, B", 8, 8 },
+	{ &OPCode_CB_F9, "SET 7, C", 8, 8 },
+	{ &OPCode_CB_FA, "SET 7, D", 8, 8 },
+	{ &OPCode_CB_FB, "SET 7, E", 8, 8 },
+	{ &OPCode_CB_FC, "SET 7, H", 8, 8 },
+	{ &OPCode_CB_FD, "SET 7, L", 8, 8 },
+	{ &OPCode_CB_FE, "SET 7, (HL)", 16, 16 },
+	{ &OPCode_CB_FF, "SET 7, A", 8, 8 },
 };
 
 void CPU::OPCode_06()
