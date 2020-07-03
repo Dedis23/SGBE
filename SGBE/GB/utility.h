@@ -17,6 +17,20 @@ const uint32_t GAMEBOY_SCREEN_HEIGHT = 144;
 
 #define NOP
 
+namespace bitwise {
+
+	inline bool GetBit(byte i_BitNumber, byte i_Value)
+	{
+		return (i_Value & (1 << i_BitNumber)) > 0 ? true : false;
+	}
+
+	inline void SetBit(byte i_BitNumber, bool i_IsRaise, byte& o_Value)
+	{
+		if (i_IsRaise)	o_Value |= 1 << (i_BitNumber);
+		else o_Value &= ~(1 << (i_BitNumber));
+	}
+}
+
 class WordAddress
 {
 public:

@@ -22,6 +22,12 @@ void CPU::Step()
 	// execute
 	LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << PC.GetValue() - 1);
 	(this->*OPCodeData.Operation)();
+	cout << std::hex << HL.GetValue() << endl;
+	if (HL.GetValue() == 0x8000)
+	{
+		cout << "STOP!";
+		cout << endl;
+	}
 
 	// calculate cycles
 	uint32_t cycles = 0x0;
@@ -1126,7 +1132,7 @@ void CPU::SRL_n(IRegister& i_DestRegister)
 */
 void CPU::BIT_b_r(byte i_BitNumber, byte i_Value)
 {
-	bool res = ~(i_Value & (1 << i_BitNumber));
+	bool res = !bitwise::GetBit(i_BitNumber, i_Value);
 	
 	Flag.SetZ(res);
 	Flag.SetN(false);
@@ -1142,7 +1148,7 @@ void CPU::BIT_b_r(byte i_BitNumber, byte i_Value)
 */
 void CPU::SET_b_r(byte i_BitNumber, byte& o_Value)
 {
-	o_Value = o_Value | (1 << i_BitNumber);
+	bitwise::SetBit(i_BitNumber, true, o_Value);
 }
 
 /*
@@ -1154,7 +1160,7 @@ void CPU::SET_b_r(byte i_BitNumber, byte& o_Value)
 */
 void CPU::RES_b_r(byte i_BitNumber, byte& o_Value)
 {
-	o_Value = o_Value & ~(1 << i_BitNumber);
+	bitwise::SetBit(i_BitNumber, false, o_Value);
 }
 
 const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
@@ -1191,7 +1197,7 @@ const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
 	{ &OPCode_1D, "DEC E", 4, 4 },
 	{ &OPCode_1E, "LD E, n", 8, 8 },
 	{ &OPCode_1F, "RRA", 4, 4 },
-	{ &OPCode_20, "JR N, n", 8, 12 },
+	{ &OPCode_20, "JR NZ, n", 8, 12 },
 	{ &OPCode_21, "LD HL, nn", 12, 12 },
 	{ &OPCode_22, "LDI (HL), A", 8, 8 },
 	{ &OPCode_23, "INC HL", 8, 8 },
