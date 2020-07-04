@@ -22,10 +22,15 @@ void CPU::Step()
 	// execute
 	if (PC.GetValue() - 1 >= 0xC && PC.GetValue() - 1 <= 0x1C)
 	{
-		dumpRegisters();
 		LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
+		(this->*OPCodeData.Operation)();
+		dumpRegisters();
+		cout << endl;
 	}
-	(this->*OPCodeData.Operation)();
+	else
+	{
+		(this->*OPCodeData.Operation)();
+	}
 
 	// calculate cycles
 	uint32_t cycles = 0x0;
@@ -4711,7 +4716,6 @@ void CPU::OPCode_CB_BE()
 /* simple registers dump into stdout */
 void CPU::dumpRegisters()
 {
-	A.SetValue(128);
 	cout << "Registers dump:" << endl;
 	cout << "A: 0x" << std::hex << std::setfill('0') << std::setw(2) << A.GetValue() << " | F: 0x" << std::hex << std::setfill('0') << std::setw(2) << F.GetValue() << " | AF: 0x" << std::hex << std::setfill('0') << std::setw(4) << AF.GetValue() << endl;
 	cout << "B: 0x" << std::hex << std::setfill('0') << std::setw(2) << B.GetValue() << " | C: 0x" << std::hex << std::setfill('0') << std::setw(2) << C.GetValue() << " | BC: 0x" << std::hex << std::setfill('0') << std::setw(4) << BC.GetValue() << endl;

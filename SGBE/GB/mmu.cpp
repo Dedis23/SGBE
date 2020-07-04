@@ -75,6 +75,7 @@ byte MMU::Read(const WordAddress& i_Address) const
 
 void MMU::Write(const WordAddress& i_Address, byte i_Value)
 {
+    bool wroteToAddr = false;
     /* more info about the sections is in the h file */
 
     if (i_Address.checkRangeBounds(0x00, 0xFF))
@@ -96,21 +97,21 @@ void MMU::Write(const WordAddress& i_Address, byte i_Value)
     if (i_Address.checkRangeBounds(0x8000, 0x9FFF))
     {
         m_VRAM[i_Address.GetValue() - 0x8000] = i_Value;
-        return;
+        wroteToAddr = true;
     }
 
     /* External RAM (RAM on specific cartridge types which supported this) */
     if (i_Address.checkRangeBounds(0xA000, 0xBFFF))
     {
         m_Cartridge.Write(i_Address.GetValue() - 0xA000, i_Value);
-        return;
+        wroteToAddr = true;
     }
 
     /* Internal RAM */
     if (i_Address.checkRangeBounds(0xC000, 0xDFFF))
     {
         m_RAM[i_Address.GetValue() - 0xC000] = i_Value;
-        return;
+        wroteToAddr = true;
     }
 
     /* Shadow RAM */
@@ -119,14 +120,14 @@ void MMU::Write(const WordAddress& i_Address, byte i_Value)
         /* writing in the Shadow RAM is like writing in the internal RAM banks. the shadow ram is an exact copy from the internal RAM which is 0x2000 addresses below */
         /* i.e writing to 0xE000 is like writing to 0xC000, so 0x2000 is reduced and then 0xC000 (0xE000 total) to get to the place in the m_RAM array */
         m_RAM[i_Address.GetValue() - 0xE000] = i_Value;
-        return;
+        wroteToAddr = true;
     }
 
     /* OAM */
     if (i_Address.checkRangeBounds(0xFE00, 0xFE9F))
     {
         m_OAM[i_Address.GetValue() - 0xFE00] = i_Value;
-        return;
+        wroteToAddr = true;
     }
 
     /* Unusable area - shouldn't get here */
@@ -139,16 +140,17 @@ void MMU::Write(const WordAddress& i_Address, byte i_Value)
     if (i_Address.checkRangeBounds(0xFF00, 0xFF7F))
     {
         m_MappedIO[i_Address.GetValue() - 0xFF00] = i_Value;
-        return;
+        wroteToAddr = true;
     }
 
     /* Zero Page RAM */
     if (i_Address.checkRangeBounds(0xFF80, 0xFFFF))
     {
         m_ZeroPageRAM[i_Address.GetValue() - 0xFF80] = i_Value;
-        return;
+        wroteToAddr = true;
     }
 
+    LOG_INFO(wroteToAddr == true, return, "Wrote 0x" << std::hex << static_cast<word>(i_Value) << " in address 0x" << std::hex << i_Address.GetValue());
     LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address.GetValue());
 }
 
