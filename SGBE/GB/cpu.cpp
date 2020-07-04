@@ -20,14 +20,12 @@ void CPU::Step()
 	}
 
 	// execute
-	LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << PC.GetValue() - 1);
-	(this->*OPCodeData.Operation)();
-	cout << std::hex << HL.GetValue() << endl;
-	if (HL.GetValue() == 0x8000)
+	if (PC.GetValue() - 1 >= 0xC && PC.GetValue() - 1 <= 0x1C)
 	{
-		cout << "STOP!";
-		cout << endl;
+		dumpRegisters();
+		LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
 	}
+	(this->*OPCodeData.Operation)();
 
 	// calculate cycles
 	uint32_t cycles = 0x0;
@@ -4705,4 +4703,22 @@ void CPU::OPCode_CB_BE()
 	byte val = m_MMU.Read(addr);
 	RES_b_r(7, val);
 	m_MMU.Write(addr, val);
+}
+
+
+/* debug methods */
+
+/* simple registers dump into stdout */
+void CPU::dumpRegisters()
+{
+	A.SetValue(128);
+	cout << "Registers dump:" << endl;
+	cout << "A: 0x" << std::hex << std::setfill('0') << std::setw(2) << A.GetValue() << " | F: 0x" << std::hex << std::setfill('0') << std::setw(2) << F.GetValue() << " | AF: 0x" << std::hex << std::setfill('0') << std::setw(4) << AF.GetValue() << endl;
+	cout << "B: 0x" << std::hex << std::setfill('0') << std::setw(2) << B.GetValue() << " | C: 0x" << std::hex << std::setfill('0') << std::setw(2) << C.GetValue() << " | BC: 0x" << std::hex << std::setfill('0') << std::setw(4) << BC.GetValue() << endl;
+	cout << "D: 0x" << std::hex << std::setfill('0') << std::setw(2) << D.GetValue() << " | E: 0x" << std::hex << std::setfill('0') << std::setw(2) << E.GetValue() << " | DE: 0x" << std::hex << std::setfill('0') << std::setw(4) << DE.GetValue() << endl;
+	cout << "H: 0x" << std::hex << std::setfill('0') << std::setw(2) << H.GetValue() << " | L: 0x" << std::hex << std::setfill('0') << std::setw(2) << L.GetValue() << " | HL: 0x" << std::hex << std::setfill('0') << std::setw(4) << HL.GetValue() << endl;
+	cout << "------------------------------" << endl;
+	cout << "PC: 0x" << std::hex << std::setfill('0') << std::setw(4) << PC.GetValue() << " | SP: 0x" << std::hex << std::setfill('0') << std::setw(4) << SP.GetValue() << " | (HL): 0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<word>(m_MMU.Read(HL.GetValue())) << endl;
+	cout << "------------------------------" << endl;
+	cout << "Z: " << Flag.GetZ() << " | N: " << Flag.GetN() << " | H: " << Flag.GetH() << " | C: " << Flag.GetC() << endl;
 }

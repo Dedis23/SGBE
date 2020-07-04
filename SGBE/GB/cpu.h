@@ -7,7 +7,7 @@
 /* Most of the information were take from gameboy cpu manual pdf: *
  * http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf				  */
 
-#include <unordered_map>
+#include <iomanip>
 #include "utility.h"
 #include "mmu.h"
 
@@ -711,6 +711,11 @@ private:
 	void OPCode_CB_BC();
 	void OPCode_CB_BD();
 	void OPCode_CB_BE();
+
+private:
+
+	/* debug methods */
+	void dumpRegisters();
 };
 
 #endif
