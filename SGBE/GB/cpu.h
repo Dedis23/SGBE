@@ -22,7 +22,7 @@ public:
 	CPU(const CPU&) = delete;
 	CPU& operator=(const CPU&) = delete;
 
-	void Step();
+	void Step(uint32_t& o_Cycles);
 	void Reset();
 
 private:

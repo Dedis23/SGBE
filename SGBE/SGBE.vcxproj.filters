@@ -54,6 +54,9 @@
     <ClCompile Include="GB\cartridge.cpp">
       <Filter>GB</Filter>
     </ClCompile>
+    <ClCompile Include="GB\gpu.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Generic\logger.h">
@@ -84,6 +87,9 @@
       <Filter>GB</Filter>
     </ClInclude>
     <ClInclude Include="GB\cartridge.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\gpu.h">
       <Filter>GB</Filter>
     </ClInclude>
   </ItemGroup>

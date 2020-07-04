@@ -10,6 +10,7 @@
 #include "cpu.h"
 #include "cartridge.h"
 #include "mmu.h"
+#include "gpu.h"
 
 #ifndef __INTERPRETER_H
 #define __INTERPRETER_H
@@ -34,6 +35,7 @@ private:
 	vector<byte> m_ROMData;
 	CPU* m_CPU;
 	MMU* m_MMU;
+	GPU* m_GPU;
 	CartridgeHeader* m_CartridgeHeader;
 	Cartridge* m_Cartridge;
 };

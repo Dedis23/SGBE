@@ -2,7 +2,7 @@
 
 CPU::CPU(MMU& i_MMU) : m_MMU(i_MMU), AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false), m_IsCCJump(false) {}
 
-void CPU::Step()
+void CPU::Step(uint32_t& o_Cycles)
 {
 	// read next instruction opcode
 	byte OPCode = readNextByte();
@@ -20,7 +20,7 @@ void CPU::Step()
 	}
 
 	// execute
-	if (PC.GetValue() - 1 >= 0xC && PC.GetValue() - 1 <= 0x1C)
+	if (PC.GetValue() - 1 >= 0xC && PC.GetValue() - 1 <= 0x1C) // this is for debug only, to be removed
 	{
 		LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
 		(this->*OPCodeData.Operation)();
@@ -33,14 +33,13 @@ void CPU::Step()
 	}
 
 	// calculate cycles
-	uint32_t cycles = 0x0;
 	if (m_IsCCJump)
 	{
-		cycles += OPCodeData.ConditionalCycles;
+		o_Cycles += OPCodeData.ConditionalCycles;
 	}
 	else
 	{
-		cycles += OPCodeData.Cycles;
+		o_Cycles += OPCodeData.Cycles;
 	}
 
 	m_IsCCJump = false; // restore is cc jump flag to false state before next step
