@@ -50,18 +50,18 @@ void SGBE::Run()
 	if (m_Interpreter->IsCartridgeLoadedSuccessfully())
 	{
 		// main loop here
-		//m_Interpreter->Run();
+		m_Interpreter->Run();
 
-		SDL_SetRenderDrawColor(m_Renderer, 128, 70, 150, 255);
-		//SDL_RenderDrawPoint(m_Renderer, GAMEBOY_SCREEN_WIDTH / 2, GAMEBOY_SCREEN_HEIGHT / 2); //Renders on middle of screen.
-
-		for (int i = 0; i < GAMEBOY_SCREEN_WIDTH; i++)
-		{
-			SDL_RenderDrawPoint(m_Renderer, i, i);
-		}
-		SDL_RenderPresent(m_Renderer);
-
-		// todo remove this
+		//SDL_SetRenderDrawColor(m_Renderer, 128, 70, 150, 255);
+		////SDL_RenderDrawPoint(m_Renderer, GAMEBOY_SCREEN_WIDTH / 2, GAMEBOY_SCREEN_HEIGHT / 2); //Renders on middle of screen.
+		//
+		//for (int i = 0; i < GAMEBOY_SCREEN_WIDTH; i++)
+		//{
+		//	SDL_RenderDrawPoint(m_Renderer, i, i);
+		//}
+		//SDL_RenderPresent(m_Renderer);
+		//
+		//// todo remove this
 		SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
 		SDL_RenderClear(m_Renderer);
 		SDL_RenderPresent(m_Renderer);

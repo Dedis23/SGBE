@@ -41,9 +41,9 @@ private:
 
 private:
 	/* registers */
-	ByteRegister A, B, C, D, E, F, H, L; // 8 bit-registers, accumulator and general purpose ones
+	ByteRegister A, B, C, D, E, H, L; // 8 bit-registers, accumulator, general purpose ones
+	FlagRegister F; // flag register, high nible is affected: Z N H C 0 0 0 0
 	WordRegister SP, PC; // 16-bit registers, stack pointer and program counter
-	FlagRegister Flag; // flag register, high nible is affected: Z N H C 0 0 0 0
 	Pair8BRegisters AF, BC, DE, HL; // 2x8-bit registers paired together
 	bool m_IME; // Interrupt master enable
 	bool m_HALT; // is cpu halted boolean (wait until an interrupt occurs)

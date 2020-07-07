@@ -57,7 +57,7 @@ void CPU::Reset()
 	L.SetValue(0);
 	SP.SetValue(0);
 	PC.SetValue(0);
-	Flag.SetValue(0);
+	F.SetValue(0);
 	m_IME = false;
 	m_HALT = false;
 	m_IsCCJump = false;
@@ -89,25 +89,25 @@ bool CPU::checkJumpCondition(JumpConditions i_Condition)
 	switch (i_Condition)
 	{
 	case CPU::JumpConditions::NZ:
-		if (!Flag.GetZ())
+		if (!F.GetZ())
 		{
 			return true;
 		}
 		break;
 	case CPU::JumpConditions::Z:
-		if (Flag.GetZ())
+		if (F.GetZ())
 		{
 			return true;
 		}
 		break;
 	case CPU::JumpConditions::NC:
-		if (!Flag.GetC())
+		if (!F.GetC())
 		{
 			return true;
 		}
 		break;
 	case CPU::JumpConditions::C:
-		if (Flag.GetC())
+		if (F.GetC())
 		{
 			return true;
 		}
@@ -188,10 +188,10 @@ void CPU::LD_HL_SP_n()
 	word res = SP.GetValue() + n;
 
 	word flagCheck = SP.GetValue() ^ n ^ (SP.GetValue() + n);
-	Flag.SetZ(false);
-	Flag.SetN(false);
-	(flagCheck & 0x10) == 0x10 ? Flag.SetH(true) : Flag.SetH(false);
-	(flagCheck & 0x100) == 0x100 ? Flag.SetC(true) : Flag.SetC(false);
+	F.SetZ(false);
+	F.SetN(false);
+	(flagCheck & 0x10) == 0x10 ? F.SetH(true) : F.SetH(false);
+	(flagCheck & 0x100) == 0x100 ? F.SetC(true) : F.SetC(false);
 
 	HL.SetValue(res);
 }
@@ -255,10 +255,10 @@ void CPU::ADD(byte i_Value)
 	byte res = aVal + i_Value;
 	A.SetValue(res);
 
-	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	((aVal & 0xF) + (i_Value & 0xF)) > 0xF ? Flag.SetH(true) : Flag.SetH(false);
-	((aVal & 0xFF) + (i_Value & 0xFF)) > 0xFF ? Flag.SetC(true) : Flag.SetC(false);
+	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	((aVal & 0xF) + (i_Value & 0xF)) > 0xF ? F.SetH(true) : F.SetH(false);
+	((aVal & 0xFF) + (i_Value & 0xFF)) > 0xFF ? F.SetC(true) : F.SetC(false);
 }
 
 /*
@@ -278,9 +278,9 @@ void CPU::ADD_HL(word i_Value)
 	word res = hlVal + i_Value;
 	HL.SetValue(res);
 
-	Flag.SetN(false);
-	((hlVal & 0xFFF) + (i_Value & 0xFFF)) > 0xFFF ? Flag.SetH(true) : Flag.SetH(false);
-	((hlVal & 0xFFFF) + (i_Value & 0xFFFF)) > 0xFFFF ? Flag.SetC(true) : Flag.SetC(false);
+	F.SetN(false);
+	((hlVal & 0xFFF) + (i_Value & 0xFFF)) > 0xFFF ? F.SetH(true) : F.SetH(false);
+	((hlVal & 0xFFFF) + (i_Value & 0xFFFF)) > 0xFFFF ? F.SetC(true) : F.SetC(false);
 }
 
 /*
@@ -301,17 +301,17 @@ void CPU::ADD_SP()
 	word spVal = SP.GetValue();
 	int res = static_cast<int>(spVal + val);
 
-	Flag.SetZ(false);
-	Flag.SetN(false);
+	F.SetZ(false);
+	F.SetN(false);
 	if (val >= 0)
 	{
-		((spVal & 0xF) + (val & 0xF)) > 0xF ? Flag.SetH(true) : Flag.SetH(false);
-		((spVal & 0xFF) + (val)) > 0xFF ? Flag.SetC(true) : Flag.SetC(false);
+		((spVal & 0xF) + (val & 0xF)) > 0xF ? F.SetH(true) : F.SetH(false);
+		((spVal & 0xFF) + (val)) > 0xFF ? F.SetC(true) : F.SetC(false);
 	}
 	else
 	{
-		(res & 0xF) <= (spVal & 0xF) ? Flag.SetH(true) : Flag.SetH(false);
-		(res & 0xFF) <= (spVal & 0xFF) ? Flag.SetC(true) : Flag.SetC(false);
+		(res & 0xF) <= (spVal & 0xF) ? F.SetH(true) : F.SetH(false);
+		(res & 0xFF) <= (spVal & 0xFF) ? F.SetC(true) : F.SetC(false);
 	}
 }
 
@@ -329,14 +329,14 @@ void CPU::ADD_SP()
 void CPU::ADC(byte i_Value)
 {
 	byte aVal = static_cast<byte>(A.GetValue());
-	byte carry = Flag.GetC();
+	byte carry = F.GetC();
 	byte res = aVal + i_Value + carry;
 	A.SetValue(res);
 
-	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	((aVal & 0xF) + (i_Value & 0xF) + carry) > 0xF ? Flag.SetH(true) : Flag.SetH(false);
-	((aVal & 0xFF) + (i_Value & 0xFF) + carry) > 0xFF ? Flag.SetC(true) : Flag.SetC(false);
+	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	((aVal & 0xF) + (i_Value & 0xF) + carry) > 0xF ? F.SetH(true) : F.SetH(false);
+	((aVal & 0xFF) + (i_Value & 0xFF) + carry) > 0xFF ? F.SetC(true) : F.SetC(false);
 }
 
 /*
@@ -356,10 +356,10 @@ void CPU::SUB(byte i_Value)
 	byte res = aVal - i_Value;
 	A.SetValue(res);
 
-	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(true);
-	((aVal & 0xF) - (i_Value & 0xF)) < 0x0 ? Flag.SetH(true) : Flag.SetH(false);
-	aVal < i_Value ? Flag.SetC(true) : Flag.SetC(false);
+	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(true);
+	((aVal & 0xF) - (i_Value & 0xF)) < 0x0 ? F.SetH(true) : F.SetH(false);
+	aVal < i_Value ? F.SetC(true) : F.SetC(false);
 }
 
 /*
@@ -376,14 +376,14 @@ void CPU::SUB(byte i_Value)
 void CPU::SBC(byte i_Value)
 {
 	byte aVal = static_cast<byte>(A.GetValue());
-	byte carry = Flag.GetC();
+	byte carry = F.GetC();
 	byte res = aVal - carry - i_Value;
 	A.SetValue(res);
 
-	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(true);
-	((aVal & 0xF) - (i_Value & 0xF) - carry) < 0x0 ? Flag.SetH(true) : Flag.SetH(false);
-	aVal < i_Value + carry ? Flag.SetC(true) : Flag.SetC(false);
+	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(true);
+	((aVal & 0xF) - (i_Value & 0xF) - carry) < 0x0 ? F.SetH(true) : F.SetH(false);
+	aVal < i_Value + carry ? F.SetC(true) : F.SetC(false);
 }
 
 /*
@@ -403,10 +403,10 @@ void CPU::AND(byte i_Value)
 	byte res = aVal & i_Value;
 	A.SetValue(res);
 
-	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(true);
-	Flag.SetC(false);
+	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(true);
+	F.SetC(false);
 }
 
 /*
@@ -426,10 +426,10 @@ void CPU::OR(byte i_Value)
 	byte res = aVal | i_Value;
 	A.SetValue(res);
 
-	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
-	Flag.SetC(false);
+	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+	F.SetC(false);
 }
 
 /*
@@ -449,10 +449,10 @@ void CPU::XOR(byte i_Value)
 	byte res = aVal ^ i_Value;
 	A.SetValue(res);
 
-	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
-	Flag.SetC(false);
+	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+	F.SetC(false);
 }
 
 /*
@@ -472,10 +472,10 @@ void CPU::CP(byte i_Value)
 	byte aVal = static_cast<byte>(A.GetValue());
 	byte res = aVal - i_Value;
 
-	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(true);
-	((aVal & 0xF) - (i_Value & 0xF)) < 0x0 ? Flag.SetH(true) : Flag.SetH(false);
-	aVal < i_Value ? Flag.SetC(true) : Flag.SetC(false);
+	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(true);
+	((aVal & 0xF) - (i_Value & 0xF)) < 0x0 ? F.SetH(true) : F.SetH(false);
+	aVal < i_Value ? F.SetC(true) : F.SetC(false);
 }
 
 /*
@@ -494,9 +494,9 @@ void CPU::INC(IRegister& i_DestRegister)
 	i_DestRegister.Increment();
 	word regVal = i_DestRegister.GetValue();
 
-	regVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	(regVal & 0xF) == 0x0 ? Flag.SetH(true) : Flag.SetH(false);
+	regVal == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	(regVal & 0xF) == 0x0 ? F.SetH(true) : F.SetH(false);
 }
 
 /*
@@ -529,9 +529,9 @@ void CPU::DEC(IRegister& i_DestRegister)
 	i_DestRegister.Decrement();
 	word regVal = i_DestRegister.GetValue();
 
-	regVal == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	(regVal & 0xF) == 0x0 ? Flag.SetH(true) : Flag.SetH(false);
+	regVal == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	(regVal & 0xF) == 0x0 ? F.SetH(true) : F.SetH(false);
 }
 
 /*
@@ -570,14 +570,14 @@ void CPU::DAA()
 	byte aVal = static_cast<byte>(A.GetValue());
 	int correctionVal = 0x0;
 
-	if (Flag.GetN())
+	if (F.GetN())
 	{
-		if (Flag.GetH())
+		if (F.GetH())
 		{
 			correctionVal -= 0x06;
 		}
 
-		if (Flag.GetC())
+		if (F.GetC())
 		{
 			correctionVal -= 0x60;
 		}
@@ -585,13 +585,13 @@ void CPU::DAA()
 	else
 	{
 		// if high nibble is greater than 9 or carry is set, add 0x60 to correction
-		if ((((aVal & 0xF0) >> 4) > 0x9) || Flag.GetC())
+		if ((((aVal & 0xF0) >> 4) > 0x9) || F.GetC())
 		{
 			correctionVal += 0x60;
 		}
 
 		// if low nibble is greater than 9 or half carry is set, add 0x6 to correction
-		if (((aVal & 0xF) > 0x9) || Flag.GetH())
+		if (((aVal & 0xF) > 0x9) || F.GetH())
 		{
 			correctionVal += 0x6;
 		}
@@ -599,9 +599,9 @@ void CPU::DAA()
 
 	int res = aVal + correctionVal;
 	
-	(res == 0x0) ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetH(false);
-	((aVal & 0xFF) + (correctionVal & 0xFF)) > 0xFF ? Flag.SetC(true) : Flag.SetC(false);
+	(res == 0x0) ? F.SetZ(true) : F.SetZ(false);
+	F.SetH(false);
+	((aVal & 0xFF) + (correctionVal & 0xFF)) > 0xFF ? F.SetC(true) : F.SetC(false);
 
 	A.SetValue(static_cast<word>(res));
 }
@@ -623,8 +623,8 @@ void CPU::CPL()
 	aVal = ~aVal;
 	A.SetValue(aVal);
 
-	Flag.SetN(true);
-	Flag.SetH(true);
+	F.SetN(true);
+	F.SetH(true);
 }
 
 /*
@@ -642,10 +642,10 @@ void CPU::CPL()
 */
 void CPU::CCF()
 {
-	Flag.GetC() ? Flag.SetC(false) : Flag.SetC(true);
+	F.GetC() ? F.SetC(false) : F.SetC(true);
 
-	Flag.SetN(false);
-	Flag.SetH(false);
+	F.SetN(false);
+	F.SetH(false);
 }
 
 /*
@@ -661,10 +661,10 @@ void CPU::CCF()
 */
 void CPU::SCF()
 {
-	Flag.SetC(true);
+	F.SetC(true);
 	
-	Flag.SetN(false);
-	Flag.SetH(false);
+	F.SetN(false);
+	F.SetH(false);
 }
 
 /*
@@ -933,10 +933,10 @@ void CPU::SWAP(IRegister& i_DestRegister)
 	byte val = static_cast<byte>(i_DestRegister.GetValue());
 	byte res = (val >> 4) | (val << 4);
 
-	res == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
-	Flag.SetC(false);
+	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+	F.SetC(false);
 
 	i_DestRegister.SetValue(res);
 }
@@ -955,14 +955,14 @@ void CPU::SWAP(IRegister& i_DestRegister)
 void CPU::RLC_n(IRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
-	i_DestRegister.GetBit(7) ? Flag.SetC(true) : Flag.SetC(false);
+	i_DestRegister.GetBit(7) ? F.SetC(true) : F.SetC(false);
 	
-	val = (val << 1) | Flag.GetC(); // rotate left and add bit 7 to bit 0
+	val = (val << 1) | F.GetC(); // rotate left and add bit 7 to bit 0
 	i_DestRegister.SetValue(val);
 	
-	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
 }
 
 /*
@@ -982,15 +982,15 @@ void CPU::RL_n(IRegister& i_DestRegister)
 	// save bit 7 from n
 	bool bit7 = i_DestRegister.GetBit(7);
 
-	val = (val << 1) | Flag.GetC(); // rotate left and add carry to bit 0
+	val = (val << 1) | F.GetC(); // rotate left and add carry to bit 0
 	i_DestRegister.SetValue(val);
 
 	// set old bit 7 into carry flag
-	bit7 ? Flag.SetC(true) : Flag.SetC(false);
+	bit7 ? F.SetC(true) : F.SetC(false);
 
-	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
 }
 
 /*
@@ -1007,14 +1007,14 @@ void CPU::RL_n(IRegister& i_DestRegister)
 void CPU::RRC_n(IRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
-	i_DestRegister.GetBit(0) ? Flag.SetC(true) : Flag.SetC(false);
+	i_DestRegister.GetBit(0) ? F.SetC(true) : F.SetC(false);
 
-	val = (val >> 1) | (Flag.GetC() << 7); // rotate right and add bit 0 to bit 7
+	val = (val >> 1) | (F.GetC() << 7); // rotate right and add bit 0 to bit 7
 	i_DestRegister.SetValue(val);
 
-	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
 }
 
 /*
@@ -1034,15 +1034,15 @@ void CPU::RR_n(IRegister& i_DestRegister)
 	// save bit 0 from n
 	bool bit0 = i_DestRegister.GetBit(0);
 
-	val = (val >> 1) | (Flag.GetC() << 7); // rotate left and add carry to bit 7
+	val = (val >> 1) | (F.GetC() << 7); // rotate left and add carry to bit 7
 	i_DestRegister.SetValue(val);
 
 	// set old bit 0 into carry flag
-	bit0 ? Flag.SetC(true) : Flag.SetC(false);
+	bit0 ? F.SetC(true) : F.SetC(false);
 
-	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
 }
 
 /*
@@ -1060,13 +1060,13 @@ void CPU::SLA_n(IRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 
-	Flag.SetC(i_DestRegister.GetBit(7)); // set carry to be bit 7
+	F.SetC(i_DestRegister.GetBit(7)); // set carry to be bit 7
 	val = val << 1; // shift n left (LSB will be 0)
 	i_DestRegister.SetValue(val);
 
-	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
 }
 
 /*
@@ -1085,7 +1085,7 @@ void CPU::SRA_n(IRegister& i_DestRegister)
 	byte val = i_DestRegister.GetValue();
 	bool bit7 = i_DestRegister.GetBit(7);
 
-	Flag.SetC(i_DestRegister.GetBit(0)); // set carry to be bit 0
+	F.SetC(i_DestRegister.GetBit(0)); // set carry to be bit 0
 	val = val >> 1; // shift n right, MSB is 0 now
 	if (bit7) // if MSB was set, restore it
 	{
@@ -1093,9 +1093,9 @@ void CPU::SRA_n(IRegister& i_DestRegister)
 	}
 	i_DestRegister.SetValue(val);
 
-	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
 }
 
 /*
@@ -1112,13 +1112,13 @@ void CPU::SRA_n(IRegister& i_DestRegister)
 void CPU::SRL_n(IRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
-	Flag.SetC(i_DestRegister.GetBit(0)); // set carry to be bit 0
+	F.SetC(i_DestRegister.GetBit(0)); // set carry to be bit 0
 	val = val >> 1; // shift n right, MSB is 0 now
 	i_DestRegister.SetValue(val);
 
-	val == 0x0 ? Flag.SetZ(true) : Flag.SetZ(false);
-	Flag.SetN(false);
-	Flag.SetH(false);
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
 }
 
 /*
@@ -1136,9 +1136,9 @@ void CPU::BIT_b_r(byte i_BitNumber, byte i_Value)
 {
 	bool res = !bitwise::GetBit(i_BitNumber, i_Value);
 	
-	Flag.SetZ(res);
-	Flag.SetN(false);
-	Flag.SetH(true);
+	F.SetZ(res);
+	F.SetN(false);
+	F.SetH(true);
 }
 
 /*
@@ -4723,5 +4723,5 @@ void CPU::dumpRegisters()
 	cout << "------------------------------" << endl;
 	cout << "PC: 0x" << std::hex << std::setfill('0') << std::setw(4) << PC.GetValue() << " | SP: 0x" << std::hex << std::setfill('0') << std::setw(4) << SP.GetValue() << " | (HL): 0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<word>(m_MMU.Read(HL.GetValue())) << endl;
 	cout << "------------------------------" << endl;
-	cout << "Z: " << Flag.GetZ() << " | N: " << Flag.GetN() << " | H: " << Flag.GetH() << " | C: " << Flag.GetC() << endl;
+	cout << "Z: " << F.GetZ() << " | N: " << F.GetN() << " | H: " << F.GetH() << " | C: " << F.GetC() << endl;
 }
