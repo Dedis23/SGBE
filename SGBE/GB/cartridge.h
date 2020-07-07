@@ -1,5 +1,5 @@
 ﻿/********************************************************************
- *			Copyright (C) 2020 Dedi Sidi			                *
+ *			Created by: Dedi Sidi, 2020 			                *
  *														            *
  *			Cartridge class that is specific for the gameboy        *
  ********************************************************************/

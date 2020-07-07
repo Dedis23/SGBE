@@ -1,5 +1,5 @@
 ﻿/********************************************************************************
- *			Copyright (C) 2020 Dedi Sidi										*
+ *			Created by: Dedi Sidi, 2020											*
  *																				*
  *			The interpreter is the main emulation module						*
  *			It holds and operates the various components of the gameboy			*
@@ -10,7 +10,7 @@
 #include "cpu.h"
 #include "cartridge.h"
 #include "mmu.h"
-#include "gpu.h"
+#include "ppu.h"
 
 #ifndef __INTERPRETER_H
 #define __INTERPRETER_H
@@ -35,7 +35,7 @@ private:
 	vector<byte> m_ROMData;
 	CPU* m_CPU;
 	MMU* m_MMU;
-	GPU* m_GPU;
+	PPU* m_PPU;
 	CartridgeHeader* m_CartridgeHeader;
 	Cartridge* m_Cartridge;
 };

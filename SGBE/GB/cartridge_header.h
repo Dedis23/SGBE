@@ -1,5 +1,5 @@
 /********************************************************************
- *			Copyright (C) 2020 Dedi Sidi			                *
+ *			Created by: Dedi Sidi, 2020 			                *
  *														            *
  *			A class that holds metadata about the cartridge         *
  ********************************************************************/

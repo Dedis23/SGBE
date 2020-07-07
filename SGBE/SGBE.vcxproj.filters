@@ -54,7 +54,7 @@
     <ClCompile Include="GB\cartridge.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="GB\gpu.cpp">
+    <ClCompile Include="GB\ppu.cpp">
       <Filter>GB</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,7 +89,7 @@
     <ClInclude Include="GB\cartridge.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="GB\gpu.h">
+    <ClInclude Include="GB\ppu.h">
       <Filter>GB</Filter>
     </ClInclude>
   </ItemGroup>

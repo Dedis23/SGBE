@@ -33,8 +33,8 @@ bool Interpreter::Initialize(const std::string& i_RomFileName)
 	m_CPU = new CPU(*m_MMU);
 	LOG_ERROR(m_CPU == nullptr, return false, "Failed to initialize CPU");
 
-	m_GPU = new GPU();
-	LOG_ERROR(m_GPU == nullptr, return false, "Failed to initalize GPU");
+	m_PPU = new PPU();
+	LOG_ERROR(m_PPU == nullptr, return false, "Failed to initalize GPU");
 
 	return true;
 }

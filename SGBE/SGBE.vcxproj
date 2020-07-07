@@ -155,7 +155,7 @@
     <ClCompile Include="GB\cartridge.cpp" />
     <ClCompile Include="GB\cartridge_header.cpp" />
     <ClCompile Include="GB\cpu.cpp" />
-    <ClCompile Include="GB\gpu.cpp" />
+    <ClCompile Include="GB\ppu.cpp" />
     <ClCompile Include="GB\interpreter.cpp" />
     <ClCompile Include="GB\mmu.cpp" />
     <ClCompile Include="GB\registers.cpp" />
@@ -167,7 +167,7 @@
     <ClInclude Include="GB\cartridge.h" />
     <ClInclude Include="GB\cartridge_header.h" />
     <ClInclude Include="GB\cpu.h" />
-    <ClInclude Include="GB\gpu.h" />
+    <ClInclude Include="GB\ppu.h" />
     <ClInclude Include="GB\interpreter.h" />
     <ClInclude Include="GB\mmu.h" />
     <ClInclude Include="GB\registers.h" />

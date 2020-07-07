@@ -1,5 +1,5 @@
 /****************************************************************
- *			Copyright (C) 2020 Dedi Sidi					    *
+ *			Created by: Dedi Sidi, 2020 					    *
  *															    *
  *			The main application class						    *
  *          the application is based on the SDL framework       *

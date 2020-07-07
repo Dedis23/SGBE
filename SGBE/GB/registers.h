@@ -1,5 +1,5 @@
 /****************************************************************
- *		Copyright (C) 2020 Dedi Sidi							*
+ *		Created by: Dedi Sidi, 2020								*
  *																*
  *		Generic registers classes of various sizes				*
  *		as well as registers that are specific for the gameboy 	*
