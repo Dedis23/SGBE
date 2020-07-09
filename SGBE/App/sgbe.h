@@ -28,11 +28,14 @@ private:
     bool loadArguments(int argc, char* argv[]);
     bool initializeSDL();
 
-    // CLI Options
-private:
+
+private:    // CLI Options
     static void cliRomOption(const string& i_RomFileName);
     static void cliSilentOption();
     static void cliLogFileNameOption(const string& i_LogFileName);
+
+private: // SDL Wrappers
+    void SDLDrawWrapper(byte i_R, byte i_G, byte i_B, uint32_t i_WidthPosition, uint32_t i_HeightPosition);
 
 private:
     static string s_ROMFileName;

@@ -8,6 +8,7 @@ Interpreter::~Interpreter()
 	delete m_Cartridge;
 	delete m_MMU;
 	delete m_CPU;
+	delete m_PPU;
 }
 
 bool Interpreter::Initialize(const std::string& i_RomFileName)

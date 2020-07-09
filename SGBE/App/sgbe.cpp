@@ -121,3 +121,10 @@ void SGBE::cliLogFileNameOption(const string& i_LogFileName)
 	LOGGER_SET_FILE_NAME(i_LogFileName);
 	LOG_INFO(true, NOP, "Log file name set to" << i_LogFileName);
 }
+
+void SGBE::SDLDrawWrapper(byte i_R, byte i_G, byte i_B, uint32_t i_WidthPosition, uint32_t i_HeightPosition)
+{
+	SDL_SetRenderDrawColor(m_Renderer, i_R, i_G, i_B, 255);
+	SDL_RenderDrawPoint(m_Renderer, i_WidthPosition, i_HeightPosition);
+	SDL_RenderPresent(m_Renderer);
+}

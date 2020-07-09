@@ -18,6 +18,9 @@
 class Interpreter
 {
 public:
+	typedef void(*DrawFunction)(byte i_R, byte i_G, byte i_B, uint32_t i_WidthPosition, uint32_t i_HeightPosition);
+
+public:
 	Interpreter();
 	virtual ~Interpreter();
 	Interpreter(const Interpreter&) = delete;
@@ -38,6 +41,7 @@ private:
 	PPU* m_PPU;
 	CartridgeHeader* m_CartridgeHeader;
 	Cartridge* m_Cartridge;
+	DrawFunction m_DrawFunction;
 };
 
 #endif
