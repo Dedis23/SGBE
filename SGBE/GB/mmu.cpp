@@ -150,7 +150,8 @@ void MMU::Write(const WordAddress& i_Address, byte i_Value)
         wroteToAddr = true;
     }
 
-    LOG_INFO(wroteToAddr == true, return, "Wrote 0x" << std::hex << static_cast<word>(i_Value) << " in address 0x" << std::hex << i_Address.GetValue());
+    //LOG_INFO(wroteToAddr == true, return, "Wrote 0x" << std::hex << static_cast<word>(i_Value) << " in address 0x" << std::hex << i_Address.GetValue());
+    return;
     LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address.GetValue());
 }
 

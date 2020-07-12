@@ -5,9 +5,6 @@
  *          The main graphics chip of the gameboy	   *
  *******************************************************/
 
-#include <string>
-#include <vector>
-#include "cartridge.h"
 #include "utility.h"
 
 #ifndef __PPU_H

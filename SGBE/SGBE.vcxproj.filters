@@ -57,6 +57,9 @@
     <ClCompile Include="GB\ppu.cpp">
       <Filter>GB</Filter>
     </ClCompile>
+    <ClCompile Include="GB\timer.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Generic\logger.h">
@@ -90,6 +93,9 @@
       <Filter>GB</Filter>
     </ClInclude>
     <ClInclude Include="GB\ppu.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\timer.h">
       <Filter>GB</Filter>
     </ClInclude>
   </ItemGroup>
