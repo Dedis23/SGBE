@@ -14,6 +14,8 @@
 #ifndef __CPU_H
 #define __CPU_H
 
+const uint32_t CLOCK_SPEED = 4194304; // 4 * 2^20
+
 class CPU
 {
 public:

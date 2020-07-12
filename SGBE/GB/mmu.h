@@ -32,10 +32,10 @@
 */
 
 /*
-    memory map info taken from:
+    memory map info:
     http://bgb.bircd.org/pandocs.htm#gameboytechnicaldata
     http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Memory
-	bootstrap taken from:
+	bootstrap:
 	https://realboyemulator.wordpress.com/2013/01/03/a-look-at-the-game-boy-bootstrap-let-the-fun-begin/
 */
 

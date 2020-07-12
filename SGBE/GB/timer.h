@@ -9,6 +9,7 @@
   * http://www.codeslinger.co.uk/pages/projects/gameboy/timers.html                       */
 
 #include "utility.h"
+#include "cpu.h"
 
 #ifndef __TIMER_H
 #define __TIMER_H
@@ -27,6 +28,9 @@ public:
     Timer& operator=(const Timer&) = delete;
 
     void Step(uint32_t& o_Cycles);
+
+private:
+    uint32_t m_CyclesToTick;
 };
 
 #endif
