@@ -5,15 +5,13 @@
  *			It holds and operates the various components of the gameboy			*
  ********************************************************************************/
 
+#pragma once
 #include <string>
 #include <vector>
 #include "cpu.h"
 #include "cartridge.h"
 #include "mmu.h"
 #include "ppu.h"
-
-#ifndef __INTERPRETER_H
-#define __INTERPRETER_H
 
 class Interpreter
 {
@@ -43,5 +41,3 @@ private:
 	Cartridge* m_Cartridge;
 	DrawFunction m_DrawFunction;
 };
-
-#endif

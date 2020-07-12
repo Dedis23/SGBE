@@ -4,12 +4,10 @@
  *			Utility functions and definitions           *
  ********************************************************/
 
+#pragma once
 #include <iostream>
 #include "../Generic/logger.h"
 #include "registers.h"
-
-#ifndef __UTILITY_H
-#define __UTILITY_H
 
 const uint32_t TARGET_FRAME_RATE = 60;
 const uint32_t GAMEBOY_SCREEN_WIDTH = 160;
@@ -53,5 +51,3 @@ public:
 private:
 	word m_Value = 0;
 };
-
-#endif

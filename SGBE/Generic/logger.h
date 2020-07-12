@@ -4,6 +4,7 @@
  *			Generic thread-safe Logger class			*
  ********************************************************/
 
+#pragma once
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -12,9 +13,6 @@
 #include <chrono>
 #include <ctime>
 #include <vector>
-
-#ifndef __LOGGER_H
-#define __LOGGER_H
 
 using namespace std;
 
@@ -132,5 +130,3 @@ private:
 	const string c_ErrorHeadline = "[ERROR]:";
 	const string c_CriticalHeadline = "[CRITICAL]:";
 };
-
-#endif

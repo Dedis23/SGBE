@@ -8,11 +8,9 @@
   * https://www.youtube.com/watch?v=HyzD8pNlpwI		                                      *
   * http://www.codeslinger.co.uk/pages/projects/gameboy/timers.html                       */
 
+#pragma once
 #include "utility.h"
 #include "cpu.h"
-
-#ifndef __TIMER_H
-#define __TIMER_H
 
 const word DIVIDER_REGISTER_ADDR = 0xFF04;
 const word TIMER_COUNTER_ADDR = 0xFF05;
@@ -32,5 +30,3 @@ public:
 private:
     uint32_t m_CyclesToTick;
 };
-
-#endif

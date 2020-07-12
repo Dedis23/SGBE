@@ -39,13 +39,11 @@
 	https://realboyemulator.wordpress.com/2013/01/03/a-look-at-the-game-boy-bootstrap-let-the-fun-begin/
 */
 
+#pragma once
 #include <string>
 #include <vector>
 #include "cartridge.h"
 #include "utility.h"
-
-#ifndef __MMU_H
-#define __MMU_H
 
 class MMU
 {
@@ -70,5 +68,3 @@ private:
 	vector<byte> m_ZeroPageRAM = vector<byte>(0xFFFF - 0xFF80 + 1);
 	static const vector<byte> s_Bootstrap;
 };
-
-#endif

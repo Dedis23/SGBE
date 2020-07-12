@@ -5,10 +5,8 @@
  *          The main graphics chip of the gameboy	   *
  *******************************************************/
 
+#pragma once
 #include "utility.h"
-
-#ifndef __PPU_H
-#define __PPU_H
 
 struct Pixel
 {
@@ -29,5 +27,3 @@ public:
 
     void Step(uint32_t& o_Cycles);
 };
-
-#endif

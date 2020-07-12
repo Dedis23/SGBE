@@ -4,13 +4,11 @@
  *			Cartridge class that is specific for the gameboy        *
  ********************************************************************/
 
+#pragma once
 #include <iostream>
 #include <string>
 #include <vector>
 #include "cartridge_header.h"
-
-#ifndef __CARTRIDGE_H
-#define __CARTRIDGE_H
 
 class Cartridge
 {
@@ -43,5 +41,3 @@ class CartridgeFactory
 public:
     static Cartridge* CreateCartridge(vector<byte>& i_ROMData, CartridgeHeader::CartridgeType_E i_CartridgeType);
 };
-
-#endif

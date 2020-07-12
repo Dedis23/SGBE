@@ -4,12 +4,10 @@
  *			A very basic CLI parsing system                                     *
  ********************************************************************************/
 
+#pragma once
 #include <sstream>
 #include <vector>
 #include <unordered_map>
-
-#ifndef __CLI_H
-#define __CLI_H
 
 using namespace std;
 
@@ -36,5 +34,3 @@ private:
     unordered_map<string, OptionFunctionMultipleArgs> m_MultipleArgsOptionsMap;
     string m_OptionDelimiter;
 };
-
-#endif

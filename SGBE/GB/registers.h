@@ -5,10 +5,8 @@
  *		as well as registers that are specific for the gameboy 	*
  ****************************************************************/
 
+#pragma once
 #include <iostream>
-
-#ifndef __REGISTERS_H
-#define __REGISTERS_H
 
 typedef uint8_t byte;
 typedef int8_t sbyte;
@@ -115,5 +113,3 @@ public:
 	void SetC(bool i_IsRaise);
 	bool GetC() const;
 };
-
-#endif

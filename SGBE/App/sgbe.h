@@ -5,12 +5,10 @@
  *          the application is based on the SDL framework       *
  ****************************************************************/
 
+#pragma once
 #include "SDL.h"
 #include "../Generic/cli.h"
 #include "../GB/interpreter.h"
-
-#ifndef __SGBE_H
-#define __SGBE_H
 
 class SGBE
 {
@@ -43,5 +41,3 @@ private:
     SDL_Renderer* m_Renderer;
     Interpreter* m_Interpreter;
 };
-
-#endif

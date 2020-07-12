@@ -7,12 +7,10 @@
 /* Most of the information were take from gameboy cpu manual pdf: *
  * http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf				  */
 
+#pragma once
 #include <iomanip>
 #include "utility.h"
 #include "mmu.h"
-
-#ifndef __CPU_H
-#define __CPU_H
 
 const uint32_t CLOCK_SPEED = 4194304; // 4 * 2^20
 
@@ -719,5 +717,3 @@ private:
 	/* debug methods */
 	void dumpRegisters();
 };
-
-#endif
