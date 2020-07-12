@@ -1,6 +1,6 @@
 ﻿#include "mmu.h"
 
-MMU::MMU(Cartridge& i_Cartridge) : m_Cartridge(i_Cartridge) {}
+MMU::MMU(Cartridge& i_Cartridge, Timer& i_Timer) : m_Cartridge(i_Cartridge), m_Timer(i_Timer) {}
 
 byte MMU::Read(const WordAddress& i_Address) const
 {
@@ -61,7 +61,7 @@ byte MMU::Read(const WordAddress& i_Address) const
     /* Mapped IO */
     if (i_Address.checkRangeBounds(0xFF00, 0xFF7F))
     {
-        return m_MappedIO[i_Address.GetValue() - 0xFF00];
+        return readMappedIO(i_Address);
     }
 
     /* Zero Page RAM */
@@ -140,6 +140,7 @@ void MMU::Write(const WordAddress& i_Address, byte i_Value)
     if (i_Address.checkRangeBounds(0xFF00, 0xFF7F))
     {
         m_MappedIO[i_Address.GetValue() - 0xFF00] = i_Value;
+        writeMappedIO(i_Address, i_Value);
         wroteToAddr = true;
     }
 
@@ -155,11 +156,50 @@ void MMU::Write(const WordAddress& i_Address, byte i_Value)
     LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address.GetValue());
 }
 
+byte MMU::readMappedIO(const WordAddress& i_Address) const
+{
+    switch (i_Address.GetValue())
+    {
+    case DIVIDER_REGISTER_ADDR:
+        return m_Timer.GetDividerCounter();
+    case TIMER_COUNTER_ADDR:
+        return m_Timer.GetTimerCounter();
+    case TIMER_MODULO_ADDR:
+        return m_Timer.GetTimerModulo();
+    case TIMER_CONTROL_ADDR:
+        return m_Timer.GetTimerControl();
+    default:
+        return m_MappedIO[i_Address.GetValue() - 0xFF00];
+    }
+}
+
+void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
+{
+    switch (i_Address.GetValue())
+    {
+    case DIVIDER_REGISTER_ADDR:
+        // whenever the user write to the divider, it will reset
+        m_Timer.ResetDividerTimer();
+        break;
+    case TIMER_COUNTER_ADDR:
+        m_Timer.SetTimerCounter(i_Value);
+        break;
+    case TIMER_MODULO_ADDR:
+        m_Timer.SetTimerModulo(i_Value);
+        break;
+    case TIMER_CONTROL_ADDR:
+        m_Timer.SetTimerCounter(i_Value);
+        break;
+    default:
+        break;
+    }
+}
+
 bool MMU::isBootstrapDone() const
 {
     // at the end of the bootstrap, a value of 1 is written to address 0xFF50
     // this way the addresses 0x00 ~ 0xFF from the cartridge can be access because we know that we are post boot
-    return Read(0xFF50);
+    return Read(BOOTSTRAP_DONE_ADDR);
 }
 
 const vector<byte> MMU::s_Bootstrap =

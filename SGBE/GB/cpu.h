@@ -12,7 +12,9 @@
 #include "utility.h"
 #include "mmu.h"
 
-const uint32_t CLOCK_SPEED = 4194304; // 4 * 2^20
+const uint32_t CPU_CLOCK_SPEED = 4194304; // 4 * 2^20
+
+class MMU;
 
 class CPU
 {

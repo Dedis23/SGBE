@@ -28,14 +28,17 @@ bool Interpreter::Initialize(const std::string& i_RomFileName)
 	res = initializeCartridge();
 	LOG_CRITICAL(res == false, return false, "Failed to initialzie cartridge");
 
-	m_MMU = new MMU(*m_Cartridge);
-	LOG_ERROR(m_MMU == nullptr, return false, "Failed to initialize MMU");
-
-	m_CPU = new CPU(*m_MMU);
-	LOG_ERROR(m_CPU == nullptr, return false, "Failed to initialize CPU");
+	m_Timer = new Timer();
+	LOG_ERROR(m_Timer == nullptr, return false, "Failed to initialize the Timer");
 
 	m_PPU = new PPU();
-	LOG_ERROR(m_PPU == nullptr, return false, "Failed to initalize GPU");
+	LOG_ERROR(m_PPU == nullptr, return false, "Failed to initalize the GPU");
+
+	m_MMU = new MMU(*m_Cartridge, *m_Timer);
+	LOG_ERROR(m_MMU == nullptr, return false, "Failed to initialize the MMU");
+																    
+	m_CPU = new CPU(*m_MMU);									    
+	LOG_ERROR(m_CPU == nullptr, return false, "Failed to initialize the CPU");
 
 	return true;
 }
@@ -52,6 +55,7 @@ void Interpreter::Run()
 	{
 		uint32_t cycles = 0;
 		m_CPU->Step(cycles);
+		m_Timer->Step(cycles);
 	}
 }
 

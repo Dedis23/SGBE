@@ -1111,7 +1111,7 @@ void CPU::SRA_n(IRegister& i_DestRegister)
 */
 void CPU::SRL_n(IRegister& i_DestRegister)
 {
-	byte val = i_DestRegister.GetValue();
+	byte val = static_cast<byte>(i_DestRegister.GetValue());
 	F.SetC(i_DestRegister.GetBit(0)); // set carry to be bit 0
 	val = val >> 1; // shift n right, MSB is 0 now
 	i_DestRegister.SetValue(val);

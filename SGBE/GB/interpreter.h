@@ -12,6 +12,7 @@
 #include "cartridge.h"
 #include "mmu.h"
 #include "ppu.h"
+#include "timer.h"
 
 class Interpreter
 {
@@ -37,6 +38,7 @@ private:
 	CPU* m_CPU;
 	MMU* m_MMU;
 	PPU* m_PPU;
+	Timer* m_Timer;
 	CartridgeHeader* m_CartridgeHeader;
 	Cartridge* m_Cartridge;
 	DrawFunction m_DrawFunction;
