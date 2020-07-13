@@ -24,6 +24,7 @@ public:
 private:
     bool loadDefaultSettings();
     bool loadArguments(int argc, char* argv[]);
+    bool loadROM(const string& i_RomFilePath);
     bool initializeSDL();
 
 
@@ -37,6 +38,7 @@ private: // SDL Wrappers
 
 private:
     static string s_ROMFileName;
+    vector<byte> m_ROMData;
     SDL_Window* m_Window;
     SDL_Renderer* m_Renderer;
     Interpreter* m_Interpreter;

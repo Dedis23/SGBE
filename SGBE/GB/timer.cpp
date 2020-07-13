@@ -3,7 +3,7 @@
 const uint32_t Timer::TimerFrequenciesArr[] = { 4096, 262144, 65536, 16384 };
 
 // Note - the divider freq is 16384 and cannot be set otherwise
-Timer::Timer() : m_IsEnabled(true), m_RemainingCyclesToTickTheCounter(0),
+Timer::Timer() : m_IsEnabled(true), m_RemainingCyclesToTickTheCounter(TimerFrequenciesArr[(int)TimerFrequencies::_4096Hz]),
 m_RemainingCyclesToTickTheDivider(TimerFrequenciesArr[(int)TimerFrequencies::_16384Hz]),
 m_TimerCounter(0), m_DividerCounter(0), m_TimerModulo(0), m_TimerControl(0),
 m_CurrentFrequency(TimerFrequencies::_4096Hz) {}

@@ -35,10 +35,13 @@ bool SGBE::Initialize(int argc, char* argv[])
 	// assert that the user inserted a rom file name
 	LOG_ERROR(s_ROMFileName == "", return false, "Cannot initialize without a ROM file name");
 
+	res = loadROM(s_ROMFileName);
+	LOG_CRITICAL(res == false, return false, "Failed to load ROM data");
+
 	// initialize the interpreter
-	m_Interpreter = new Interpreter();
+	m_Interpreter = new Interpreter(m_ROMData);
 	LOG_CRITICAL(m_Interpreter == nullptr , return false, "Failed to allocate memory for the interpreter");
-	res = m_Interpreter->Initialize(s_ROMFileName);
+	res = m_Interpreter->Initialize();
 	LOG_CRITICAL(res == false, return false, "Failed to initialize the interpreter");
 	LOG_INFO(true, NOP, "SGBE initialized successfully." << endl);
 
@@ -47,7 +50,7 @@ bool SGBE::Initialize(int argc, char* argv[])
 
 void SGBE::Run()
 {
-	if (m_Interpreter->IsCartridgeLoadedSuccessfully())
+	//if (m_Interpreter->IsCartridgeLoadedSuccessfully())
 	{
 		// main loop here
 		m_Interpreter->Run();
@@ -99,6 +102,32 @@ bool SGBE::initializeSDL()
 
 	m_Renderer = SDL_CreateRenderer(m_Window, -1, 0);
 	LOG_CRITICAL(m_Window == NULL, return false, "Failed to create SDL renderer");
+
+	return true;
+}
+
+
+bool SGBE::loadROM(const string& i_RomFileName)
+{
+	bool res = false;
+
+	// read file
+	std::ifstream romFile(i_RomFileName, std::ios::binary);
+	LOG_ERROR(!romFile.is_open() || !romFile.good(), return false, "Failed to read the file: " << i_RomFileName);
+
+	// get the size
+	romFile.seekg(0, std::ios::end);
+	std::streampos fileSize = romFile.tellg();
+	romFile.seekg(0, std::ios::beg);
+
+	// read the data - fill the stream into vector<char>
+	vector<char> container(fileSize);
+	romFile.read(&container[0], fileSize);
+
+	// move to member vector of type byte
+	std::move(std::begin(container), std::end(container), std::back_inserter(m_ROMData));
+	LOG_INFO(true, NOP, "Read " << m_ROMData.size() / 1024 << "KB from file: " << i_RomFileName);
+	romFile.close();
 
 	return true;
 }

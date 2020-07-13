@@ -20,21 +20,20 @@ public:
 	typedef void(*DrawFunction)(byte i_R, byte i_G, byte i_B, uint32_t i_WidthPosition, uint32_t i_HeightPosition);
 
 public:
-	Interpreter();
+	Interpreter(vector<byte>& i_ROMData);
 	virtual ~Interpreter();
 	Interpreter(const Interpreter&) = delete;
 	Interpreter& operator=(const Interpreter&) = delete;
 
-	bool Initialize(const std::string& i_RomFileName);
+	bool Initialize();
 	bool IsCartridgeLoadedSuccessfully();
 	void Run();
 
 private:
-	bool loadROM(const string& i_RomFilePath);
 	bool initializeCartridge();
 
 private:
-	vector<byte> m_ROMData;
+	vector<byte>& m_ROMData;
 	CPU* m_CPU;
 	MMU* m_MMU;
 	PPU* m_PPU;
