@@ -188,7 +188,7 @@ void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
         m_Timer.SetTimerModulo(i_Value);
         break;
     case TIMER_CONTROL_ADDR:
-        m_Timer.SetTimerCounter(i_Value);
+        m_Timer.SetTimerControl(i_Value);
         break;
     default:
         break;

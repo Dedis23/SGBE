@@ -30,7 +30,7 @@ public:
         _16384Hz = 3,
 	};
 
-    static const uint32_t TimerFrequenciesArr[];
+    static const uint32_t CyclesArr[];
 
 public:
     Timer();

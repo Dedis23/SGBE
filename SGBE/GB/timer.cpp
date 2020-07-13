@@ -1,12 +1,16 @@
 ﻿#include "timer.h"
 
-const uint32_t Timer::TimerFrequenciesArr[] = { 4096, 262144, 65536, 16384 };
+const uint32_t Timer::CyclesArr[] = { CPU_CLOCK_SPEED / 4096, CPU_CLOCK_SPEED / 262144, CPU_CLOCK_SPEED / 65536, CPU_CLOCK_SPEED / 16384 };
 
 // Note - the divider freq is 16384 and cannot be set otherwise
-Timer::Timer() : m_IsEnabled(true), m_RemainingCyclesToTickTheCounter(TimerFrequenciesArr[(int)TimerFrequencies::_4096Hz]),
-m_RemainingCyclesToTickTheDivider(TimerFrequenciesArr[(int)TimerFrequencies::_16384Hz]),
+Timer::Timer() : m_IsEnabled(true), m_RemainingCyclesToTickTheCounter(CyclesArr[(int)TimerFrequencies::_4096Hz]),
+m_RemainingCyclesToTickTheDivider(CyclesArr[(int)TimerFrequencies::_16384Hz]),
 m_TimerCounter(0), m_DividerCounter(0), m_TimerModulo(0), m_TimerControl(0),
-m_CurrentFrequency(TimerFrequencies::_4096Hz) {}
+m_CurrentFrequency(TimerFrequencies::_4096Hz) 
+{
+	// the default of the timer controler is enabled and set to 4096
+	m_TimerControl = 0b000000100;
+}
 
 void Timer::Step(const uint32_t& i_Cycles)
 {
@@ -35,6 +39,7 @@ void Timer::Step(const uint32_t& i_Cycles)
 	m_RemainingCyclesToTickTheDivider -= i_Cycles;
 	if (m_RemainingCyclesToTickTheDivider <= 0)
 	{
+		m_RemainingCyclesToTickTheDivider = CyclesArr[(int)TimerFrequencies::_16384Hz];
 		// it will overflow eventually and will start counting again from 0 (0-255)
 		// here no timer interrupts will be invoked
 		m_DividerCounter++; 
@@ -44,6 +49,10 @@ void Timer::Step(const uint32_t& i_Cycles)
 void Timer::SetTimerControl(byte i_NewTimerControl)
 {
 	m_TimerControl = i_NewTimerControl;
+
+	bitwise::GetBit(2, i_NewTimerControl) ? start() : stop(); // read bit 2 for enable/disable
+	Timer::TimerFrequencies freq = (Timer::TimerFrequencies)(i_NewTimerControl & 0x3); // get bits 0 and 1 for freq type
+	setFrequency(freq);
 }
 
 byte Timer::GetTimerControl() const
@@ -54,10 +63,6 @@ byte Timer::GetTimerControl() const
 void Timer::SetTimerCounter(byte i_NewTimerCounter)
 {
 	m_TimerCounter = i_NewTimerCounter;
-
-	bitwise::GetBit(2, i_NewTimerCounter) ? start() : stop();
-	Timer::TimerFrequencies freq = (Timer::TimerFrequencies)(i_NewTimerCounter & 0x2);
-	setFrequency(freq);
 }
 
 byte Timer::GetTimerCounter() const
@@ -92,16 +97,16 @@ void Timer::setFrequency(TimerFrequencies i_Frequency)
 		switch (i_Frequency)
 		{
 		case Timer::TimerFrequencies::_4096Hz:
-			m_RemainingCyclesToTickTheCounter = TimerFrequenciesArr[(int)Timer::TimerFrequencies::_4096Hz];
+			m_RemainingCyclesToTickTheCounter = CyclesArr[(int)Timer::TimerFrequencies::_4096Hz];
 			break;
 		case Timer::TimerFrequencies::_262144Hz:
-			m_RemainingCyclesToTickTheCounter = TimerFrequenciesArr[(int)Timer::TimerFrequencies::_262144Hz];
+			m_RemainingCyclesToTickTheCounter = CyclesArr[(int)Timer::TimerFrequencies::_262144Hz];
 			break;
 		case Timer::TimerFrequencies::_65536Hz:
-			m_RemainingCyclesToTickTheCounter = TimerFrequenciesArr[(int)Timer::TimerFrequencies::_65536Hz];
+			m_RemainingCyclesToTickTheCounter = CyclesArr[(int)Timer::TimerFrequencies::_65536Hz];
 			break;
 		case Timer::TimerFrequencies::_16384Hz:
-			m_RemainingCyclesToTickTheCounter = TimerFrequenciesArr[(int)Timer::TimerFrequencies::_16384Hz];
+			m_RemainingCyclesToTickTheCounter = CyclesArr[(int)Timer::TimerFrequencies::_16384Hz];
 			break;
 		}
 	}

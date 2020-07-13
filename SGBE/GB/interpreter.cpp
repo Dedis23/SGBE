@@ -54,6 +54,20 @@ void Interpreter::Run()
 		uint32_t cycles = 0;
 		m_CPU->Step(cycles);
 		m_Timer->Step(cycles);
+
+		//cout << "Divider: " << (int)m_MMU->Read(DIVIDER_REGISTER_ADDR) << endl;
+		//cout << "Counter: " << (int)m_MMU->Read(TIMER_COUNTER_ADDR) << endl;
+		//cout << "Modulo: " << (int)m_MMU->Read( TIMER_MODULO_ADDR) << endl;
+		//cout << "Control: " << (int)m_MMU->Read(TIMER_CONTROL_ADDR) << endl;
+		static bool wrote = false;
+		if (!wrote)
+		{
+			m_MMU->Write(DIVIDER_REGISTER_ADDR, 99);
+			m_MMU->Write(TIMER_COUNTER_ADDR, 55);
+			m_MMU->Write(TIMER_MODULO_ADDR, 10);
+			m_MMU->Write(TIMER_CONTROL_ADDR, 7);
+			wrote = true;
+		}
 	}
 }
 

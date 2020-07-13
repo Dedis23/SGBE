@@ -50,7 +50,7 @@ bool SGBE::Initialize(int argc, char* argv[])
 
 void SGBE::Run()
 {
-	//if (m_Interpreter->IsCartridgeLoadedSuccessfully())
+	if (m_Interpreter->IsCartridgeLoadedSuccessfully())
 	{
 		// main loop here
 		m_Interpreter->Run();

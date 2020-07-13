@@ -28,7 +28,7 @@ private:
     bool initializeSDL();
 
 
-private:    // CLI Options
+private: // CLI Options
     static void cliRomOption(const string& i_RomFileName);
     static void cliSilentOption();
     static void cliLogFileNameOption(const string& i_LogFileName);
