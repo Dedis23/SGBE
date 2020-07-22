@@ -42,6 +42,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "gameboy.h"
 #include "cartridge.h"
 #include "utility.h"
 #include "timer.h"
@@ -49,12 +50,10 @@
 /* special locations addresses in memory */
 const word BOOTSTRAP_DONE_ADDR = 0xFF50;
 
-class Timer;
-
 class MMU
 {
 public:
-    MMU(Cartridge& i_Cartridge, Timer& i_Timer);
+    MMU(Gameboy& i_Gameboy, Cartridge& i_Cartridge);
 	virtual ~MMU() = default;
     MMU(const MMU&) = delete;
     MMU& operator=(const MMU&) = delete;
@@ -68,8 +67,11 @@ private:
 	bool isBootstrapDone() const;
 
 private:
+	/* gameboy ref */
+	Gameboy& m_Gameboy;
+
+	/* memory modules */
     Cartridge& m_Cartridge;
-	Timer& m_Timer;
 	vector<byte> m_VRAM = vector<byte>(0x9FFF - 0x8000 + 1);
 	vector<byte> m_RAM = vector<byte>(0xFDFF - 0xC000 + 1); // including the shadow ram
 	vector<byte> m_OAM = vector<byte>(0xFEFF - 0xFE00 + 1); // including the unusable section

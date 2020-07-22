@@ -1,18 +1,18 @@
-#include "interpreter.h"
+#include "gameboy.h"
 
-Interpreter::Interpreter(vector<byte>& i_ROMData) : m_ROMData(i_ROMData), m_CPU(nullptr),
+Gameboy::Gameboy(vector<byte>& i_ROMData) : m_ROMData(i_ROMData), m_CPU(nullptr),
 m_MMU(nullptr), m_CartridgeHeader(nullptr), m_Cartridge(nullptr) {}
 
-Interpreter::~Interpreter()
+Gameboy::~Gameboy()
 {
 	delete m_CartridgeHeader;
 	delete m_Cartridge;
 	delete m_MMU;
 	delete m_CPU;
-	delete m_PPU;
+	delete m_GPU;
 }
 
-bool Interpreter::Initialize()
+bool Gameboy::Initialize()
 {
 	bool res = false;
 
@@ -26,28 +26,28 @@ bool Interpreter::Initialize()
 	res = initializeCartridge();
 	LOG_CRITICAL(res == false, return false, "Failed to initialzie cartridge");
 
-	m_Timer = new Timer();
+	m_MMU = new MMU(*this, *m_Cartridge);
+	LOG_ERROR(m_MMU == nullptr, return false, "Failed to initialize the MMU");
+
+	m_CPU = new CPU(*this, *m_MMU);
+	LOG_ERROR(m_CPU == nullptr, return false, "Failed to initialize the CPU");
+
+	m_Timer = new Timer(*this);
 	LOG_ERROR(m_Timer == nullptr, return false, "Failed to initialize the Timer");
 
-	m_PPU = new PPU();
-	LOG_ERROR(m_PPU == nullptr, return false, "Failed to initalize the GPU");
-
-	m_MMU = new MMU(*m_Cartridge, *m_Timer);
-	LOG_ERROR(m_MMU == nullptr, return false, "Failed to initialize the MMU");
-																    
-	m_CPU = new CPU(*m_MMU);									    
-	LOG_ERROR(m_CPU == nullptr, return false, "Failed to initialize the CPU");
+	m_GPU = new GPU(*this);
+	LOG_ERROR(m_GPU == nullptr, return false, "Failed to initalize the GPU");
 
 	return true;
 }
 
-bool Interpreter::IsCartridgeLoadedSuccessfully()
+bool Gameboy::IsCartridgeLoadedSuccessfully()
 {
 	return m_Cartridge == nullptr ? false : true;
 }
 
 /* This is the main emulation loop */
-void Interpreter::Run()
+void Gameboy::Run()
 {
 	while (true)
 	{
@@ -57,7 +57,17 @@ void Interpreter::Run()
 	}
 }
 
-bool Interpreter::initializeCartridge()
+CPU& Gameboy::GetCPU()
+{
+	return *m_CPU;
+}
+
+Timer& Gameboy::GetTimer()
+{
+	return *m_Timer;
+}
+
+bool Gameboy::initializeCartridge()
 {
 	bool res = false;
 

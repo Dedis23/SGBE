@@ -39,9 +39,6 @@
     <ClCompile Include="GB\mmu.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="GB\interpreter.cpp">
-      <Filter>GB</Filter>
-    </ClCompile>
     <ClCompile Include="GB\registers.cpp">
       <Filter>GB</Filter>
     </ClCompile>
@@ -54,10 +51,13 @@
     <ClCompile Include="GB\cartridge.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="GB\ppu.cpp">
+    <ClCompile Include="GB\timer.cpp">
       <Filter>GB</Filter>
     </ClCompile>
-    <ClCompile Include="GB\timer.cpp">
+    <ClCompile Include="GB\gameboy.cpp">
+      <Filter>GB</Filter>
+    </ClCompile>
+    <ClCompile Include="GB\gpu.cpp">
       <Filter>GB</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,9 +77,6 @@
     <ClInclude Include="GB\mmu.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="GB\interpreter.h">
-      <Filter>GB</Filter>
-    </ClInclude>
     <ClInclude Include="GB\registers.h">
       <Filter>GB</Filter>
     </ClInclude>
@@ -92,10 +89,13 @@
     <ClInclude Include="GB\cartridge.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="GB\ppu.h">
+    <ClInclude Include="GB\timer.h">
       <Filter>GB</Filter>
     </ClInclude>
-    <ClInclude Include="GB\timer.h">
+    <ClInclude Include="GB\gameboy.h">
+      <Filter>GB</Filter>
+    </ClInclude>
+    <ClInclude Include="GB\gpu.h">
       <Filter>GB</Filter>
     </ClInclude>
   </ItemGroup>

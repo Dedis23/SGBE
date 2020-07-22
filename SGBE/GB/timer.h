@@ -19,6 +19,8 @@ const word TIMER_COUNTER_ADDR = 0xFF05;
 const word TIMER_MODULO_ADDR = 0xFF06;
 const word TIMER_CONTROL_ADDR = 0xFF07;
 
+class Gameboy;
+
 class Timer
 {
 public:
@@ -33,7 +35,7 @@ public:
     static const uint32_t CyclesArr[];
 
 public:
-    Timer();
+    Timer(Gameboy& i_Gameboy);
 	virtual ~Timer() = default;
     Timer(const Timer&) = delete;
     Timer& operator=(const Timer&) = delete;

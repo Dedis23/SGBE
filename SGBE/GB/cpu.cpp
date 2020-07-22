@@ -1,6 +1,7 @@
 #include "cpu.h"
 
-CPU::CPU(MMU& i_MMU) : m_MMU(i_MMU), AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false), m_IsCCJump(false) {}
+CPU::CPU(Gameboy& i_Gameboy, MMU& i_MMU) : m_Gameboy(i_Gameboy), m_MMU(i_MMU),
+AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false), m_IsCCJump(false) {}
 
 void CPU::Step(uint32_t& o_Cycles)
 {

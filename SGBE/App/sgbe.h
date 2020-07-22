@@ -8,7 +8,7 @@
 #pragma once
 #include "SDL.h"
 #include "../Generic/cli.h"
-#include "../GB/interpreter.h"
+#include "../GB/gameboy.h"
 
 class SGBE
 {
@@ -41,5 +41,5 @@ private:
     vector<byte> m_ROMData;
     SDL_Window* m_Window;
     SDL_Renderer* m_Renderer;
-    Interpreter* m_Interpreter;
+    Gameboy* m_Gameboy;
 };

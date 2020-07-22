@@ -14,12 +14,13 @@
 
 const uint32_t CPU_CLOCK_SPEED = 4194304; // 4 * 2^20
 
+class Gameboy;
 class MMU;
 
 class CPU
 {
 public:
-	CPU(MMU& i_MMU);
+	CPU(Gameboy& i_Gameboy, MMU& i_MMU);
 	virtual ~CPU() = default;
 	CPU(const CPU&) = delete;
 	CPU& operator=(const CPU&) = delete;
@@ -53,6 +54,9 @@ private:
 
 	/* components */
 	MMU& m_MMU;
+
+	/* gameboy ref */
+	Gameboy& m_Gameboy;
 
 private:
 	/* OPCodes - struct and map */

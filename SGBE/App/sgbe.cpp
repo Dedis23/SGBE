@@ -2,13 +2,13 @@
 
 string SGBE::s_ROMFileName = "";
 
-SGBE::SGBE() : m_Window(nullptr), m_Renderer(nullptr), m_Interpreter(nullptr) {}
+SGBE::SGBE() : m_Window(nullptr), m_Renderer(nullptr), m_Gameboy(nullptr) {}
 
 SGBE::~SGBE()
 {
 	// delete interpreter
-	delete m_Interpreter;
-	m_Interpreter = nullptr;
+	delete m_Gameboy;
+	m_Gameboy = nullptr;
 	
 	// clean logger instance
 	Logger::ResetInstance();
@@ -39,9 +39,9 @@ bool SGBE::Initialize(int argc, char* argv[])
 	LOG_CRITICAL(res == false, return false, "Failed to load ROM data");
 
 	// initialize the interpreter
-	m_Interpreter = new Interpreter(m_ROMData);
-	LOG_CRITICAL(m_Interpreter == nullptr , return false, "Failed to allocate memory for the interpreter");
-	res = m_Interpreter->Initialize();
+	m_Gameboy = new Gameboy(m_ROMData);
+	LOG_CRITICAL(m_Gameboy == nullptr , return false, "Failed to allocate memory for the interpreter");
+	res = m_Gameboy->Initialize();
 	LOG_CRITICAL(res == false, return false, "Failed to initialize the interpreter");
 	LOG_INFO(true, NOP, "SGBE initialized successfully." << endl);
 
@@ -50,10 +50,10 @@ bool SGBE::Initialize(int argc, char* argv[])
 
 void SGBE::Run()
 {
-	if (m_Interpreter->IsCartridgeLoadedSuccessfully())
+	if (m_Gameboy->IsCartridgeLoadedSuccessfully())
 	{
 		// main loop here
-		m_Interpreter->Run();
+		m_Gameboy->Run();
 
 		//SDL_SetRenderDrawColor(m_Renderer, 128, 70, 150, 255);
 		////SDL_RenderDrawPoint(m_Renderer, GAMEBOY_SCREEN_WIDTH / 2, GAMEBOY_SCREEN_HEIGHT / 2); //Renders on middle of screen.

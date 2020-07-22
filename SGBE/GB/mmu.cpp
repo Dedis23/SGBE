@@ -1,6 +1,6 @@
 ﻿#include "mmu.h"
 
-MMU::MMU(Cartridge& i_Cartridge, Timer& i_Timer) : m_Cartridge(i_Cartridge), m_Timer(i_Timer) {}
+MMU::MMU(Gameboy& i_Gameboy, Cartridge& i_Cartridge) : m_Gameboy(i_Gameboy), m_Cartridge(i_Cartridge) {}
 
 byte MMU::Read(const WordAddress& i_Address) const
 {
@@ -156,39 +156,41 @@ void MMU::Write(const WordAddress& i_Address, byte i_Value)
     LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address.GetValue());
 }
 
+/* read from memory modules from other componenets */
 byte MMU::readMappedIO(const WordAddress& i_Address) const
 {
     switch (i_Address.GetValue())
     {
     case DIVIDER_REGISTER_ADDR:
-        return m_Timer.GetDividerCounter();
+        return m_Gameboy.GetTimer().GetDividerCounter();
     case TIMER_COUNTER_ADDR:
-        return m_Timer.GetTimerCounter();
+        return m_Gameboy.GetTimer().GetTimerCounter();
     case TIMER_MODULO_ADDR:
-        return m_Timer.GetTimerModulo();
+        return m_Gameboy.GetTimer().GetTimerModulo();
     case TIMER_CONTROL_ADDR:
-        return m_Timer.GetTimerControl();
+        return m_Gameboy.GetTimer().GetTimerControl();
     default:
         return m_MappedIO[i_Address.GetValue() - 0xFF00];
     }
 }
 
+/* write to memory modules from other componenets */
 void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
 {
     switch (i_Address.GetValue())
     {
     case DIVIDER_REGISTER_ADDR:
         // whenever the user write to the divider, it will reset
-        m_Timer.ResetDividerTimer();
+        m_Gameboy.GetTimer().ResetDividerTimer();
         break;
     case TIMER_COUNTER_ADDR:
-        m_Timer.SetTimerCounter(i_Value);
+        m_Gameboy.GetTimer().SetTimerCounter(i_Value);
         break;
     case TIMER_MODULO_ADDR:
-        m_Timer.SetTimerModulo(i_Value);
+        m_Gameboy.GetTimer().SetTimerModulo(i_Value);
         break;
     case TIMER_CONTROL_ADDR:
-        m_Timer.SetTimerControl(i_Value);
+        m_Gameboy.GetTimer().SetTimerControl(i_Value);
         break;
     default:
         break;
