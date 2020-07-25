@@ -163,7 +163,7 @@ void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
     {
     case TIMER_DIVIDER_ADDR:
         // whenever the user write to the divider, it will reset
-        m_Gameboy.GetTimer().ResetDividerTimer();
+        m_MappedIO[i_Address.GetValue() - 0xFF00] = 0;
         break;
     case TIMER_CONTROL_ADDR:
         m_Gameboy.GetTimer().SetTimerControl(i_Value);
