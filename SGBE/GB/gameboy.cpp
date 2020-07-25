@@ -56,6 +56,11 @@ CPU& Gameboy::GetCPU()
 	return *m_CPU;
 }
 
+MMU& Gameboy::GetMMU()
+{
+	return *m_MMU;
+}
+
 Timer& Gameboy::GetTimer()
 {
 	return *m_Timer;

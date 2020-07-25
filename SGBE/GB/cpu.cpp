@@ -31,7 +31,7 @@ void CPU::Step(uint32_t& o_Cycles)
 	else
 	{
 		(this->*OPCodeData.Operation)();
-		LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
+		//(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
 	}
 
 	// calculate cycles

@@ -151,7 +151,7 @@ void MMU::Write(const WordAddress& i_Address, byte i_Value)
         wroteToAddr = true;
     }
 
-    //LOG_INFO(wroteToAddr == true, return, "Wrote 0x" << std::hex << static_cast<word>(i_Value) << " in address 0x" << std::hex << i_Address.GetValue());
+    LOG_INFO(wroteToAddr == true, return, "Wrote 0x" << std::hex << static_cast<word>(i_Value) << " in address 0x" << std::hex << i_Address.GetValue());
     return;
     LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address.GetValue());
 }
@@ -163,8 +163,6 @@ byte MMU::readMappedIO(const WordAddress& i_Address) const
     {
     case DIVIDER_REGISTER_ADDR:
         return m_Gameboy.GetTimer().GetDividerCounter();
-    case TIMER_COUNTER_ADDR:
-        return m_Gameboy.GetTimer().GetTimerCounter();
     case TIMER_MODULO_ADDR:
         return m_Gameboy.GetTimer().GetTimerModulo();
     case TIMER_CONTROL_ADDR:
@@ -182,9 +180,6 @@ void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
     case DIVIDER_REGISTER_ADDR:
         // whenever the user write to the divider, it will reset
         m_Gameboy.GetTimer().ResetDividerTimer();
-        break;
-    case TIMER_COUNTER_ADDR:
-        m_Gameboy.GetTimer().SetTimerCounter(i_Value);
         break;
     case TIMER_MODULO_ADDR:
         m_Gameboy.GetTimer().SetTimerModulo(i_Value);

@@ -33,6 +33,7 @@ public:
 	bool IsCartridgeLoadedSuccessfully();
 	void Run();
 	CPU& GetCPU();
+	MMU& GetMMU();
 	Timer& GetTimer();
 
 private:

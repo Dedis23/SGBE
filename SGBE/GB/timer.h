@@ -43,8 +43,6 @@ public:
     void Step(const uint32_t& i_Cycles);
     void SetTimerControl(byte i_NewTimerControl);
     byte GetTimerControl() const;
-    void SetTimerCounter(byte i_NewTimerCounter);
-    byte GetTimerCounter() const;
     byte GetDividerCounter() const;
     void ResetDividerTimer();
     void SetTimerModulo(byte i_NewTimerModulo);
@@ -61,7 +59,6 @@ private:
     int32_t m_RemainingCyclesToTickTheCounter;
     int32_t m_RemainingCyclesToTickTheDivider;
     byte m_TimerModulo;
-    byte m_TimerCounter;
     byte m_DividerCounter;
     byte m_TimerControl;
 
