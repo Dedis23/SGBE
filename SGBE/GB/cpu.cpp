@@ -31,6 +31,7 @@ void CPU::Step(uint32_t& o_Cycles)
 	else
 	{
 		(this->*OPCodeData.Operation)();
+		LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
 	}
 
 	// calculate cycles
@@ -62,6 +63,84 @@ void CPU::Reset()
 	m_IME = false;
 	m_HALT = false;
 	m_IsCCJump = false;
+}
+
+void CPU::RequestInterrupt(InterruptType i_InterruptType)
+{
+	// get out of halt
+	m_HALT = false;
+	// set in memory the requested interrupt
+	byte interruptRequest = m_MMU.Read(INTERRUPT_REQUREST_ADDR);
+	switch (i_InterruptType)
+	{
+	case CPU::InterruptType::VBlank:
+		bitwise::SetBit(0, true, interruptRequest);
+		break;
+	case CPU::InterruptType::LCD:
+		bitwise::SetBit(1, true, interruptRequest);
+		break;
+	case CPU::InterruptType::Timer:
+		bitwise::SetBit(2, true, interruptRequest);
+		break;
+	case CPU::InterruptType::Serial:
+		bitwise::SetBit(3, true, interruptRequest);
+		break;
+	case CPU::InterruptType::Joypad:
+		bitwise::SetBit(4, true, interruptRequest);
+		break;
+	}
+	m_MMU.Write(INTERRUPT_REQUREST_ADDR, interruptRequest);
+}
+
+void CPU::HandleInterrupts()
+{
+	if (m_IME) // if interrupts are enabled 
+	{
+		// every bit represent a different interrupt, lowest bits = highest priority
+		// need to check whether a bit was requested from the Interrup Request byte
+		// and whether the or not this interrupt type is currently enabled
+		byte interruptRequest = m_MMU.Read(INTERRUPT_REQUREST_ADDR);
+		byte interruptEnabled = m_MMU.Read(INTERRUPT_ENABLED_ADDR);
+		byte activeInterrupts = interruptRequest & interruptEnabled;
+
+		if (activeInterrupts > 0)
+		{
+			// disable IME during the time we serivce the interrupt
+			m_IME = false;
+			// cpu is not halt during the interrupt
+			m_HALT = false;
+			// save current PC into stack
+			PUSH(PC.GetValue());
+			// set PC to the interrupt routine based on priority and clear the request bit from request flag
+			if (bitwise::GetBit(0, activeInterrupts))
+			{
+				PC.SetValue(VBLANK_INTERRUPT_ROUTINE_ADDR);
+				bitwise::SetBit(0, false, interruptRequest);
+			}
+			else if (bitwise::GetBit(1, activeInterrupts))
+			{
+				PC.SetValue(LCD_INTERRUPT_ROUTINE_ADDR);
+				bitwise::SetBit(1, false, interruptRequest);
+			}
+			else if (bitwise::GetBit(2, activeInterrupts))
+			{
+				PC.SetValue(TIMER_INTERRUPT_ROUTINE_ADDR);
+				bitwise::SetBit(2, false, interruptRequest);
+			}
+			else if (bitwise::GetBit(3, activeInterrupts))
+			{
+				PC.SetValue(SERIAL_INTERRUPT_ROUTINE_ADDR);
+				bitwise::SetBit(3, false, interruptRequest);
+			}
+			else if (bitwise::GetBit(4, activeInterrupts))
+			{
+				PC.SetValue(JOYPAD_INTERRUPT_ROUTINE_ADDR);
+				bitwise::SetBit(4, false, interruptRequest);
+			}
+
+			m_MMU.Write(INTERRUPT_REQUREST_ADDR, interruptRequest);
+		}
+	}
 }
 
 byte CPU::readNextByte()
@@ -910,12 +989,14 @@ void CPU::RET_cc(JumpConditions i_Condition)
 	RETI
 
 	Description:
-	Pop two bytes from stack & jump to that address then enable interrupts
+	Pop two bytes from stack & jump to that address
+	and enable interrupts 
+	this is being called after an interrupt routine
 */
 void CPU::RETI()
 {
-	m_IME = true;
 	RET();
+	m_IME = true;
 }
 
 /*

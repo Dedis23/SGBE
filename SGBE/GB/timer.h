@@ -64,4 +64,7 @@ private:
     byte m_TimerCounter;
     byte m_DividerCounter;
     byte m_TimerControl;
+
+    /* gameboy ref */
+    Gameboy& m_Gameboy;
 };

@@ -3,7 +3,7 @@
 const uint32_t Timer::CyclesArr[] = { CPU_CLOCK_SPEED / 4096, CPU_CLOCK_SPEED / 262144, CPU_CLOCK_SPEED / 65536, CPU_CLOCK_SPEED / 16384 };
 
 // Note - the divider freq is 16384 and cannot be set otherwise
-Timer::Timer(Gameboy& i_Gameboy) : m_IsEnabled(true), m_RemainingCyclesToTickTheCounter(CyclesArr[(int)TimerFrequencies::_4096Hz]),
+Timer::Timer(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsEnabled(true), m_RemainingCyclesToTickTheCounter(CyclesArr[(int)TimerFrequencies::_4096Hz]),
 m_RemainingCyclesToTickTheDivider(CyclesArr[(int)TimerFrequencies::_16384Hz]),
 m_TimerCounter(0), m_DividerCounter(0), m_TimerModulo(0), m_TimerControl(0),
 m_CurrentFrequency(TimerFrequencies::_4096Hz)
@@ -30,7 +30,7 @@ void Timer::Step(const uint32_t& i_Cycles)
 				m_TimerCounter = m_TimerModulo;
 				
 				// trigger the timer interrupt
-				//TODO
+				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::Timer);
 			}
 		}
 	}

@@ -12,6 +12,17 @@
 #include "utility.h"
 #include "mmu.h"
 
+/* Interrupt registers addresses in memory */
+const word INTERRUPT_ENABLED_ADDR = 0xFFFF;
+const word INTERRUPT_REQUREST_ADDR = 0xFF0F; // every bit corresponds to a different interrupt
+
+/* Interrupt routines addresses in memory */
+const word VBLANK_INTERRUPT_ROUTINE_ADDR = 0x40;
+const word LCD_INTERRUPT_ROUTINE_ADDR = 0x48;
+const word TIMER_INTERRUPT_ROUTINE_ADDR = 0x50;
+const word SERIAL_INTERRUPT_ROUTINE_ADDR = 0x58;
+const word JOYPAD_INTERRUPT_ROUTINE_ADDR = 0x60;
+
 const uint32_t CPU_CLOCK_SPEED = 4194304; // 4 * 2^20
 
 class Gameboy;
@@ -20,6 +31,16 @@ class MMU;
 class CPU
 {
 public:
+	enum class InterruptType
+	{
+		VBlank,
+		LCD,
+		Timer,
+		Serial,
+		Joypad,
+	};
+
+public:
 	CPU(Gameboy& i_Gameboy, MMU& i_MMU);
 	virtual ~CPU() = default;
 	CPU(const CPU&) = delete;
@@ -27,6 +48,8 @@ public:
 
 	void Step(uint32_t& o_Cycles);
 	void Reset();
+	void RequestInterrupt(InterruptType i_InterruptType);
+	void HandleInterrupts();
 
 private:
 	enum class JumpConditions

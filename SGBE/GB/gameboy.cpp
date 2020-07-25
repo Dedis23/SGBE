@@ -16,13 +16,6 @@ bool Gameboy::Initialize()
 {
 	bool res = false;
 
-	m_CartridgeHeader = new CartridgeHeader(m_ROMData);
-	LOG_ERROR(m_CartridgeHeader == nullptr, return false, "Failed to read the cartridge header");
-
-	res = m_CartridgeHeader->VerifyChecksum();
-	LOG_ERROR(res == false, return true, "Failed to verify cartridge checksum");
-	LOG_INFO(true, NOP, "Cartridge checksum verified successfully.");
-
 	res = initializeCartridge();
 	LOG_CRITICAL(res == false, return false, "Failed to initialzie cartridge");
 
@@ -54,6 +47,7 @@ void Gameboy::Run()
 		uint32_t cycles = 0;
 		m_CPU->Step(cycles);
 		m_Timer->Step(cycles);
+		m_CPU->HandleInterrupts();
 	}
 }
 
@@ -70,6 +64,13 @@ Timer& Gameboy::GetTimer()
 bool Gameboy::initializeCartridge()
 {
 	bool res = false;
+
+	m_CartridgeHeader = new CartridgeHeader(m_ROMData);
+	LOG_ERROR(m_CartridgeHeader == nullptr, return false, "Failed to read the cartridge header");
+
+	res = m_CartridgeHeader->VerifyChecksum();
+	LOG_ERROR(res == false, return true, "Failed to verify cartridge checksum");
+	LOG_INFO(true, NOP, "Cartridge checksum verified successfully.");
 
 	LOG_INFO(true, NOP, "Cartridge title: " << m_CartridgeHeader->Title);
 	LOG_INFO(true, NOP, "Version: " << m_CartridgeHeader->Version);
