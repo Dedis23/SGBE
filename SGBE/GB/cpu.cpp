@@ -21,7 +21,7 @@ void CPU::Step(uint32_t& o_Cycles)
 	}
 
 	// execute
-	if (PC.GetValue() - 1 >= 0xC && PC.GetValue() - 1 <= 0x1C) // this is for debug only, to be removed
+	if (PC.GetValue() - 1 >= 0x95 && PC.GetValue() - 1 <= 0xA7) // this is for debug only, to be removed
 	{
 		LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
 		(this->*OPCodeData.Operation)();
