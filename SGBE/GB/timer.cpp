@@ -6,11 +6,7 @@ const uint32_t Timer::CyclesArr[] = { CPU_CLOCK_SPEED / 4096, CPU_CLOCK_SPEED / 
 Timer::Timer(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsEnabled(true), 
 m_RemainingCyclesToTickTheCounter(CyclesArr[(int)TimerFrequencies::_4096Hz]),
 m_RemainingCyclesToTickTheDivider(CyclesArr[(int)TimerFrequencies::_16384Hz]),
-m_CurrentFrequency(TimerFrequencies::_4096Hz)
-{
-	// the default of the timer controler is enabled and set to 4096
-	m_Gameboy.GetMMU().Write(TIMER_CONTROL_ADDR, 0b000000100);
-}
+m_CurrentFrequency(TimerFrequencies::_4096Hz) {}
 
 void Timer::Step(const uint32_t& i_Cycles)
 {
