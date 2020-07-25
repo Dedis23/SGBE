@@ -14,7 +14,7 @@
 #include "cpu.h"
 
 /* Timer registers addresses in memory */
-const word DIVIDER_REGISTER_ADDR = 0xFF04;
+const word TIMER_DIVIDER_ADDR = 0xFF04;
 const word TIMER_COUNTER_ADDR = 0xFF05;
 const word TIMER_MODULO_ADDR = 0xFF06;
 const word TIMER_CONTROL_ADDR = 0xFF07;
@@ -43,10 +43,7 @@ public:
     void Step(const uint32_t& i_Cycles);
     void SetTimerControl(byte i_NewTimerControl);
     byte GetTimerControl() const;
-    byte GetDividerCounter() const;
     void ResetDividerTimer();
-    void SetTimerModulo(byte i_NewTimerModulo);
-    byte GetTimerModulo() const;
 
 private:
     void setFrequency(TimerFrequencies i_Frequency);
@@ -58,8 +55,6 @@ private:
     TimerFrequencies m_CurrentFrequency;
     int32_t m_RemainingCyclesToTickTheCounter;
     int32_t m_RemainingCyclesToTickTheDivider;
-    byte m_TimerModulo;
-    byte m_DividerCounter;
     byte m_TimerControl;
 
     /* gameboy ref */

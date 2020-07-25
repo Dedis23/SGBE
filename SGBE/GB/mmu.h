@@ -62,7 +62,6 @@ public:
 	void Write(const WordAddress& i_Address, byte i_Value);
 
 private:
-	byte readMappedIO(const WordAddress& i_Address) const;
 	void writeMappedIO(const WordAddress& i_Address, byte i_Value);
 	bool isBootstrapDone() const;
 
