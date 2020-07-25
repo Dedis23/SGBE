@@ -4,8 +4,11 @@
  *			The CPU of the gameboy				*
  ************************************************/
 
-/* Most of the information were take from gameboy cpu manual pdf: *
- * http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf				  */
+/* Most of the information were take from:							 *
+ * gameboy cpu manual pdf:											 *
+ * http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf					 *
+ * Gameboy CPU Manual pdf:											 *
+ * http://index-of.es/Varios-2/Game%20Boy%20Programming%20Manual.pdf */
 
 #pragma once
 #include <iomanip>
@@ -13,8 +16,9 @@
 #include "mmu.h"
 
 /* Interrupt registers addresses in memory */
-const word INTERRUPT_ENABLED_ADDR = 0xFFFF;
-const word INTERRUPT_REQUREST_ADDR = 0xFF0F; // every bit corresponds to a different interrupt
+/* every bit corresponds to a different interrupt */
+const word INTERRUPT_ENABLED_ADDR = 0xFFFF; // R/W
+const word INTERRUPT_REQUREST_ADDR = 0xFF0F; // R/W
 
 /* Interrupt routines addresses in memory */
 const word VBLANK_INTERRUPT_ROUTINE_ADDR = 0x40;

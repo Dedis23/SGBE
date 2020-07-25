@@ -14,10 +14,10 @@
 #include "cpu.h"
 
 /* Timer registers addresses in memory */
-const word TIMER_DIVIDER_ADDR = 0xFF04;
-const word TIMER_COUNTER_ADDR = 0xFF05;
-const word TIMER_MODULO_ADDR = 0xFF06;
-const word TIMER_CONTROL_ADDR = 0xFF07;
+const word TIMER_DIVIDER_ADDR = 0xFF04; // R/W
+const word TIMER_COUNTER_ADDR = 0xFF05; // R/W
+const word TIMER_MODULO_ADDR = 0xFF06;  // R/W
+const word TIMER_CONTROL_ADDR = 0xFF07; // R/W
 
 class Gameboy;
 
