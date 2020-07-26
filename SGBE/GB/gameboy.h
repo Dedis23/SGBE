@@ -16,6 +16,7 @@
 
 class CPU;
 class MMU;
+class GPU;
 class Timer;
 
 class Gameboy

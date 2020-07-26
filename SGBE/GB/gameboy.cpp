@@ -42,12 +42,18 @@ bool Gameboy::IsCartridgeLoadedSuccessfully()
 /* This is the main emulation loop */
 void Gameboy::Run()
 {
-	while (true)
+	while (true) // change this with SDL quit check i.e press X or click ESC
 	{
+		uint32_t MAX_CYCLES_THIS_FRAME = CPU_CLOCK_SPEED / TARGET_FRAME_RATE;
 		uint32_t cycles = 0;
-		m_CPU->Step(cycles);
-		m_Timer->Step(cycles);
-		m_CPU->HandleInterrupts();
+		while (cycles <= MAX_CYCLES_THIS_FRAME)
+		{
+			m_CPU->Step(cycles);
+			m_Timer->Step(cycles);
+			m_GPU->Step(cycles);
+			m_CPU->HandleInterrupts();
+		}
+		//m_GPU->RenderGame();
 	}
 }
 
