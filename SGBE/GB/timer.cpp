@@ -46,6 +46,19 @@ void Timer::Step(const uint32_t& i_Cycles)
 	}
 }
 
+void Timer::Reset()
+{
+	m_IsEnabled = true;
+	m_RemainingCyclesToTickTheCounter = CyclesArr[(int)TimerFrequencies::_4096Hz];
+	m_RemainingCyclesToTickTheDivider = CyclesArr[(int)TimerFrequencies::_16384Hz];
+	m_CurrentFrequency = TimerFrequencies::_4096Hz;
+	// reset timer memory registers in memory
+	m_Gameboy.GetMMU().Write(TIMER_DIVIDER_ADDR, 0);
+	m_Gameboy.GetMMU().Write(TIMER_COUNTER_ADDR, 0);
+	m_Gameboy.GetMMU().Write(TIMER_MODULO_ADDR, 0);
+	m_Gameboy.GetMMU().Write(TIMER_CONTROL_ADDR, 0b000000100); // the default value for the timer controler, is enabled and 4096Hz mode
+}
+
 void Timer::SetTimerControl(byte i_NewTimerControl)
 {
 	bitwise::GetBit(2, i_NewTimerControl) ? start() : stop(); // read bit 2 for enable/disable

@@ -1,7 +1,7 @@
 #include "gameboy.h"
 
-Gameboy::Gameboy(vector<byte>& i_ROMData) : m_ROMData(i_ROMData), m_CPU(nullptr),
-m_MMU(nullptr), m_CartridgeHeader(nullptr), m_Cartridge(nullptr) {}
+Gameboy::Gameboy(vector<byte>& i_ROMData) : m_ROMData(i_ROMData), m_MMU(nullptr), m_CPU(nullptr),
+m_Timer(nullptr), m_GPU(nullptr), m_CartridgeHeader(nullptr), m_Cartridge(nullptr), m_DrawFunction(nullptr) {}
 
 Gameboy::~Gameboy()
 {
@@ -44,16 +44,15 @@ void Gameboy::Run()
 {
 	while (true) // change this with SDL quit check i.e press X or click ESC
 	{
-		uint32_t MAX_CYCLES_THIS_FRAME = CPU_CLOCK_SPEED / TARGET_FRAME_RATE;
-		uint32_t cycles = 0;
-		while (cycles <= MAX_CYCLES_THIS_FRAME)
+		uint32_t currentFrameCycles = 0;
+		while (currentFrameCycles < MAX_CYCLES_BEFORE_RENDERING)
 		{
-			m_CPU->Step(cycles);
-			m_Timer->Step(cycles);
-			m_GPU->Step(cycles);
+			m_CPU->Step(currentFrameCycles);
+			m_Timer->Step(currentFrameCycles);
+			m_GPU->Step(currentFrameCycles);
 			m_CPU->HandleInterrupts();
 		}
-		//m_GPU->RenderGame();
+		//renderScreen();
 	}
 }
 

@@ -57,6 +57,8 @@ struct Pixel
 
 const Pixel GAMEBOY_POCKET_PALLETE[4] = { { 255, 255, 255 }, { 192, 192, 192 }, { 96, 96, 96 }, { 0, 0, 0 } };
 
+const uint32_t MAX_CYCLES_BEFORE_RENDERING = 70224; 
+
 class Gameboy;
 
 class GPU
@@ -67,7 +69,8 @@ public:
     GPU(const GPU&) = delete;
     GPU& operator=(const GPU&) = delete;
 
-    void Step(uint32_t& o_Cycles);
+    void Step(uint32_t& i_Cycles);
+    void Reset();
     void DisableLCD();
 
 private:
@@ -79,11 +82,20 @@ private:
         Transfer_Data_To_LCD = 3,
     };
 
+    const uint32_t MIN_H_BLANK_MODE_CYCLES = 204;
+    const uint32_t MIN_SEARCHING_OAM_MODE_CYCLES = 80;
+    const uint32_t MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES = 172;
+    const uint32_t MAX_VIDEO_CYCLES = MIN_H_BLANK_MODE_CYCLES + MIN_SEARCHING_OAM_MODE_CYCLES + MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES;
+    const uint32_t V_BLANK_CYCLES = 4560;
+
     bool isLCDEnabled();
     void handleHBlankMode();
     void handleVBlankMode();
     void handleSearchSpritesAttributesMode();
     void handleLCDTransferMode();
+
+    Video_Mode m_Mode;
+    uint32_t m_VideoCycles;
 
     /* gameboy ref */
     Gameboy& m_Gameboy;

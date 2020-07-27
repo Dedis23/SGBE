@@ -9,7 +9,7 @@
 #include "../Generic/logger.h"
 #include "registers.h"
 
-const float TARGET_FRAME_RATE = 59.73f; // original gameboy vsync
+const float TARGET_FRAME_RATE = 59.72f; // original gameboy vsync
 const uint32_t GAMEBOY_SCREEN_WIDTH = 160;
 const uint32_t GAMEBOY_SCREEN_HEIGHT = 144;
 

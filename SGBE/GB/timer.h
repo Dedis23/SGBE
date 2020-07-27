@@ -41,6 +41,7 @@ public:
     Timer& operator=(const Timer&) = delete;
 
     void Step(const uint32_t& i_Cycles);
+    void Reset();
     void SetTimerControl(byte i_NewTimerControl);
 
 private:
