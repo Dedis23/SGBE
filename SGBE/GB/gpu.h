@@ -71,7 +71,6 @@ public:
 
     void Step(uint32_t& i_Cycles);
     void Reset();
-    void DisableLCD();
 
 private:
     enum class Video_Mode
@@ -79,16 +78,17 @@ private:
         H_Blank = 0,
         V_Blank = 1,
         Searching_OAM = 2,
-        Transfer_Data_To_LCD = 3,
+        Transfer_Data_To_LCD = 3, // access VRAM and transfer data to LCD
     };
 
-    const uint32_t MIN_H_BLANK_MODE_CYCLES = 204;
-    const uint32_t MIN_SEARCHING_OAM_MODE_CYCLES = 80;
-    const uint32_t MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES = 172;
+    const uint32_t MIN_H_BLANK_MODE_CYCLES = 204; // Mode 0
+    const uint32_t MIN_SEARCHING_OAM_MODE_CYCLES = 80; // Mode 2
+    const uint32_t MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES = 172; // Mode 3
     const uint32_t MAX_VIDEO_CYCLES = MIN_H_BLANK_MODE_CYCLES + MIN_SEARCHING_OAM_MODE_CYCLES + MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES;
-    const uint32_t V_BLANK_CYCLES = 4560;
+    const uint32_t V_BLANK_CYCLES = 4560; // Mode 1
 
     bool isLCDEnabled();
+    void setMode(Video_Mode i_NewMode);
     void handleHBlankMode();
     void handleVBlankMode();
     void handleSearchSpritesAttributesMode();
