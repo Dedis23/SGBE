@@ -45,8 +45,9 @@ void GPU::Step(uint32_t& i_Cycles)
 
 void GPU::Reset()
 {
-	m_Mode = Video_Mode::Searching_OAM;
 	m_VideoCycles = 0;
+	m_Gameboy.GetMMU().Write(GPU_LCDC_Y_COORDINATE_ADDR, 0);
+	setMode(Video_Mode::Searching_OAM);
 }
 
 bool GPU::isLCDEnabled()

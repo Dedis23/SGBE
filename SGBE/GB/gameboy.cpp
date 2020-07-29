@@ -71,6 +71,11 @@ Timer& Gameboy::GetTimer()
 	return *m_Timer;
 }
 
+GPU& Gameboy::GetGPU()
+{
+	return *m_GPU;
+}
+
 bool Gameboy::initializeCartridge()
 {
 	bool res = false;

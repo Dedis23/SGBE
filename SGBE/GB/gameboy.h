@@ -36,6 +36,7 @@ public:
 	CPU& GetCPU();
 	MMU& GetMMU();
 	Timer& GetTimer();
+	GPU& GetGPU();
 
 private:
 	bool initializeCartridge();
