@@ -23,7 +23,7 @@ const word GPU_LCD_CONTROL_ADDR = 0xFF40;
 const word GPU_LCDC_STATUS_ADDR = 0xFF41;
 const word GPU_SCROLL_Y_ADDR = 0xFF42;
 const word GPU_SCROLL_X_ADDR = 0xFF43;
-const word GPU_LCDC_Y_CORRDINATE_ADDR = 0xFF44;
+const word GPU_LCDC_Y_COORDINATE_ADDR = 0xFF44;
 const word GPU_LY_COMPARE_ADDR = 0xFF45;
 const word GPU_DMA_TRANSFER_AND_START_ADDR = 0xFF46;
 const word GPU_BG_PALETTE_DATA_ADDR = 0xFF47;
@@ -90,10 +90,10 @@ private:
         Transfer_Data_To_LCD = 3, // access VRAM and transfer data to LCD
     };
 
-    const uint32_t MIN_H_BLANK_MODE_CYCLES = 204; // Mode 0
-    const uint32_t MIN_V_BLANK_MODE_CYCLES = 456; // Mode 1
-    const uint32_t MIN_SEARCHING_OAM_MODE_CYCLES = 80; // Mode 2
-    const uint32_t MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES = 172; // Mode 3
+    const uint32_t MIN_H_BLANK_MODE_CYCLES = 204; // Mode 0 cycles
+    const uint32_t MIN_V_BLANK_MODE_SINGLE_LINE_CYCLES = 456; // Mode 1 single line cycle, overall it takes 10 times this number
+    const uint32_t MIN_SEARCHING_OAM_MODE_CYCLES = 80; // Mode 2 cycles
+    const uint32_t MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES = 172; // Mode 3 cycles
     const uint32_t V_BLANK_START_SCANLINE = 144;
     const uint32_t V_BLANK_END_SCANLINE = 153;
 

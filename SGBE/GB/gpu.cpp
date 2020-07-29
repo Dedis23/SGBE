@@ -63,9 +63,9 @@ void GPU::handleHBlankMode()
 		m_VideoCycles %= MIN_H_BLANK_MODE_CYCLES;
 
 		// increment the y scanline
-		byte currScanline = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_CORRDINATE_ADDR);
+		byte currScanline = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_COORDINATE_ADDR);
 		currScanline++;
-		m_Gameboy.GetMMU().Write(GPU_LCDC_Y_CORRDINATE_ADDR, currScanline);
+		m_Gameboy.GetMMU().Write(GPU_LCDC_Y_COORDINATE_ADDR, currScanline);
 
 		// after a change in the scanline, check for LY and LYC coincidence interrupt
 		checkForLYAndLYCCoincidence();
@@ -91,14 +91,46 @@ void GPU::handleHBlankMode()
 			}
 
 			// move to mode 2
-			setMode(Video_Mode::H_Blank);
+			setMode(Video_Mode::Searching_OAM);
 		}
 	}
 }
 
+/* mode 1 handler */
 void GPU::handleVBlankMode()
 {
+	if (m_VideoCycles >= MIN_V_BLANK_MODE_SINGLE_LINE_CYCLES)
+	{
+		m_VideoCycles %= MIN_V_BLANK_MODE_SINGLE_LINE_CYCLES;
 
+		// increment the y corrdinate
+		byte currScanline = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_COORDINATE_ADDR);
+		currScanline++;
+		m_Gameboy.GetMMU().Write(GPU_LCDC_Y_COORDINATE_ADDR, currScanline);
+
+		// after a change in the scanline, check for LY and LYC coincidence interrupt
+		checkForLYAndLYCCoincidence();
+
+		// check if its time to go back to line 0 and mode 2 (meaning a full frame have passed)
+		if (currScanline < V_BLANK_END_SCANLINE)
+		{
+			// reset Y corrdinate to 0
+			currScanline = 0;
+			m_Gameboy.GetMMU().Write(GPU_LCDC_Y_COORDINATE_ADDR, currScanline);
+
+			// after a change in the scanline, check for LY and LYC coincidence interrupt
+			checkForLYAndLYCCoincidence();
+
+			// check for mode 2 interrupt bit
+			if (checkForLCDCInterrupt(LCDC_STATUS_MODE_2_OAM_INTERRUPT_BIT))
+			{
+				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+			}
+
+			// move to mode 2
+			setMode(Video_Mode::Searching_OAM);
+		}
+	}
 }
 
 /* mode 2 handler */
@@ -149,7 +181,7 @@ bool GPU::checkForLCDCInterrupt(int i_InterruptBit)
 
 void GPU::checkForLYAndLYCCoincidence()
 {
-	byte currScanline = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_CORRDINATE_ADDR);
+	byte currScanline = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_COORDINATE_ADDR);
 	byte LYCompare = m_Gameboy.GetMMU().Read(GPU_LY_COMPARE_ADDR);
 	byte lcdcStatus = m_Gameboy.GetMMU().Read(GPU_LCDC_STATUS_ADDR);
 
