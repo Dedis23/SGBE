@@ -91,10 +91,11 @@ private:
     };
 
     const uint32_t MIN_H_BLANK_MODE_CYCLES = 204; // Mode 0
+    const uint32_t MIN_V_BLANK_MODE_CYCLES = 456; // Mode 1
     const uint32_t MIN_SEARCHING_OAM_MODE_CYCLES = 80; // Mode 2
     const uint32_t MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES = 172; // Mode 3
-    const uint32_t MAX_VIDEO_CYCLES = MIN_H_BLANK_MODE_CYCLES + MIN_SEARCHING_OAM_MODE_CYCLES + MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES;
-    const uint32_t V_BLANK_CYCLES = MAX_VIDEO_CYCLES * 10; // Mode 1, 10 lines 144-153
+    const uint32_t V_BLANK_START_SCANLINE = 144;
+    const uint32_t V_BLANK_END_SCANLINE = 153;
 
     bool isLCDEnabled();
     void setMode(Video_Mode i_NewMode);
@@ -102,8 +103,9 @@ private:
     void handleVBlankMode();
     void handleSearchSpritesAttributesMode();
     void handleLCDTransferMode();
-    void drawScanline();
+    void drawCurrentScanline();
     bool checkForLCDCInterrupt(int i_InterruptBit);
+    void checkForLYAndLYCCoincidence();
 
     Video_Mode m_Mode;
     uint32_t m_VideoCycles;

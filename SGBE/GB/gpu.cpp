@@ -58,7 +58,42 @@ bool GPU::isLCDEnabled()
 /* mode 0 handler */
 void GPU::handleHBlankMode()
 {
+	if (m_VideoCycles >= MIN_H_BLANK_MODE_CYCLES)
+	{
+		m_VideoCycles %= MIN_H_BLANK_MODE_CYCLES;
 
+		// increment the y scanline
+		byte currScanline = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_CORRDINATE_ADDR);
+		currScanline++;
+		m_Gameboy.GetMMU().Write(GPU_LCDC_Y_CORRDINATE_ADDR, currScanline);
+
+		// after a change in the scanline, check for LY and LYC coincidence interrupt
+		checkForLYAndLYCCoincidence();
+
+		// move either to mode 2 or mode 1, based on current scanline
+		if (currScanline == V_BLANK_START_SCANLINE)
+		{
+			// check for mode 1 interrupt bit
+			if (checkForLCDCInterrupt(LCDC_STATUS_MODE_1_V_BLANK_INTERRUPT_BIT))
+			{
+				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+			}
+
+			// move to mode 1
+			setMode(Video_Mode::V_Blank);
+		}
+		else // move again to OAM search (mode 2) to create the next scanline
+		{
+			// check for mode 2 interrupt bit
+			if (checkForLCDCInterrupt(LCDC_STATUS_MODE_2_OAM_INTERRUPT_BIT))
+			{
+				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+			}
+
+			// move to mode 2
+			setMode(Video_Mode::H_Blank);
+		}
+	}
 }
 
 void GPU::handleVBlankMode()
@@ -86,7 +121,7 @@ void GPU::handleLCDTransferMode()
 		m_VideoCycles %= MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES;
 
 		// write a single scanline
-		drawScanline();
+		drawCurrentScanline();
 
 		// check for mode 0 (H Blank) interrupt bit
 		if (checkForLCDCInterrupt(LCDC_STATUS_MODE_0_H_BLANK_INTERRUPT_BIT))
@@ -99,12 +134,41 @@ void GPU::handleLCDTransferMode()
 	}
 }
 
+void GPU::drawCurrentScanline()
+{
+	// TODO
+}
+
 bool GPU::checkForLCDCInterrupt(int i_InterruptBit)
 {
 	bool isInterruptBitRaised = false;
 	byte lcdcStatus = m_Gameboy.GetMMU().Read(GPU_LCDC_STATUS_ADDR);
 	isInterruptBitRaised = bitwise::GetBit(i_InterruptBit, lcdcStatus);
 	return isInterruptBitRaised;
+}
+
+void GPU::checkForLYAndLYCCoincidence()
+{
+	byte currScanline = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_CORRDINATE_ADDR);
+	byte LYCompare = m_Gameboy.GetMMU().Read(GPU_LY_COMPARE_ADDR);
+	byte lcdcStatus = m_Gameboy.GetMMU().Read(GPU_LCDC_STATUS_ADDR);
+
+	// compare the current Y scanline and LYC
+	if (currScanline == LYCompare)
+	{
+		// raise coincidence bit
+		bitwise::SetBit(LCDC_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT, true, lcdcStatus);
+		if (checkForLCDCInterrupt(LCDC_STATUS_LYC_EQUALS_LY_COINCIDENCE_INTERRUPT_BIT))
+		{
+			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+		}
+	}
+	else //  its > or <
+	{
+		// clear the coincidence bit
+		bitwise::SetBit(LCDC_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT, false, lcdcStatus);
+	}
+	m_Gameboy.GetMMU().Write(GPU_LCDC_STATUS_ADDR, lcdcStatus);
 }
 
 void GPU::setMode(Video_Mode i_NewMode)
