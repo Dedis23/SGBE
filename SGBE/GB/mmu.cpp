@@ -173,14 +173,19 @@ void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
     switch (i_Address.GetValue())
     {
     case TIMER_DIVIDER_ADDR:
+    {
         // whenever the user write to the divider, it will reset
         m_MappedIO[i_Address.GetValue() - 0xFF00] = 0;
+    }
         break;
     case TIMER_CONTROL_ADDR:
+    {
         m_Gameboy.GetTimer().SetTimerControl(i_Value);
         m_MappedIO[i_Address.GetValue() - 0xFF00] = i_Value;
+    }
         break;
     case GPU_LCD_CONTROL_ADDR:
+    {
         // if the LCD is currently on and the new value clears the LCD enable bit, we will reset the GPU
         byte currLCDC = m_MappedIO[i_Address.GetValue() - 0xFF00];
         if (bitwise::GetBit(LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT, currLCDC == true)
@@ -189,21 +194,28 @@ void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
             m_Gameboy.GetGPU().Reset();
         }
         m_MappedIO[i_Address.GetValue() - 0xFF00] = i_Value;
+    }
         break;
     case GPU_LCDC_STATUS_ADDR:
+    {
         // bits 0-2 should not be written by the game they are read only (2 is LY,LYC coincidence bit and 0-1 are the current mode)
         i_Value &= 0xF8;
         byte currLCDCStatus = m_MappedIO[i_Address.GetValue() - 0xFF00];
         currLCDCStatus &= 0x07;
         m_MappedIO[i_Address.GetValue() - 0xFF00] = currLCDCStatus | i_Value;
+    }
         break;
     case GPU_LCDC_Y_COORDINATE_ADDR:
+    {
         // whenever the user write to the Y coordinate, it will reset
         m_MappedIO[i_Address.GetValue() - 0xFF00] = 0;
+    }
         break;
     default:
+    {
         // any other mapped i/o
         m_MappedIO[i_Address.GetValue() - 0xFF00] = i_Value;
+    }
         break;
     }
 }
