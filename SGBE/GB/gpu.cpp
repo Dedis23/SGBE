@@ -169,7 +169,22 @@ void GPU::handleLCDTransferMode()
 
 void GPU::drawCurrentScanline()
 {
-	// TODO
+	byte LCDC = m_Gameboy.GetMMU().Read(GPU_LCD_CONTROL_ADDR);
+	// check BG/Window priority bit, if 0 then do not write BG and Window
+	if (bitwise::GetBit(LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT, LCDC))
+	{
+		drawBackground();
+		// check for window display bit
+		if (bitwise::GetBit(LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT, LCDC))
+		{
+			drawWindow();
+		}
+	}
+	// check for sprite bit
+	if (bitwise::GetBit(LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT, LCDC))
+	{
+		drawSprites();
+	}
 }
 
 bool GPU::checkForLCDCInterrupt(int i_InterruptBit)
