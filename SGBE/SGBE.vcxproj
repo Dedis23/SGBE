@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App\main.cpp" />
+    <ClCompile Include="App\sdl_wrapper.cpp" />
     <ClCompile Include="App\sgbe.cpp" />
     <ClCompile Include="GB\cartridge.cpp" />
     <ClCompile Include="GB\cartridge_header.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="Generic\logger.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\sdl_wrapper.h" />
     <ClInclude Include="App\sgbe.h" />
     <ClInclude Include="GB\cartridge.h" />
     <ClInclude Include="GB\cartridge_header.h" />

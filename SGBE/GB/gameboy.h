@@ -21,13 +21,10 @@ class GPU;
 class Timer;
 struct Pixel;
 
-//typedef void(*RenderFunction)(Pixel i_FrameBuffer[]);
-std::function<void(Pixel i_FrameBuffer[])> t;
-
 class Gameboy
 {
 public:
-	Gameboy(vector<byte>& i_ROMData, RenderFunction i_RenderFunction);
+	Gameboy(vector<byte>& i_ROMData, function<void(Pixel i_FrameBuffer[])> i_RenderFuncPtr);
 	virtual ~Gameboy();
 	Gameboy(const Gameboy&) = delete;
 	Gameboy& operator=(const Gameboy&) = delete;
@@ -54,5 +51,5 @@ private:
 	CartridgeHeader* m_CartridgeHeader;
 	Cartridge* m_Cartridge;
 	// host specific methods
-	RenderFunction m_RenderFunction;
+	function<void(Pixel* i_FrameBuffer)> m_RenderScreen;
 };

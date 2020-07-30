@@ -25,8 +25,8 @@ void CPU::Step(uint32_t& o_Cycles)
 	{
 		LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
 		(this->*OPCodeData.Operation)();
-		dumpRegisters();
-		cout << endl;
+		//dumpRegisters();
+		//cout << endl;
 	}
 	else
 	{

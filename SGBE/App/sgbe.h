@@ -6,7 +6,7 @@
  ****************************************************************/
 
 #pragma once
-#include "SDL.h"
+#include "sdl_wrapper.h"
 #include "../Generic/cli.h"
 #include "../GB/gameboy.h"
 
@@ -25,7 +25,6 @@ private:
     bool loadDefaultSettings();
     bool loadArguments(int argc, char* argv[]);
     bool loadROM(const string& i_RomFilePath);
-    bool initializeSDL();
 
 
 private: // CLI Options
@@ -33,16 +32,9 @@ private: // CLI Options
     static void cliSilentOption();
     static void cliLogFileNameOption(const string& i_LogFileName);
 
-private: // SDL Wrappers
-    void SDLRenderWrapper(Pixel i_FrameBuffer[]);
-
 private:
     static string s_ROMFileName;
     vector<byte> m_ROMData;
+    SDLWrapper* m_SDLWrapper;
     Gameboy* m_Gameboy;
-
-    // SDL releated
-    SDL_Window* m_Window;
-    SDL_Renderer* m_Renderer;
-    SDL_Texture* m_Texture;
 };

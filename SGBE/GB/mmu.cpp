@@ -155,12 +155,12 @@ void MMU::Write(const WordAddress& i_Address, byte i_Value)
     }
     
     /* debug printing without timer writes, this should be commented */
-    LOG_INFO(wroteToAddr == true
-        && i_Address.GetValue() != TIMER_DIVIDER_ADDR
-        && i_Address.GetValue() != TIMER_COUNTER_ADDR
-        && i_Address.GetValue() != TIMER_MODULO_ADDR
-        && i_Address.GetValue() != TIMER_CONTROL_ADDR,
-        return, "Wrote 0x" << std::hex << static_cast<word>(i_Value) << " in address 0x" << std::hex << i_Address.GetValue());
+    //LOG_INFO(wroteToAddr == true
+    //    && i_Address.GetValue() != TIMER_DIVIDER_ADDR
+    //    && i_Address.GetValue() != TIMER_COUNTER_ADDR
+    //    && i_Address.GetValue() != TIMER_MODULO_ADDR
+    //    && i_Address.GetValue() != TIMER_CONTROL_ADDR,
+    //    return, "Wrote 0x" << std::hex << static_cast<word>(i_Value) << " in address 0x" << std::hex << i_Address.GetValue());
     return;
 
     LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address.GetValue());

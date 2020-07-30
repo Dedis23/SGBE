@@ -1,7 +1,7 @@
 #include "gameboy.h"
 
-Gameboy::Gameboy(vector<byte>& i_ROMData, RenderFunction i_RenderFunction) : m_ROMData(i_ROMData), m_MMU(nullptr), m_CPU(nullptr),
-m_Timer(nullptr), m_GPU(nullptr), m_CartridgeHeader(nullptr), m_Cartridge(nullptr), m_RenderFunction(i_RenderFunction) {}
+Gameboy::Gameboy(vector<byte>& i_ROMData, function<void(Pixel* i_FrameBuffer)> i_RenderFuncPtr) : m_ROMData(i_ROMData), m_MMU(nullptr), m_CPU(nullptr),
+m_Timer(nullptr), m_GPU(nullptr), m_CartridgeHeader(nullptr), m_Cartridge(nullptr), m_RenderScreen(i_RenderFuncPtr) {}
 
 Gameboy::~Gameboy()
 {
@@ -50,6 +50,8 @@ void Gameboy::Step()
 		m_GPU->Step(currentFrameCycles);
 		m_CPU->HandleInterrupts();
 	}
+	Pixel testArr[GAMEBOY_SCREEN_HEIGHT * GAMEBOY_SCREEN_WIDTH];
+	m_RenderScreen(testArr);
 	//renderScreen();
 }
 

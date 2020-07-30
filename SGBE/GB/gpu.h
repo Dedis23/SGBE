@@ -57,7 +57,7 @@ struct Pixel
     byte Green;
     byte Blue;
 
-    Pixel() = default;
+    Pixel() : Red(255), Green(255), Blue(255) {}
     Pixel(byte i_Red, byte i_Green, byte i_Blue) : Red(i_Red), Green(i_Green), Blue(i_Blue) {}
     bool operator==(Pixel& i_Other)
     {

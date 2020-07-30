@@ -2,26 +2,20 @@
 
 string SGBE::s_ROMFileName = "";
 
-void TSDLRenderWrapper(Pixel i_FrameBuffer[])
-{
-
-}
-
-SGBE::SGBE() : m_Window(nullptr), m_Renderer(nullptr), m_Texture(nullptr), m_Gameboy(nullptr) {}
+SGBE::SGBE() : m_SDLWrapper(nullptr), m_Gameboy(nullptr) {}
 
 SGBE::~SGBE()
 {
 	// delete interpreter
 	delete m_Gameboy;
 	m_Gameboy = nullptr;
+
+	// delete SDL wrapper
+	delete m_SDLWrapper;
+	m_SDLWrapper = nullptr;
 	
 	// clean logger instance
 	Logger::ResetInstance();
-
-	// clean SDL
-	SDL_DestroyRenderer(m_Renderer);
-	SDL_DestroyWindow(m_Window);
-	SDL_Quit();
 }
 
 bool SGBE::Initialize(int argc, char* argv[])
@@ -34,20 +28,29 @@ bool SGBE::Initialize(int argc, char* argv[])
 	res = loadArguments(argc, argv);
 	LOG_CRITICAL(res == false, return false, "Failed to load arguments");
 
-	res = initializeSDL();
-	LOG_CRITICAL(res == false, return false, "Failed to initialize SDL");
-
 	// assert that the user inserted a rom file name
 	LOG_ERROR(s_ROMFileName == "", return false, "Cannot initialize without a ROM file name");
 
 	res = loadROM(s_ROMFileName);
 	LOG_CRITICAL(res == false, return false, "Failed to load ROM data");
 
-	// initialize the interpreter
-	m_Gameboy = new Gameboy(m_ROMData, &TSDLRenderWrapper);
+	// initialize SDL wrapper
+	m_SDLWrapper = new SDLWrapper();
+	LOG_CRITICAL(m_SDLWrapper == nullptr, return false, "Failed to allocate memory for the SDL wrapper");
+
+	res = m_SDLWrapper->Initialize("SGBE", GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT);
+	LOG_CRITICAL(res == false, return false, "Failed to initialize the SDL wrapper");
+
+	// initialize the gameboy
+	using std::placeholders::_1;
+	function<void(Pixel*)> renderScreenPtr = std::bind(&SDLWrapper::RenderScreen, m_SDLWrapper, _1);
+
+	m_Gameboy = new Gameboy(m_ROMData, renderScreenPtr);
 	LOG_CRITICAL(m_Gameboy == nullptr , return false, "Failed to allocate memory for the interpreter");
+
 	res = m_Gameboy->Initialize();
 	LOG_CRITICAL(res == false, return false, "Failed to initialize the interpreter");
+
 	LOG_INFO(true, NOP, "SGBE initialized successfully." << endl);
 
 	return true;
@@ -85,25 +88,6 @@ bool SGBE::loadArguments(int argc, char* argv[])
 
 	return true;
 }
-
-bool SGBE::initializeSDL()
-{
-	SDL_Init(SDL_INIT_EVERYTHING);
-
-	m_Window = SDL_CreateWindow("SGBE", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-	LOG_CRITICAL(m_Window == NULL, return false, "Failed to create SDL window");
-
-	m_Renderer = SDL_CreateRenderer(m_Window, -1, 0);
-	LOG_CRITICAL(m_Window == NULL, return false, "Failed to create SDL renderer");
-
-	SDL_RenderSetLogicalSize(m_Renderer, GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT);
-
-	m_Texture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT);
-	LOG_CRITICAL(m_Texture == NULL, return false, "Failed to create SDL texture");
-
-	return true;
-}
-
 
 bool SGBE::loadROM(const string& i_RomFileName)
 {
@@ -147,19 +131,4 @@ void SGBE::cliLogFileNameOption(const string& i_LogFileName)
 
 	LOGGER_SET_FILE_NAME(i_LogFileName);
 	LOG_INFO(true, NOP, "Log file name set to" << i_LogFileName);
-}
-
-void SGBE::SDLRenderWrapper(Pixel i_FrameBuffer[])
-{
-	int res = -1;
-	res = SDL_UpdateTexture(m_Texture, NULL, i_FrameBuffer, GAMEBOY_SCREEN_WIDTH * sizeof(byte) * 3);
-	LOG_ERROR(res != 0, return, "SDL Failed to update texture");
-
-	res = SDL_RenderClear(m_Renderer);
-	LOG_ERROR(res != 0, return, "SDL Failed to render clear");
-
-	res = SDL_RenderCopy(m_Renderer, m_Texture, NULL, NULL);
-	LOG_ERROR(res != 0, return, "SDL Failed to render copy");
-
-	SDL_RenderPresent(m_Renderer);
 }
