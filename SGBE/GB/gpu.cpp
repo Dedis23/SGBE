@@ -56,7 +56,12 @@ void GPU::Reset()
 	setMode(Video_Mode::Searching_OAM);
 }
 
-bool GPU::isLCDEnabled()
+const Pixel* GPU::GetFrameBuffer() const
+{
+	return m_FrameBuffer;
+}
+
+bool GPU::isLCDEnabled() const
 {
 	byte LCDC = m_Gameboy.GetMMU().Read(GPU_LCD_CONTROL_ADDR);
 	return bitwise::GetBit(LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT, LCDC);
@@ -193,7 +198,7 @@ void GPU::drawCurrentScanline()
 	}
 }
 
-bool GPU::checkForLCDCInterrupt(int i_InterruptBit)
+bool GPU::checkForLCDCInterrupt(int i_InterruptBit) const
 {
 	bool isInterruptBitRaised = false;
 	byte lcdcStatus = m_Gameboy.GetMMU().Read(GPU_LCDC_STATUS_ADDR);
@@ -201,7 +206,7 @@ bool GPU::checkForLCDCInterrupt(int i_InterruptBit)
 	return isInterruptBitRaised;
 }
 
-void GPU::checkForLYAndLYCCoincidence()
+void GPU::checkForLYAndLYCCoincidence() const
 {
 	byte currScanline = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_COORDINATE_ADDR);
 	byte LYCompare = m_Gameboy.GetMMU().Read(GPU_LY_COMPARE_ADDR);
@@ -227,7 +232,10 @@ void GPU::checkForLYAndLYCCoincidence()
 
 void GPU::drawBackground()
 {
-
+	byte LCDC = m_Gameboy.GetMMU().Read(GPU_LCD_CONTROL_ADDR);
+	byte scrollY = m_Gameboy.GetMMU().Read(GPU_SCROLL_Y_ADDR);
+	byte scrollX = m_Gameboy.GetMMU().Read(GPU_SCROLL_X_ADDR);
+	byte currScanLine = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_COORDINATE_ADDR);
 }
 
 void GPU::drawWindow()

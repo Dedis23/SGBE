@@ -31,7 +31,7 @@ bool SDLWrapper::Initialize(const string& i_WindowTitle, int i_WindowWidth, int 
 }
 
 
-void SDLWrapper::RenderScreen(Pixel* i_FrameBuffer)
+void SDLWrapper::RenderScreen(const Pixel* i_FrameBuffer)
 {
 	int res = -1;
 	res = SDL_UpdateTexture(m_Texture, NULL, i_FrameBuffer, m_WindowWidth * sizeof(uint8_t) * 3);

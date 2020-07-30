@@ -51,6 +51,14 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 #define LCDC_STATUS_MODE_FLAG_SECOND_BIT                    1 // 00: H_Blank mode 01: V_Blank mode
 #define LCDC_STATUS_MODE_FLAG_FIRST_BIT                     0 // 10: Searching OAM mode 11: Transfer data to LCD mode
 
+/* Various mode definitions */
+#define MIN_H_BLANK_MODE_CYCLES 204 // Mode 0 cycles
+#define MIN_V_BLANK_MODE_SINGLE_LINE_CYCLES 456 // Mode 1 single line cycle, overall it takes 10 times this number
+#define MIN_SEARCHING_OAM_MODE_CYCLES 80 // Mode 2 cycles
+#define MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES 172 // Mode 3 cycles
+#define V_BLANK_START_SCANLINE 144
+#define V_BLANK_END_SCANLINE 153
+
 struct Pixel
 {
     byte Red;
@@ -59,7 +67,7 @@ struct Pixel
 
     Pixel() : Red(255), Green(255), Blue(255) {}
     Pixel(byte i_Red, byte i_Green, byte i_Blue) : Red(i_Red), Green(i_Green), Blue(i_Blue) {}
-    bool operator==(Pixel& i_Other)
+    bool operator==(Pixel& i_Other) const
     {
         return this->Red == i_Other.Red && this->Green == i_Other.Green && this->Blue == i_Other.Blue;
     }
@@ -81,6 +89,7 @@ public:
 
     void Step(uint32_t& i_Cycles);
     void Reset();
+    const Pixel* GetFrameBuffer() const;
 
 private:
     enum class Video_Mode
@@ -91,22 +100,15 @@ private:
         Transfer_Data_To_LCD = 3, // access VRAM and transfer data to LCD
     };
 
-    const uint32_t MIN_H_BLANK_MODE_CYCLES = 204; // Mode 0 cycles
-    const uint32_t MIN_V_BLANK_MODE_SINGLE_LINE_CYCLES = 456; // Mode 1 single line cycle, overall it takes 10 times this number
-    const uint32_t MIN_SEARCHING_OAM_MODE_CYCLES = 80; // Mode 2 cycles
-    const uint32_t MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES = 172; // Mode 3 cycles
-    const uint32_t V_BLANK_START_SCANLINE = 144;
-    const uint32_t V_BLANK_END_SCANLINE = 153;
-
-    bool isLCDEnabled();
     void setMode(Video_Mode i_NewMode);
     void handleHBlankMode();
     void handleVBlankMode();
     void handleSearchSpritesAttributesMode();
     void handleLCDTransferMode();
+    bool isLCDEnabled() const;
+    bool checkForLCDCInterrupt(int i_InterruptBit) const;
+    void checkForLYAndLYCCoincidence() const;
     void drawCurrentScanline();
-    bool checkForLCDCInterrupt(int i_InterruptBit);
-    void checkForLYAndLYCCoincidence();
     void drawBackground();
     void drawWindow();
     void drawSprites();

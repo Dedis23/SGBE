@@ -43,7 +43,7 @@ bool SGBE::Initialize(int argc, char* argv[])
 
 	// initialize the gameboy
 	using std::placeholders::_1;
-	function<void(Pixel*)> renderScreenPtr = std::bind(&SDLWrapper::RenderScreen, m_SDLWrapper, _1);
+	function<void(const Pixel*)> renderScreenPtr = std::bind(&SDLWrapper::RenderScreen, m_SDLWrapper, _1);
 
 	m_Gameboy = new Gameboy(m_ROMData, renderScreenPtr);
 	LOG_CRITICAL(m_Gameboy == nullptr , return false, "Failed to allocate memory for the interpreter");

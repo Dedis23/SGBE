@@ -24,8 +24,7 @@ public:
 
 public:
     bool Initialize(const string& i_WindowTitle, int i_WindowWidth, int i_WindowHeight);
-    void RenderScreen(Pixel* i_FrameBuffer);
-    void Test() {}
+    void RenderScreen(const Pixel* i_FrameBuffer);
 
 private:
     string m_WindowTitle;
