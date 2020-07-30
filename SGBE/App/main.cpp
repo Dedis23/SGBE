@@ -4,7 +4,6 @@ int main(int argc, char* argv[])
 {
 	bool res = false;
 	SGBE* sgbe = nullptr;
-	int exitStatus = EXIT_SUCCESS;
 
 	sgbe = new SGBE();
 	LOG_CRITICAL(sgbe == nullptr, return EXIT_FAILURE, "Failed to allocate memory for SGBE");
@@ -17,5 +16,5 @@ int main(int argc, char* argv[])
 	delete sgbe;
 	Logger::ResetInstance();
 
-	return exitStatus;
+	return 	EXIT_SUCCESS;
 }

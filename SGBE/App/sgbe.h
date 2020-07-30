@@ -34,12 +34,15 @@ private: // CLI Options
     static void cliLogFileNameOption(const string& i_LogFileName);
 
 private: // SDL Wrappers
-    void SDLDrawWrapper(byte i_R, byte i_G, byte i_B, uint32_t i_WidthPosition, uint32_t i_HeightPosition);
+    void SDLRenderWrapper(Pixel i_FrameBuffer[]);
 
 private:
     static string s_ROMFileName;
     vector<byte> m_ROMData;
+    Gameboy* m_Gameboy;
+
+    // SDL releated
     SDL_Window* m_Window;
     SDL_Renderer* m_Renderer;
-    Gameboy* m_Gameboy;
+    SDL_Texture* m_Texture;
 };

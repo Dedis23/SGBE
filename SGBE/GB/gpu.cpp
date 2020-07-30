@@ -1,6 +1,10 @@
 ﻿#include "gpu.h"
 
-GPU::GPU(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0) {}
+GPU::GPU(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0)
+{
+	// reset all pixels to white 255 in RGB
+	memset(m_FrameBuffer, 0xFF, sizeof(m_FrameBuffer));
+}
 
 
 /*
@@ -46,6 +50,8 @@ void GPU::Step(uint32_t& i_Cycles)
 void GPU::Reset()
 {
 	m_VideoCycles = 0;
+	// reset all pixels to white 255 in RGB
+	memset(m_FrameBuffer, 0xFF, sizeof(m_FrameBuffer));
 	m_Gameboy.GetMMU().Write(GPU_LCDC_Y_COORDINATE_ADDR, 0);
 	setMode(Video_Mode::Searching_OAM);
 }
@@ -217,6 +223,21 @@ void GPU::checkForLYAndLYCCoincidence()
 		bitwise::SetBit(LCDC_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT, false, lcdcStatus);
 	}
 	m_Gameboy.GetMMU().Write(GPU_LCDC_STATUS_ADDR, lcdcStatus);
+}
+
+void GPU::drawBackground()
+{
+
+}
+
+void GPU::drawWindow()
+{
+
+}
+
+void GPU::drawSprites()
+{
+
 }
 
 void GPU::setMode(Video_Mode i_NewMode)

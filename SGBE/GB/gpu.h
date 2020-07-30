@@ -36,7 +36,7 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 #define LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT             7 // 0 off, 1 on
 #define LCD_CONTROL_WINDOW_TILE_MAP_DISPLAY_SELECT_BIT 6
 #define LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT          5 // 0 off, 1 on
-#define LCD_CONTROL_BG_WINDOW_TILE_DATA_SELECT_BIT     4
+#define LCD_CONTROL_BG_WINDOW_TILE_DATA_SELECT_BIT     4 // 
 #define LCD_CONTROL_BG_TILE_MAP_DISPLAY_SELECT_BIT     3
 #define LCD_CONTROL_SPRITE_SIZE_BIT                    2 // 0=8x8, 1=8x16
 #define LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT          1 // 0 off, 1 on
@@ -57,6 +57,7 @@ struct Pixel
     byte Green;
     byte Blue;
 
+    Pixel() = default;
     Pixel(byte i_Red, byte i_Green, byte i_Blue) : Red(i_Red), Green(i_Green), Blue(i_Blue) {}
     bool operator==(Pixel& i_Other)
     {
@@ -106,9 +107,13 @@ private:
     void drawCurrentScanline();
     bool checkForLCDCInterrupt(int i_InterruptBit);
     void checkForLYAndLYCCoincidence();
+    void drawBackground();
+    void drawWindow();
+    void drawSprites();
 
     Video_Mode m_Mode;
     uint32_t m_VideoCycles;
+    Pixel m_FrameBuffer[GAMEBOY_SCREEN_HEIGHT * GAMEBOY_SCREEN_WIDTH];
 
     /* gameboy ref */
     Gameboy& m_Gameboy;

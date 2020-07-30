@@ -13,26 +13,28 @@
 #include "mmu.h"
 #include "gpu.h"
 #include "timer.h"
+#include <functional>
 
 class CPU;
 class MMU;
 class GPU;
 class Timer;
+struct Pixel;
+
+//typedef void(*RenderFunction)(Pixel i_FrameBuffer[]);
+std::function<void(Pixel i_FrameBuffer[])> t;
 
 class Gameboy
 {
 public:
-	typedef void(*DrawFunction)(byte i_R, byte i_G, byte i_B, uint32_t i_WidthPosition, uint32_t i_HeightPosition);
-
-public:
-	Gameboy(vector<byte>& i_ROMData);
+	Gameboy(vector<byte>& i_ROMData, RenderFunction i_RenderFunction);
 	virtual ~Gameboy();
 	Gameboy(const Gameboy&) = delete;
 	Gameboy& operator=(const Gameboy&) = delete;
 
 	bool Initialize();
 	bool IsCartridgeLoadedSuccessfully();
-	void Run();
+	void Step();
 	CPU& GetCPU();
 	MMU& GetMMU();
 	Timer& GetTimer();
@@ -52,5 +54,5 @@ private:
 	CartridgeHeader* m_CartridgeHeader;
 	Cartridge* m_Cartridge;
 	// host specific methods
-	DrawFunction m_DrawFunction;
+	RenderFunction m_RenderFunction;
 };

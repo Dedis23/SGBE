@@ -2,7 +2,12 @@
 
 string SGBE::s_ROMFileName = "";
 
-SGBE::SGBE() : m_Window(nullptr), m_Renderer(nullptr), m_Gameboy(nullptr) {}
+void TSDLRenderWrapper(Pixel i_FrameBuffer[])
+{
+
+}
+
+SGBE::SGBE() : m_Window(nullptr), m_Renderer(nullptr), m_Texture(nullptr), m_Gameboy(nullptr) {}
 
 SGBE::~SGBE()
 {
@@ -39,7 +44,7 @@ bool SGBE::Initialize(int argc, char* argv[])
 	LOG_CRITICAL(res == false, return false, "Failed to load ROM data");
 
 	// initialize the interpreter
-	m_Gameboy = new Gameboy(m_ROMData);
+	m_Gameboy = new Gameboy(m_ROMData, &TSDLRenderWrapper);
 	LOG_CRITICAL(m_Gameboy == nullptr , return false, "Failed to allocate memory for the interpreter");
 	res = m_Gameboy->Initialize();
 	LOG_CRITICAL(res == false, return false, "Failed to initialize the interpreter");
@@ -52,23 +57,11 @@ void SGBE::Run()
 {
 	if (m_Gameboy->IsCartridgeLoadedSuccessfully())
 	{
-		// main loop here
-		m_Gameboy->Run();
-
-		//SDL_SetRenderDrawColor(m_Renderer, 128, 70, 150, 255);
-		////SDL_RenderDrawPoint(m_Renderer, GAMEBOY_SCREEN_WIDTH / 2, GAMEBOY_SCREEN_HEIGHT / 2); //Renders on middle of screen.
-		//
-		//for (int i = 0; i < GAMEBOY_SCREEN_WIDTH; i++)
-		//{
-		//	SDL_RenderDrawPoint(m_Renderer, i, i);
-		//}
-		//SDL_RenderPresent(m_Renderer);
-		//
-		//// todo remove this
-		SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
-		SDL_RenderClear(m_Renderer);
-		SDL_RenderPresent(m_Renderer);
-		SDL_Delay(5000);
+		while (true) // change this with SDL quit check i.e press X or click ESC
+		{
+			// main loop here
+			m_Gameboy->Step(); // step a single frame
+		}
 	}
 }
 
@@ -102,6 +95,11 @@ bool SGBE::initializeSDL()
 
 	m_Renderer = SDL_CreateRenderer(m_Window, -1, 0);
 	LOG_CRITICAL(m_Window == NULL, return false, "Failed to create SDL renderer");
+
+	SDL_RenderSetLogicalSize(m_Renderer, GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT);
+
+	m_Texture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT);
+	LOG_CRITICAL(m_Texture == NULL, return false, "Failed to create SDL texture");
 
 	return true;
 }
@@ -151,9 +149,17 @@ void SGBE::cliLogFileNameOption(const string& i_LogFileName)
 	LOG_INFO(true, NOP, "Log file name set to" << i_LogFileName);
 }
 
-void SGBE::SDLDrawWrapper(byte i_R, byte i_G, byte i_B, uint32_t i_WidthPosition, uint32_t i_HeightPosition)
+void SGBE::SDLRenderWrapper(Pixel i_FrameBuffer[])
 {
-	SDL_SetRenderDrawColor(m_Renderer, i_R, i_G, i_B, 255);
-	SDL_RenderDrawPoint(m_Renderer, i_WidthPosition, i_HeightPosition);
+	int res = -1;
+	res = SDL_UpdateTexture(m_Texture, NULL, i_FrameBuffer, GAMEBOY_SCREEN_WIDTH * sizeof(byte) * 3);
+	LOG_ERROR(res != 0, return, "SDL Failed to update texture");
+
+	res = SDL_RenderClear(m_Renderer);
+	LOG_ERROR(res != 0, return, "SDL Failed to render clear");
+
+	res = SDL_RenderCopy(m_Renderer, m_Texture, NULL, NULL);
+	LOG_ERROR(res != 0, return, "SDL Failed to render copy");
+
 	SDL_RenderPresent(m_Renderer);
 }

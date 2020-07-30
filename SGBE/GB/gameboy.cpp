@@ -1,7 +1,7 @@
 #include "gameboy.h"
 
-Gameboy::Gameboy(vector<byte>& i_ROMData) : m_ROMData(i_ROMData), m_MMU(nullptr), m_CPU(nullptr),
-m_Timer(nullptr), m_GPU(nullptr), m_CartridgeHeader(nullptr), m_Cartridge(nullptr), m_DrawFunction(nullptr) {}
+Gameboy::Gameboy(vector<byte>& i_ROMData, RenderFunction i_RenderFunction) : m_ROMData(i_ROMData), m_MMU(nullptr), m_CPU(nullptr),
+m_Timer(nullptr), m_GPU(nullptr), m_CartridgeHeader(nullptr), m_Cartridge(nullptr), m_RenderFunction(i_RenderFunction) {}
 
 Gameboy::~Gameboy()
 {
@@ -40,20 +40,17 @@ bool Gameboy::IsCartridgeLoadedSuccessfully()
 }
 
 /* This is the main emulation loop */
-void Gameboy::Run()
+void Gameboy::Step()
 {
-	while (true) // change this with SDL quit check i.e press X or click ESC
+	uint32_t currentFrameCycles = 0;
+	while (currentFrameCycles < MAX_CYCLES_BEFORE_RENDERING)
 	{
-		uint32_t currentFrameCycles = 0;
-		while (currentFrameCycles < MAX_CYCLES_BEFORE_RENDERING)
-		{
-			m_CPU->Step(currentFrameCycles);
-			m_Timer->Step(currentFrameCycles);
-			m_GPU->Step(currentFrameCycles);
-			m_CPU->HandleInterrupts();
-		}
-		//renderScreen();
+		m_CPU->Step(currentFrameCycles);
+		m_Timer->Step(currentFrameCycles);
+		m_GPU->Step(currentFrameCycles);
+		m_CPU->HandleInterrupts();
 	}
+	//renderScreen();
 }
 
 CPU& Gameboy::GetCPU()
