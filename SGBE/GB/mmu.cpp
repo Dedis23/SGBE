@@ -211,12 +211,30 @@ void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
             m_MappedIO[i_Address.GetValue() - 0xFF00] = 0;
         }
         break;
+    case GPU_DMA_TRANSFER_AND_START_ADDR:
+        {
+            DMATransfer(i_Value);
+        }
+        break;
     default:
         {
             // any other mapped i/o
             m_MappedIO[i_Address.GetValue() - 0xFF00] = i_Value;
         }
         break;
+    }
+}
+
+/* When the game writes to the 0xFF46 it will initiate 
+   a DMA (direct memory access) which will copy A0h (160) values from RAM into OAM (Sprites attribute table) in addresses: 0xFE00-0xFE9F
+   the source to be copied is taken by the value that is written, however it needs to be multiplied by 100h (256) */
+void MMU::DMATransfer(byte i_SourceAdress)
+{
+    WordAddress adr(i_SourceAdress * 0x100);
+    for (int i = 0; i < 0xA0; i++)
+    {
+        byte val = Read(adr.GetValue() + i);
+        Write(0xFE00 + i, val);
     }
 }
 

@@ -63,6 +63,7 @@ public:
 
 private:
 	void writeMappedIO(const WordAddress& i_Address, byte i_Value);
+	void DMATransfer(byte i_SourceAdress);
 	bool isBootstrapDone() const;
 
 private:
