@@ -17,8 +17,8 @@
 
 /* Interrupt registers addresses in memory */
 /* every bit corresponds to a different interrupt */
-const word INTERRUPT_ENABLED_ADDR = 0xFFFF; // R/W
-const word INTERRUPT_REQUREST_ADDR = 0xFF0F; // R/W
+const word INTERRUPT_ENABLED_ADDR = 0xFFFF;
+const word INTERRUPT_REQUREST_ADDR = 0xFF0F;
 
 /* Interrupt routines addresses in memory */
 const word VBLANK_INTERRUPT_ROUTINE_ADDR = 0x40;

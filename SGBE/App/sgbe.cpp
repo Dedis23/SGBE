@@ -58,23 +58,28 @@ bool SGBE::Initialize(int argc, char* argv[])
 
 void SGBE::Run()
 {
+	chrono::time_point<chrono::high_resolution_clock> testStart, testEnd; // delete this later
+	testStart = chrono::high_resolution_clock::now();
 	chrono::time_point<chrono::high_resolution_clock> startFrameTime, endFrameTime, elapsedFrameTime;
 	if (m_Gameboy->IsCartridgeLoadedSuccessfully())
 	{
-
 		while (true) // change this with SDL quit check i.e press X or click ESC
 		{
 			startFrameTime = chrono::high_resolution_clock::now();
 			// main loop here
 			m_Gameboy->Step(); // step a single frame
 			endFrameTime = chrono::high_resolution_clock::now();
-			auto elapsedFrameTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>> (endFrameTime - startFrameTime);
-			cout << elapsedFrameTime.count() << endl;
+			auto elapsedFrameTime = chrono::duration_cast<chrono::duration<float, milli>> (endFrameTime - startFrameTime);
+			//cout << elapsedFrameTime.count() << endl;
 			static int test = 0;
 			test++;
-			if (test > 2)
+			if (test > 60)
 			{
-				exit(EXIT_SUCCESS);
+				testEnd = chrono::high_resolution_clock::now();
+				auto testElapsed = chrono::duration_cast<chrono::duration<float, milli>> (testEnd - testStart);
+				cout << "Overall 60 frames took: " << testElapsed.count() << " milliseconds" << endl;
+				test %= 60;
+				testStart = chrono::high_resolution_clock::now();
 			}
 		}
 	}

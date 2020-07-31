@@ -1,12 +1,13 @@
 ﻿#include "timer.h"
 
-const uint32_t Timer::CyclesArr[] = { CPU_CLOCK_SPEED / 4096, CPU_CLOCK_SPEED / 262144, CPU_CLOCK_SPEED / 65536, CPU_CLOCK_SPEED / 16384 };
+const uint32_t Timer::CyclesArr[] = { 1024, 16, 64, 256 };
 
 // Note - the divider freq is 16384 and cannot be set otherwise
 Timer::Timer(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsEnabled(true), 
 m_RemainingCyclesToTickTheCounter(CyclesArr[(int)TimerFrequencies::_4096Hz]),
 m_RemainingCyclesToTickTheDivider(CyclesArr[(int)TimerFrequencies::_16384Hz]),
-m_CurrentFrequency(TimerFrequencies::_4096Hz) {}
+m_CurrentFrequency(TimerFrequencies::_4096Hz),
+m_DividerCounter(0), m_TimerCounter(0), m_TimerModulo(0) {}
 
 void Timer::Step(const uint32_t& i_Cycles)
 {
@@ -18,31 +19,27 @@ void Timer::Step(const uint32_t& i_Cycles)
 		if (m_RemainingCyclesToTickTheCounter <= 0)
 		{
 			// tick the counter
-			byte timerCounter = m_Gameboy.GetMMU().Read(TIMER_COUNTER_ADDR);
-			timerCounter++;
-			if (timerCounter == 0)
+			m_TimerCounter++;
+			if (m_TimerCounter == 0)
 			{
 				// Timer overflow occured
 				// set the timer to the modulo
-				timerCounter = m_Gameboy.GetMMU().Read(TIMER_MODULO_ADDR);
+				m_TimerCounter = m_TimerModulo;
 				
 				// trigger the timer interrupt
 				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::Timer);
 			}
-			m_Gameboy.GetMMU().Write(TIMER_COUNTER_ADDR, timerCounter);
 		}
 	}
 
 	// tick the divider regardless of the timer state
+	// it will overflow eventually and will start counting again from 0 (0-255)
+	// here no timer interrupts will be invoked
 	m_RemainingCyclesToTickTheDivider -= i_Cycles;
 	if (m_RemainingCyclesToTickTheDivider <= 0)
 	{
 		m_RemainingCyclesToTickTheDivider = CyclesArr[(int)TimerFrequencies::_16384Hz];
-		// it will overflow eventually and will start counting again from 0 (0-255)
-		// here no timer interrupts will be invoked
-		byte dividerCounter = m_Gameboy.GetMMU().Read(TIMER_DIVIDER_ADDR);
-		dividerCounter++;
-		m_Gameboy.GetMMU().Write(TIMER_DIVIDER_ADDR, dividerCounter);
+		m_DividerCounter++;
 	}
 }
 
@@ -53,22 +50,52 @@ void Timer::Reset()
 	m_RemainingCyclesToTickTheDivider = CyclesArr[(int)TimerFrequencies::_16384Hz];
 	m_CurrentFrequency = TimerFrequencies::_4096Hz;
 	// reset timer memory registers in memory
-	m_Gameboy.GetMMU().Write(TIMER_DIVIDER_ADDR, 0);
-	m_Gameboy.GetMMU().Write(TIMER_COUNTER_ADDR, 0);
+	m_DividerCounter = 0;
+	m_TimerCounter = 0;
 	m_Gameboy.GetMMU().Write(TIMER_MODULO_ADDR, 0);
 	m_Gameboy.GetMMU().Write(TIMER_CONTROL_ADDR, 0b000000100); // the default value for the timer controler, is enabled and 4096Hz mode
 }
 
 void Timer::SetTimerControl(byte i_NewTimerControl)
 {
-	bitwise::GetBit(TIMER_CONTROL_ENABLE_BIT, i_NewTimerControl) ? start() : stop(); // read bit 2 for enable/disable
+	m_IsEnabled = bitwise::GetBit(TIMER_CONTROL_ENABLE_BIT, i_NewTimerControl) ? true : false; // read bit 2 for enable/disable
 	Timer::TimerFrequencies freq = (Timer::TimerFrequencies)(i_NewTimerControl & 0x3); // get bits 0 and 1 for freq type
 	setFrequency(freq);
 }
 
+byte Timer::GetDividerCounter() const
+{
+	return m_DividerCounter;
+}
+
+void Timer::ResetDividerCounter()
+{
+	m_DividerCounter = 0;
+}
+
+byte Timer::GetTimerCounter() const
+{
+	return m_TimerCounter;
+}
+
+void Timer::SetTimerCounter(byte i_NewTimerCounter)
+{
+	m_TimerCounter = i_NewTimerCounter;
+}
+
+byte Timer::GetTimerModulo() const
+{
+	return m_TimerModulo;
+}
+
+void Timer::SetTimerModulo(byte i_NewTimerModulo)
+{
+	m_TimerModulo = i_NewTimerModulo;
+}
+
 void Timer::setFrequency(TimerFrequencies i_Frequency)
 {
-	if (i_Frequency != m_CurrentFrequency) // reset only if a change was detected
+	if (i_Frequency != m_CurrentFrequency) // set only if a change was detected
 	{
 		switch (i_Frequency)
 		{
@@ -86,14 +113,4 @@ void Timer::setFrequency(TimerFrequencies i_Frequency)
 			break;
 		}
 	}
-}
-
-void Timer::start()
-{
-	m_IsEnabled = true;
-}
-
-void Timer::stop()
-{
-	m_IsEnabled = false;
 }

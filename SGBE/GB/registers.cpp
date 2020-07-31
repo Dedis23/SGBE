@@ -2,84 +2,84 @@
 
 IRegister::IRegister(word i_Value) : m_Value(i_Value) {}
 
-void IRegister::SetBit(byte i_BitNumber, bool i_IsRaise)
+inline void IRegister::SetBit(byte i_BitNumber, bool i_IsRaise)
 {
 	if (i_IsRaise)	m_Value |= 1 << (i_BitNumber);
 	else m_Value &= ~(1 << (i_BitNumber));
 }
 
-bool IRegister::GetBit(byte i_BitNumber) const
+inline bool IRegister::GetBit(byte i_BitNumber) const
 {
 	return (m_Value & (1 << i_BitNumber)) > 0 ? true : false;
 }
 
-void IRegister::Clear()
+inline void IRegister::Clear()
 {
 	m_Value = 0;
 }
 
 ByteRegister::ByteRegister(byte i_Value) : IRegister(i_Value) {}
 
-void ByteRegister::SetValue(word i_NewValue)
+inline void ByteRegister::SetValue(word i_NewValue)
 {
 	m_Value = static_cast<byte>(i_NewValue);
 }
 
-word ByteRegister::GetValue() const
+inline word ByteRegister::GetValue() const
 {
 	return static_cast<byte>(m_Value);
 }
 
-void ByteRegister::Increment()
+inline void ByteRegister::Increment()
 {
 	m_Value = static_cast<byte>(m_Value + 1);
 }
 
-void ByteRegister::Decrement()
+inline void ByteRegister::Decrement()
 {
 	m_Value = static_cast<byte>(m_Value - 1);
 }
 
 WordRegister::WordRegister(word i_Value) : IRegister(i_Value) {}
 
-void WordRegister::SetValue(word i_NewValue)
+inline void WordRegister::SetValue(word i_NewValue)
 {
 	m_Value = i_NewValue;
 }
 
-word WordRegister::GetValue() const
+inline word WordRegister::GetValue() const
 {
 	return m_Value;
 }
 
-void WordRegister::SetLowByte(byte i_NewLowByte)
+inline void WordRegister::SetLowByte(byte i_NewLowByte)
 {
 	m_Value &= 0xFF00;
 	m_Value |= i_NewLowByte;
 }
 
-byte WordRegister::GetLowByte() const
+inline byte WordRegister::GetLowByte() const
 {
 	return static_cast<byte>(m_Value);
 }
 
-void WordRegister::SetHighByte(byte i_NewHighByte)
+inline void WordRegister::SetHighByte(byte i_NewHighByte)
 {
 	m_Value &= 0x00FF;
 	m_Value |= static_cast<word>(i_NewHighByte << 8);
 }
 
-byte WordRegister::GetHighByte() const
+inline byte WordRegister::GetHighByte() const
 {
 	return static_cast<byte>(m_Value >> 8);
 }
 
-void WordRegister::Increment()
+inline void WordRegister::Increment()
 {
 	m_Value += 1;
 }
 
-void WordRegister::Decrement()
+inline void WordRegister::Decrement()
 {
 	m_Value -= 1;
 }
@@ -87,18 +87,18 @@ void WordRegister::Decrement()
 Pair8BRegisters::Pair8BRegisters(ByteRegister& i_HighByteRegister, ByteRegister& i_LowByteRegister)
 	: m_HighByteRegister(i_HighByteRegister), m_LowByteRegister(i_LowByteRegister) {}
 
-void Pair8BRegisters::SetValue(word i_NewValue)
+inline void Pair8BRegisters::SetValue(word i_NewValue)
 {
 	m_LowByteRegister.SetValue(static_cast<byte>(i_NewValue));
 	m_HighByteRegister.SetValue(static_cast<byte>(i_NewValue >> 8));
 }
 
-word Pair8BRegisters::GetValue() const
+inline word Pair8BRegisters::GetValue() const
 {
 	return (static_cast<word>(m_HighByteRegister.GetValue() << 8)) | m_LowByteRegister.GetValue();
 }
 
-void Pair8BRegisters::SetBit(byte i_BitNumber, bool i_IsRaise)
+inline void Pair8BRegisters::SetBit(byte i_BitNumber, bool i_IsRaise)
 {
 	if (i_BitNumber <= 15 && i_BitNumber > 7)
 	{
@@ -110,7 +110,7 @@ void Pair8BRegisters::SetBit(byte i_BitNumber, bool i_IsRaise)
 	}
 }
 
-bool Pair8BRegisters::GetBit(byte i_BitNumber) const
+inline bool Pair8BRegisters::GetBit(byte i_BitNumber) const
 {
 	bool res = false;
 	if (i_BitNumber <= 15 && i_BitNumber > 7)
@@ -124,28 +124,28 @@ bool Pair8BRegisters::GetBit(byte i_BitNumber) const
 	return res;
 }
 
-void Pair8BRegisters::Clear()
+inline void Pair8BRegisters::Clear()
 {
 	m_LowByteRegister.Clear();
 	m_HighByteRegister.Clear();
 }
 
-void Pair8BRegisters::Increment()
+inline void Pair8BRegisters::Increment()
 {
 	SetValue(GetValue() + 1);
 }
 
-void Pair8BRegisters::Decrement()
+inline void Pair8BRegisters::Decrement()
 {
 	SetValue(GetValue() - 1);
 }
 
-ByteRegister& Pair8BRegisters::GetHighRegister()
+inline ByteRegister& Pair8BRegisters::GetHighRegister()
 {
 	return m_HighByteRegister;
 }
 
-ByteRegister& Pair8BRegisters::GetLowRegister()
+inline ByteRegister& Pair8BRegisters::GetLowRegister()
 {
 	return m_LowByteRegister;
 }

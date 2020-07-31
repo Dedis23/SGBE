@@ -65,7 +65,7 @@ byte MMU::Read(const word& i_Address) const
     /* Mapped IO */
     if (i_Address >= 0xFF00 && i_Address <= 0xFF7F)
     {
-        return m_MappedIO[i_Address - 0xFF00];
+        return readMappedIO(i_Address);
     }
 
     /* Zero Page RAM */
@@ -166,6 +166,34 @@ void MMU::Write(const word& i_Address, byte i_Value)
     LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address);
 }
 
+byte MMU::readMappedIO(const word& i_Address) const
+{
+    switch (i_Address)
+    {
+    case TIMER_DIVIDER_ADDR:
+        {
+            return m_Gameboy.GetTimer().GetDividerCounter();
+        }
+        break;
+    case TIMER_COUNTER_ADDR:
+        {
+            return m_Gameboy.GetTimer().GetTimerCounter();
+        }
+        break;
+    case TIMER_MODULO_ADDR:
+        {
+            return m_Gameboy.GetTimer().GetTimerModulo();
+        }
+        break;
+    default:
+        {
+            // any other mapped i/o
+            return m_MappedIO[i_Address - 0xFF00];
+        }
+        break;
+    }
+}
+
 /* write to memory modules from other componenets will sometimes invoke specific methods of the modules
    or will override the new value to a different, specifc value */
 void MMU::writeMappedIO(const word& i_Address, byte i_Value)
@@ -175,7 +203,16 @@ void MMU::writeMappedIO(const word& i_Address, byte i_Value)
     case TIMER_DIVIDER_ADDR:
         {
             // whenever the user write to the divider, it will reset
-            m_MappedIO[i_Address - 0xFF00] = 0;
+            m_Gameboy.GetTimer().ResetDividerCounter();
+        }
+        break;
+    case TIMER_COUNTER_ADDR:
+        {
+            m_Gameboy.GetTimer().SetTimerCounter(i_Value);
+        }
+    case TIMER_MODULO_ADDR:
+        {
+            m_Gameboy.GetTimer().SetTimerModulo(i_Value);
         }
         break;
     case TIMER_CONTROL_ADDR:

@@ -48,17 +48,24 @@ public:
     void Step(const uint32_t& i_Cycles);
     void Reset();
     void SetTimerControl(byte i_NewTimerControl);
+    byte GetDividerCounter() const;
+    void ResetDividerCounter();
+    byte GetTimerCounter() const;
+    void SetTimerCounter(byte i_NewTimerCounter);
+    byte GetTimerModulo() const;
+    void SetTimerModulo(byte i_NewTimerModulo);
 
 private:
     void setFrequency(TimerFrequencies i_Frequency);
-    void start();
-    void stop();
 
 private:
     bool m_IsEnabled;
     TimerFrequencies m_CurrentFrequency;
     int32_t m_RemainingCyclesToTickTheCounter;
     int32_t m_RemainingCyclesToTickTheDivider;
+    byte m_DividerCounter;
+    byte m_TimerCounter;
+    byte m_TimerModulo;
 
     /* gameboy ref */
     Gameboy& m_Gameboy;
