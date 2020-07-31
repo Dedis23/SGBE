@@ -60,11 +60,11 @@ public:
 	
 	byte Read(const word& i_Address) const;
 	void Write(const word& i_Address, byte i_Value);
+	void DMATransfer(byte i_SourceAdress);
 
 private:
 	byte readMappedIO(const word& i_Address) const;
 	void writeMappedIO(const word& i_Address, byte i_Value);
-	void DMATransfer(byte i_SourceAdress);
 	bool isBootstrapDone() const;
 
 private:

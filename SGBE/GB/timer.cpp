@@ -7,7 +7,7 @@ Timer::Timer(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsEnabled(true),
 m_RemainingCyclesToTickTheCounter(CyclesArr[(int)TimerFrequencies::_4096Hz]),
 m_RemainingCyclesToTickTheDivider(CyclesArr[(int)TimerFrequencies::_16384Hz]),
 m_CurrentFrequency(TimerFrequencies::_4096Hz),
-m_DividerCounter(0), m_TimerCounter(0), m_TimerModulo(0) {}
+m_DividerCounter(0), m_TimerCounter(0), m_TimerModulo(0), m_TimerControl(0b000000100) {}
 
 void Timer::Step(const uint32_t& i_Cycles)
 {
@@ -52,45 +52,66 @@ void Timer::Reset()
 	// reset timer memory registers in memory
 	m_DividerCounter = 0;
 	m_TimerCounter = 0;
-	m_Gameboy.GetMMU().Write(TIMER_MODULO_ADDR, 0);
-	m_Gameboy.GetMMU().Write(TIMER_CONTROL_ADDR, 0b000000100); // the default value for the timer controler, is enabled and 4096Hz mode
+	m_TimerModulo = 0;
+	m_TimerControl = 0b000000100; // the default value for the timer controler, is enabled and 4096Hz mode
 }
 
-void Timer::SetTimerControl(byte i_NewTimerControl)
+byte Timer::GetRegister(const word& i_Address) const
 {
-	m_IsEnabled = bitwise::GetBit(TIMER_CONTROL_ENABLE_BIT, i_NewTimerControl) ? true : false; // read bit 2 for enable/disable
-	Timer::TimerFrequencies freq = (Timer::TimerFrequencies)(i_NewTimerControl & 0x3); // get bits 0 and 1 for freq type
-	setFrequency(freq);
+	switch (i_Address)
+	{
+	case TIMER_DIVIDER_ADDR:
+		{
+			return m_DividerCounter;
+		}
+		break;
+	case TIMER_COUNTER_ADDR:
+		{
+			return m_TimerCounter;
+		}
+		break;
+	case TIMER_MODULO_ADDR:
+		{
+			return m_TimerModulo;
+		}
+		break;
+	case TIMER_CONTROL_ADDR:
+		{
+			return m_TimerControl;
+		}
+		break;
+	}
+
+	LOG_ERROR(true, return 0, "Attempting to read from unmapped memory address: 0x" << i_Address);
 }
 
-byte Timer::GetDividerCounter() const
+void Timer::SetRegister(const word& i_Address, byte i_Value)
 {
-	return m_DividerCounter;
-}
-
-void Timer::ResetDividerCounter()
-{
-	m_DividerCounter = 0;
-}
-
-byte Timer::GetTimerCounter() const
-{
-	return m_TimerCounter;
-}
-
-void Timer::SetTimerCounter(byte i_NewTimerCounter)
-{
-	m_TimerCounter = i_NewTimerCounter;
-}
-
-byte Timer::GetTimerModulo() const
-{
-	return m_TimerModulo;
-}
-
-void Timer::SetTimerModulo(byte i_NewTimerModulo)
-{
-	m_TimerModulo = i_NewTimerModulo;
+	switch (i_Address)
+	{
+	case TIMER_DIVIDER_ADDR:
+		{
+			m_DividerCounter = 0;
+		}
+		break;
+	case TIMER_COUNTER_ADDR:
+		{
+			m_TimerCounter = i_Value;
+		}
+		break;
+	case TIMER_MODULO_ADDR:
+		{
+			m_TimerModulo = i_Value;
+		}
+		break;
+	case TIMER_CONTROL_ADDR:
+		{
+			m_IsEnabled = bitwise::GetBit(TIMER_CONTROL_ENABLE_BIT, i_Value) ? true : false; // read bit 2 for enable/disable
+			Timer::TimerFrequencies freq = (Timer::TimerFrequencies)(i_Value & 0x3); // get bits 0 and 1 for freq type
+			setFrequency(freq);
+		}
+		break;
+	}
 }
 
 void Timer::setFrequency(TimerFrequencies i_Frequency)

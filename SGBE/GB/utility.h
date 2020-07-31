@@ -15,7 +15,8 @@ const uint32_t GAMEBOY_SCREEN_HEIGHT = 144;
 
 #define NOP
 
-namespace bitwise {
+namespace bitwise 
+{
 	template<typename type>
 	inline bool GetBit(size_t i_BitNumber, type i_Value)
 	{

@@ -47,13 +47,8 @@ public:
 
     void Step(const uint32_t& i_Cycles);
     void Reset();
-    void SetTimerControl(byte i_NewTimerControl);
-    byte GetDividerCounter() const;
-    void ResetDividerCounter();
-    byte GetTimerCounter() const;
-    void SetTimerCounter(byte i_NewTimerCounter);
-    byte GetTimerModulo() const;
-    void SetTimerModulo(byte i_NewTimerModulo);
+    byte GetRegister(const word& i_Address) const;
+    void SetRegister(const word& i_Address, byte i_Value);
 
 private:
     void setFrequency(TimerFrequencies i_Frequency);
@@ -66,6 +61,7 @@ private:
     byte m_DividerCounter;
     byte m_TimerCounter;
     byte m_TimerModulo;
+    byte m_TimerControl;
 
     /* gameboy ref */
     Gameboy& m_Gameboy;

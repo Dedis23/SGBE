@@ -1,7 +1,7 @@
 /**********************************************************
- *			Created by: Dedi Sidi, 2020                   *
- *												          *
- *			GPU - The main graphics chip of the gameboy   *
+ *		Created by: Dedi Sidi, 2020                       *
+ *											              *
+ *		GPU - The main graphics chip of the gameboy       *
  *********************************************************/
 
 #pragma once
@@ -18,7 +18,7 @@
  *  gameboy cpu manual pdf:                                  *
  *  http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf           */
 
- /* gpu (ppu) releated registers addresses in memory */
+ /* gpu releated registers addresses in memory */
 const word GPU_LCD_CONTROL_ADDR = 0xFF40;
 const word GPU_LCDC_STATUS_ADDR = 0xFF41;
 const word GPU_SCROLL_Y_ADDR = 0xFF42;
@@ -34,10 +34,10 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 
 /* LCD Control bits */
 #define LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT             7 // 0 off, 1 on
-#define LCD_CONTROL_WINDOW_TILE_MAP_DISPLAY_SELECT_BIT 6 // 0 take data from 0x9800 1 take data from 0x9c00
+#define LCD_CONTROL_WINDOW_TILE_MAP_DISPLAY_SELECT_BIT 6 // 0 take data from 0x9800, 1 take data from 0x9c00
 #define LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT          5 // 0 off, 1 on
-#define LCD_CONTROL_BG_WINDOW_TILE_DATA_SELECT_BIT     4 // 0 take data from 0x8800 1 take data from 0x8000
-#define LCD_CONTROL_BG_TILE_MAP_DISPLAY_SELECT_BIT     3 // 0 take data from 0x9800 1 take data from 0x9c00
+#define LCD_CONTROL_BG_WINDOW_TILE_DATA_SELECT_BIT     4 // 0 take data from 0x8800, 1 take data from 0x8000
+#define LCD_CONTROL_BG_TILE_MAP_DISPLAY_SELECT_BIT     3 // 0 take data from 0x9800, 1 take data from 0x9c00
 #define LCD_CONTROL_SPRITE_SIZE_BIT                    2 // 0 is 8x8 sprite size, 1 is 8x16 sprite size
 #define LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT          1 // 0 off, 1 on
 #define LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT     0 // 0 off, 1 on
@@ -91,6 +91,8 @@ public:
     void Step(uint32_t& i_Cycles);
     void Reset();
     const Pixel* GetFrameBuffer() const;
+    byte GetRegister(const word& i_Address) const;
+    void SetRegister(const word& i_Address, byte i_Value);
 
 private:
     enum class Video_Mode
@@ -106,17 +108,28 @@ private:
     void handleVBlankMode();
     void handleSearchSpritesAttributesMode();
     void handleLCDTransferMode();
-    bool isLCDEnabled() const;
-    bool checkForLCDCInterrupt(int i_InterruptBit) const;
-    void checkForLYAndLYCCoincidence() const;
+    void checkForLYAndLYCCoincidence();
     void drawCurrentScanline();
     void drawBackground();
     void drawWindow();
     void drawSprites();
 
+    bool m_IsLCDEnabled;
     Video_Mode m_Mode;
     uint32_t m_VideoCycles;
     Pixel m_FrameBuffer[GAMEBOY_SCREEN_WIDTH * GAMEBOY_SCREEN_HEIGHT];
+    byte m_LCDControl;
+    byte m_LCDStatus;
+    byte m_ScrollY;
+    byte m_ScrollX;
+    byte m_LCDCYCoordinate;
+    byte m_LYCompare;
+    byte m_BGPaletteData;
+    byte m_ObjectPalette0;
+    byte m_ObjectPalette1;
+    byte m_WindowYPosition;
+    byte m_WindowXPositionMinus7;
+
 
     /* gameboy ref */
     Gameboy& m_Gameboy;
