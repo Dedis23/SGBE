@@ -32,7 +32,7 @@ const word GPU_OBJECT_PALETTE_1_DATA_ADDR = 0xFF49;
 const word GPU_WINDOW_Y_POSITION_ADDR = 0xFF4A;
 const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 
-/* LCD CONTROL bits */
+/* LCD Control bits */
 #define LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT             7 // 0 off, 1 on
 #define LCD_CONTROL_WINDOW_TILE_MAP_DISPLAY_SELECT_BIT 6 // 0 take data from 0x9800 1 take data from 0x9c00
 #define LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT          5 // 0 off, 1 on

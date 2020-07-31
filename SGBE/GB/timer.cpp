@@ -61,7 +61,7 @@ void Timer::Reset()
 
 void Timer::SetTimerControl(byte i_NewTimerControl)
 {
-	bitwise::GetBit(2, i_NewTimerControl) ? start() : stop(); // read bit 2 for enable/disable
+	bitwise::GetBit(TIMER_CONTROL_ENABLE_BIT, i_NewTimerControl) ? start() : stop(); // read bit 2 for enable/disable
 	Timer::TimerFrequencies freq = (Timer::TimerFrequencies)(i_NewTimerControl & 0x3); // get bits 0 and 1 for freq type
 	setFrequency(freq);
 }

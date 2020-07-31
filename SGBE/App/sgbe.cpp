@@ -68,7 +68,7 @@ void SGBE::Run()
 			// main loop here
 			m_Gameboy->Step(); // step a single frame
 			endFrameTime = chrono::high_resolution_clock::now();
-			auto elapsedFrameTime = std::chrono::duration_cast<std::chrono::duration<float, std::micro>> (endFrameTime - startFrameTime);
+			auto elapsedFrameTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>> (endFrameTime - startFrameTime);
 			cout << elapsedFrameTime.count() << endl;
 			static int test = 0;
 			test++;
