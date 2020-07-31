@@ -28,6 +28,8 @@ bool SDLWrapper::Initialize(const string& i_WindowTitle, int i_WindowWidth, int 
 
 	m_Texture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, m_WindowWidth, m_WindowHeight);
 	LOG_CRITICAL(m_Texture == NULL, return false, "Failed to create SDL texture");
+
+	return true;
 }
 
 

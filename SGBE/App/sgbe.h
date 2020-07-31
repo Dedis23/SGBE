@@ -9,6 +9,7 @@
 #include "sdl_wrapper.h"
 #include "../Generic/cli.h"
 #include "../GB/gameboy.h"
+#include <chrono>
 
 class SGBE
 {

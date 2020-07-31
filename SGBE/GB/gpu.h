@@ -34,11 +34,11 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 
 /* LCD CONTROL bits */
 #define LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT             7 // 0 off, 1 on
-#define LCD_CONTROL_WINDOW_TILE_MAP_DISPLAY_SELECT_BIT 6
+#define LCD_CONTROL_WINDOW_TILE_MAP_DISPLAY_SELECT_BIT 6 // 0 take data from 0x9800 1 take data from 0x9c00
 #define LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT          5 // 0 off, 1 on
 #define LCD_CONTROL_BG_WINDOW_TILE_DATA_SELECT_BIT     4 // 0 take data from 0x8800 1 take data from 0x8000
-#define LCD_CONTROL_BG_TILE_MAP_DISPLAY_SELECT_BIT     3 //
-#define LCD_CONTROL_SPRITE_SIZE_BIT                    2 // 0=8x8, 1=8x16
+#define LCD_CONTROL_BG_TILE_MAP_DISPLAY_SELECT_BIT     3 // 0 take data from 0x9800 1 take data from 0x9c00
+#define LCD_CONTROL_SPRITE_SIZE_BIT                    2 // 0 is 8x8 sprite size, 1 is 8x16 sprite size
 #define LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT          1 // 0 off, 1 on
 #define LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT     0 // 0 off, 1 on
 
@@ -59,6 +59,9 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 #define V_BLANK_START_SCANLINE 144
 #define V_BLANK_END_SCANLINE 153
 
+const uint32_t MAX_CYCLES_BEFORE_RENDERING = 70224; // this is calcualted like so:  144 lines in modes 2, 3, 0 (144*456 cycles)
+                                                    // plus 10 lines in mode 1 (10*456) = 65664 + 4560 = 70224
+                                                    // 456 is the number of cycles that it takes to draw single line (mode 2 + mode3 + mode0)
 struct Pixel
 {
     byte Red;
@@ -74,8 +77,6 @@ struct Pixel
 };
 
 const Pixel GAMEBOY_POCKET_PALLETE[4] = { { 255, 255, 255 }, { 192, 192, 192 }, { 96, 96, 96 }, { 0, 0, 0 } };
-
-const uint32_t MAX_CYCLES_BEFORE_RENDERING = 70224; 
 
 class Gameboy;
 
@@ -115,7 +116,7 @@ private:
 
     Video_Mode m_Mode;
     uint32_t m_VideoCycles;
-    Pixel m_FrameBuffer[GAMEBOY_SCREEN_HEIGHT * GAMEBOY_SCREEN_WIDTH];
+    Pixel m_FrameBuffer[GAMEBOY_SCREEN_WIDTH * GAMEBOY_SCREEN_HEIGHT];
 
     /* gameboy ref */
     Gameboy& m_Gameboy;

@@ -178,6 +178,7 @@ void GPU::handleLCDTransferMode()
 	}
 }
 
+/* draws a single scanline with background, window and sprite */
 void GPU::drawCurrentScanline()
 {
 	byte LCDC = m_Gameboy.GetMMU().Read(GPU_LCD_CONTROL_ADDR);
@@ -238,6 +239,8 @@ void GPU::drawBackground()
 	byte currScanLine = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_COORDINATE_ADDR);
 }
 
+/* the window is behind the sprites and above the background (unless specified otherwise) 
+   it is generally used for UI and its a fixed panel that will generaly not scroll */
 void GPU::drawWindow()
 {
 
