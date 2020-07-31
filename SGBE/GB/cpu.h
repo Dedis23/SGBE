@@ -102,8 +102,8 @@ private:
 	void LD_nn_n(IRegister& i_DestRegister);
 	void LD_n_nn(IRegister& i_DestRegister);
 	void LD_r1_r2(IRegister& i_DestRegister, const IRegister& i_SrcRegister);
-	void LD_r1_r2(IRegister& i_DestRegister, const WordAddress& i_SrcMemory);
-	void LD_r1_r2(const WordAddress& i_DestMemory, const IRegister& i_SrcRegister);
+	void LD_r1_r2(IRegister& i_DestRegister, const word& i_SrcMemory);
+	void LD_r1_r2(const word& i_DestMemory, const IRegister& i_SrcRegister);
 	void LD_HL_SP_n();
 	void PUSH(word i_Value);
 	void POP(word& i_Value);

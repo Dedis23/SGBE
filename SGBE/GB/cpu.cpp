@@ -21,18 +21,20 @@ void CPU::Step(uint32_t& o_Cycles)
 	}
 
 	// execute
-	if (PC.GetValue() - 1 >= 0x95 && PC.GetValue() - 1 <= 0xA7) // this is for debug only, to be removed
-	{
-		LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
-		(this->*OPCodeData.Operation)();
-		//dumpRegisters();
-		//cout << endl;
-	}
-	else
-	{
-		(this->*OPCodeData.Operation)();
-		//(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
-	}
+	(this->*OPCodeData.Operation)();
+	// this is for debug only, to be removed
+	//if (PC.GetValue() - 1 >= 0x95 && PC.GetValue() - 1 <= 0xA7)
+	//{
+	//	LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
+	//	(this->*OPCodeData.Operation)();
+	//	//dumpRegisters();
+	//	//cout << endl;
+	//}
+	//else
+	//{
+	//	(this->*OPCodeData.Operation)();
+	//	//(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
+	//}
 
 	// calculate cycles
 	if (m_IsCCJump)
@@ -238,13 +240,13 @@ void CPU::LD_r1_r2(IRegister& i_DestRegister, const IRegister& i_SrcRegister)
 	i_DestRegister.SetValue(val);
 }
 
-void CPU::LD_r1_r2(IRegister& i_DestRegister, const WordAddress& i_SrcMemory)
+void CPU::LD_r1_r2(IRegister& i_DestRegister, const word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	i_DestRegister.SetValue(val);
 }
 
-void CPU::LD_r1_r2(const WordAddress& i_DestMemory, const IRegister& i_SrcRegister)
+void CPU::LD_r1_r2(const word& i_DestMemory, const IRegister& i_SrcRegister)
 {
 	byte val = static_cast<byte>(i_SrcRegister.GetValue());
 	m_MMU.Write(i_DestMemory, val);
@@ -1834,7 +1836,7 @@ void CPU::OPCode_7D()
 
 void CPU::OPCode_7E()
 {
-	WordAddress addr = HL.GetValue();
+	word addr = HL.GetValue();
 	LD_r1_r2(A, addr);
 }
 
@@ -1870,7 +1872,7 @@ void CPU::OPCode_45()
 
 void CPU::OPCode_46()
 {
-	WordAddress addr = HL.GetValue();
+	word addr = HL.GetValue();
 	LD_r1_r2(B, addr);
 }
 
@@ -1906,7 +1908,7 @@ void CPU::OPCode_4D()
 
 void CPU::OPCode_4E()
 {
-	WordAddress addr = HL.GetValue();
+	word addr = HL.GetValue();
 	LD_r1_r2(C, addr);
 }
 
@@ -1942,7 +1944,7 @@ void CPU::OPCode_55()
 
 void CPU::OPCode_56()
 {
-	WordAddress addr = HL.GetValue();
+	word addr = HL.GetValue();
 	LD_r1_r2(D, addr);
 }
 
@@ -1978,7 +1980,7 @@ void CPU::OPCode_5D()
 
 void CPU::OPCode_5E()
 {
-	WordAddress addr = HL.GetValue();
+	word addr = HL.GetValue();
 	LD_r1_r2(E, addr);
 }
 
@@ -2014,7 +2016,7 @@ void CPU::OPCode_65()
 
 void CPU::OPCode_66()
 {
-	WordAddress addr = HL.GetValue();
+	word addr = HL.GetValue();
 	LD_r1_r2(H, addr);
 }
 
@@ -2050,7 +2052,7 @@ void CPU::OPCode_6D()
 
 void CPU::OPCode_6E()
 {
-	WordAddress addr = HL.GetValue();
+	word addr = HL.GetValue();
 	LD_r1_r2(L, addr);
 }
 

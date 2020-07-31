@@ -6,151 +6,151 @@ MMU::MMU(Gameboy& i_Gameboy, Cartridge& i_Cartridge) : m_Gameboy(i_Gameboy), m_C
     m_MappedIO[TIMER_CONTROL_ADDR - 0xFF00] = 0b000000100;
 }
 
-byte MMU::Read(const WordAddress& i_Address) const
+byte MMU::Read(const word& i_Address) const
 {
     /* more info about the sections is in the h file */
 
-    if (i_Address.checkRangeBounds(0x00, 0xFF))
+    if (i_Address >= 0x00 && i_Address <= 0xFF)
     {
         /* bootstrap */
         if (!isBootstrapDone())
         {
-            return s_Bootstrap[i_Address.GetValue()];
+            return s_Bootstrap[i_Address];
         }
     }
 
     /* Cartridge ROM banks */
-    if (i_Address.checkRangeBounds(0x0000, 0x7FFF))
+    if (i_Address >= 0x0000 && i_Address <= 0x7FFF)
     {
-        return m_Cartridge.Read(i_Address.GetValue());
+        return m_Cartridge.Read(i_Address);
     }
 
     /* Video RAM */
-    if (i_Address.checkRangeBounds(0x8000, 0x9FFF))
+    if (i_Address >= 0x8000 && i_Address <= 0x9FFF)
     {
-        return m_VRAM[i_Address.GetValue() - 0x8000];
+        return m_VRAM[i_Address - 0x8000];
     }
 
     /* External RAM (RAM on specific cartridge types which supported this) */
-    if (i_Address.checkRangeBounds(0xA000, 0xBFFF))
+    if (i_Address >= 0xA000 && i_Address <= 0xBFFF)
     {
-        return m_Cartridge.Read(i_Address.GetValue() - 0xA000);
+        return m_Cartridge.Read(i_Address - 0xA000);
     }
 
     /* Internal RAM */
-    if (i_Address.checkRangeBounds(0xC000, 0xDFFF))
+    if (i_Address >= 0xC000 && i_Address <= 0xDFFF)
     {
-        return m_RAM[i_Address.GetValue() - 0xC000];
+        return m_RAM[i_Address - 0xC000];
     }
 
     /* Shadow RAM */
-    if (i_Address.checkRangeBounds(0xE000, 0xFDFF))
+    if (i_Address >= 0xE000 && i_Address <= 0xFDFF)
     {
         /* reading exact copy from the internal RAM which is 0x2000 addresses below */
-        return m_RAM[i_Address.GetValue() - 0x2000];
+        return m_RAM[i_Address - 0x2000];
     }
 
     /* OAM */
-    if (i_Address.checkRangeBounds(0xFE00, 0xFE9F))
+    if (i_Address >= 0xFE00 && i_Address <= 0xFE9F)
     {
-        return m_OAM[i_Address.GetValue() - 0xFE00];
+        return m_OAM[i_Address - 0xFE00];
     }
 
     /* Unusable area - shouldn't get here */
-    if (i_Address.checkRangeBounds(0xFEA0, 0xFEFF))
+    if (i_Address >= 0xFEA0 && i_Address <= 0xFEFF)
     {
-        LOG_ERROR(true, return 0, "Attempting to read from unusable memory address: 0x" << i_Address.GetValue());
+        LOG_ERROR(true, return 0, "Attempting to read from unusable memory address: 0x" << i_Address);
     }
 
     /* Mapped IO */
-    if (i_Address.checkRangeBounds(0xFF00, 0xFF7F))
+    if (i_Address >= 0xFF00 && i_Address <= 0xFF7F)
     {
-        return m_MappedIO[i_Address.GetValue() - 0xFF00];
+        return m_MappedIO[i_Address - 0xFF00];
     }
 
     /* Zero Page RAM */
-    if (i_Address.checkRangeBounds(0xFF80, 0xFFFF))
+    if (i_Address >= 0xFF80 && i_Address <= 0xFFFF)
     {
-        return m_ZeroPageRAM[i_Address.GetValue() - 0xFF80];
+        return m_ZeroPageRAM[i_Address - 0xFF80];
     }
 
-    LOG_ERROR(true, return 0, "Attempting to read from unmapped memory address: 0x" << i_Address.GetValue());
+    LOG_ERROR(true, return 0, "Attempting to read from unmapped memory address: 0x" << i_Address);
 }
 
-void MMU::Write(const WordAddress& i_Address, byte i_Value)
+void MMU::Write(const word& i_Address, byte i_Value)
 {
     bool wroteToAddr = false;
     /* more info about the sections is in the h file */
 
-    if (i_Address.checkRangeBounds(0x00, 0xFF))
+    if (i_Address >= 0x00 && i_Address <= 0xFF)
     {
         /* bootstrap */
         if (!isBootstrapDone())
         {
-            LOG_ERROR(true, return, "Attempting to write to address: 0x" << i_Address.GetValue() << " while bootstrap is not done!");
+            LOG_ERROR(true, return, "Attempting to write to address: 0x" << i_Address << " while bootstrap is not done!");
         }
     }
 
     /* Cartridge ROM banks */
-    if (i_Address.checkRangeBounds(0x0000, 0x7FFF))
+    if (i_Address >= 0x0000 && i_Address <= 0x7FFF)
     {
-        LOG_ERROR(true, return, "Attempting to write to address: 0x" << i_Address.GetValue() << " which is a cartridge ROM bank address!");
+        LOG_ERROR(true, return, "Attempting to write to address: 0x" << i_Address << " which is a cartridge ROM bank address!");
     }
 
     /* Video RAM */
-    if (i_Address.checkRangeBounds(0x8000, 0x9FFF))
+    if (i_Address >= 0x8000 && i_Address <= 0x9FFF)
     {
-        m_VRAM[i_Address.GetValue() - 0x8000] = i_Value;
+        m_VRAM[i_Address - 0x8000] = i_Value;
         wroteToAddr = true;
     }
 
     /* External RAM (RAM on specific cartridge types which supported this) */
-    if (i_Address.checkRangeBounds(0xA000, 0xBFFF))
+    if (i_Address >= 0xA000 && i_Address <= 0xBFFF)
     {
-        m_Cartridge.Write(i_Address.GetValue() - 0xA000, i_Value);
+        m_Cartridge.Write(i_Address - 0xA000, i_Value);
         wroteToAddr = true;
     }
 
     /* Internal RAM */
-    if (i_Address.checkRangeBounds(0xC000, 0xDFFF))
+    if (i_Address >= 0xC000 && i_Address <= 0xDFFF)
     {
-        m_RAM[i_Address.GetValue() - 0xC000] = i_Value;
+        m_RAM[i_Address - 0xC000] = i_Value;
         wroteToAddr = true;
     }
 
     /* Shadow RAM */
-    if (i_Address.checkRangeBounds(0xE000, 0xFDFF))
+    if (i_Address >= 0xE000 && i_Address <= 0xFDFF)
     {
         /* writing in the Shadow RAM is like writing in the internal RAM banks. the shadow ram is an exact copy from the internal RAM which is 0x2000 addresses below */
         /* i.e writing to 0xE000 is like writing to 0xC000, so 0x2000 is reduced and then 0xC000 (0xE000 total) to get to the place in the m_RAM array */
-        m_RAM[i_Address.GetValue() - 0xE000] = i_Value;
+        m_RAM[i_Address - 0xE000] = i_Value;
         wroteToAddr = true;
     }
 
     /* OAM */
-    if (i_Address.checkRangeBounds(0xFE00, 0xFE9F))
+    if (i_Address >= 0xFE00 && i_Address <= 0xFE9F)
     {
-        m_OAM[i_Address.GetValue() - 0xFE00] = i_Value;
+        m_OAM[i_Address - 0xFE00] = i_Value;
         wroteToAddr = true;
     }
 
     /* Unusable area - shouldn't get here */
-    if (i_Address.checkRangeBounds(0xFEA0, 0xFEFF))
+    if (i_Address >= 0xFEA0 && i_Address <= 0xFEFF)
     {
-        LOG_ERROR(true, return, "Attempting to write to an unusable memory address: 0x" << i_Address.GetValue());
+        LOG_ERROR(true, return, "Attempting to write to an unusable memory address: 0x" << i_Address);
     }
 
     /* Mapped IO */
-    if (i_Address.checkRangeBounds(0xFF00, 0xFF7F))
+    if (i_Address >= 0xFF00 && i_Address <= 0xFF7F)
     {
         writeMappedIO(i_Address, i_Value);
         wroteToAddr = true;
     }
 
     /* Zero Page RAM */
-    if (i_Address.checkRangeBounds(0xFF80, 0xFFFF))
+    if (i_Address >= 0xFF80 && i_Address <= 0xFFFF)
     {
-        m_ZeroPageRAM[i_Address.GetValue() - 0xFF80] = i_Value;
+        m_ZeroPageRAM[i_Address - 0xFF80] = i_Value;
         wroteToAddr = true;
     }
     
@@ -163,52 +163,52 @@ void MMU::Write(const WordAddress& i_Address, byte i_Value)
     //    return, "Wrote 0x" << std::hex << static_cast<word>(i_Value) << " in address 0x" << std::hex << i_Address.GetValue());
     return;
 
-    LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address.GetValue());
+    LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address);
 }
 
 /* write to memory modules from other componenets will sometimes invoke specific methods of the modules
    or will override the new value to a different, specifc value */
-void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
+void MMU::writeMappedIO(const word& i_Address, byte i_Value)
 {
-    switch (i_Address.GetValue())
+    switch (i_Address)
     {
     case TIMER_DIVIDER_ADDR:
         {
             // whenever the user write to the divider, it will reset
-            m_MappedIO[i_Address.GetValue() - 0xFF00] = 0;
+            m_MappedIO[i_Address - 0xFF00] = 0;
         }
         break;
     case TIMER_CONTROL_ADDR:
         {
             m_Gameboy.GetTimer().SetTimerControl(i_Value);
-            m_MappedIO[i_Address.GetValue() - 0xFF00] = i_Value;
+            m_MappedIO[i_Address - 0xFF00] = i_Value;
         }
         break;
     case GPU_LCD_CONTROL_ADDR:
         {
             // if the LCD is currently on and the new value clears the LCD enable bit, we will reset the GPU
-            byte currLCDC = m_MappedIO[i_Address.GetValue() - 0xFF00];
+            byte currLCDC = m_MappedIO[i_Address - 0xFF00];
             if (bitwise::GetBit(LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT, currLCDC == true)
                 && bitwise::GetBit(LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT, i_Value) == false)
             {
                 m_Gameboy.GetGPU().Reset();
             }
-            m_MappedIO[i_Address.GetValue() - 0xFF00] = i_Value;
+            m_MappedIO[i_Address - 0xFF00] = i_Value;
         }
         break;
     case GPU_LCDC_STATUS_ADDR:
         {
             // bits 0-2 should not be written by the game they are read only (2 is LY,LYC coincidence bit and 0-1 are the current mode)
             i_Value &= 0xF8;
-            byte currLCDCStatus = m_MappedIO[i_Address.GetValue() - 0xFF00];
+            byte currLCDCStatus = m_MappedIO[i_Address - 0xFF00];
             currLCDCStatus &= 0x07;
-            m_MappedIO[i_Address.GetValue() - 0xFF00] = currLCDCStatus | i_Value;
+            m_MappedIO[i_Address - 0xFF00] = currLCDCStatus | i_Value;
         }
             break;
     case GPU_LCDC_Y_COORDINATE_ADDR:
         {
             // whenever the user write to the Y coordinate, it will reset
-            m_MappedIO[i_Address.GetValue() - 0xFF00] = 0;
+            m_MappedIO[i_Address - 0xFF00] = 0;
         }
         break;
     case GPU_DMA_TRANSFER_AND_START_ADDR:
@@ -219,7 +219,7 @@ void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
     default:
         {
             // any other mapped i/o
-            m_MappedIO[i_Address.GetValue() - 0xFF00] = i_Value;
+            m_MappedIO[i_Address - 0xFF00] = i_Value;
         }
         break;
     }
@@ -230,10 +230,10 @@ void MMU::writeMappedIO(const WordAddress& i_Address, byte i_Value)
    the source to be copied is taken by the value that is written, however it needs to be multiplied by 100h (256) */
 void MMU::DMATransfer(byte i_SourceAdress)
 {
-    WordAddress adr(i_SourceAdress * 0x100);
+    word adr = i_SourceAdress * 0x100;
     for (int i = 0; i < 0xA0; i++)
     {
-        byte val = Read(adr.GetValue() + i);
+        byte val = Read(adr + i);
         Write(0xFE00 + i, val);
     }
 }

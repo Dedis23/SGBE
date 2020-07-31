@@ -58,11 +58,11 @@ public:
     MMU(const MMU&) = delete;
     MMU& operator=(const MMU&) = delete;
 	
-	byte Read(const WordAddress& i_Address) const;
-	void Write(const WordAddress& i_Address, byte i_Value);
+	byte Read(const word& i_Address) const;
+	void Write(const word& i_Address, byte i_Value);
 
 private:
-	void writeMappedIO(const WordAddress& i_Address, byte i_Value);
+	void writeMappedIO(const word& i_Address, byte i_Value);
 	void DMATransfer(byte i_SourceAdress);
 	bool isBootstrapDone() const;
 
