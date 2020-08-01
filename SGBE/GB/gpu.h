@@ -70,7 +70,7 @@ struct Pixel
 
     Pixel() : Red(255), Green(255), Blue(255) {}
     Pixel(byte i_Red, byte i_Green, byte i_Blue) : Red(i_Red), Green(i_Green), Blue(i_Blue) {}
-    bool operator==(Pixel& i_Other) const
+    bool operator==(const Pixel& i_Other) const
     {
         return this->Red == i_Other.Red && this->Green == i_Other.Green && this->Blue == i_Other.Blue;
     }

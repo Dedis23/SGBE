@@ -5,6 +5,7 @@ AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false), m_IsCCJump(
 
 void CPU::Step(uint32_t& o_Cycles)
 {
+	if (m_HALT) return;
 	// read next instruction opcode
 	byte OPCode = readNextByte();
 
