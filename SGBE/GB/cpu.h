@@ -64,6 +64,7 @@ private:
 		C,
 	};
 
+	void initOpcodes();
 	byte readNextByte();
 	word readNextWord();
 	sbyte readNextSignedByte();
@@ -88,6 +89,8 @@ private:
 private:
 	/* OPCodes - struct and map */
 	typedef void(CPU::* OPCodeFuntion)();
+	OPCodeFuntion m_OPCodes[256];
+	OPCodeFuntion m_OPCodesCB[256];
 	struct OPCodeData
 	{
 		OPCodeFuntion Operation;
@@ -99,11 +102,15 @@ private:
 	static const std::vector<OPCodeData> m_CB_OPCodeDataMap;
 
 	/* CPU Operations */
-	void LD_nn_n(IRegister& i_DestRegister);
-	void LD_n_nn(IRegister& i_DestRegister);
-	void LD_r1_r2(IRegister& i_DestRegister, const IRegister& i_SrcRegister);
-	void LD_r1_r2(IRegister& i_DestRegister, const word& i_SrcMemory);
-	void LD_r1_r2(const word& i_DestMemory, const IRegister& i_SrcRegister);
+	void LD_nn_n(ByteRegister& i_DestRegister);
+	void LD_n_nn(WordRegister& i_DestRegister);
+	void LD_n_nn(Pair8BRegisters& i_DestRegister);
+	void LD_r1_r2(ByteRegister& i_DestRegister, const ByteRegister& i_SrcRegister);
+	void LD_r1_r2(ByteRegister& i_DestRegister, word i_SrcMemory);
+	void LD_r1_r2(word i_DestMemory, const ByteRegister& i_SrcRegister);
+	void LD_r1_r2(word i_DestMemory, byte i_Value);
+	void LD_r1_r2(WordRegister& i_DestRegister, const Pair8BRegisters& i_SrcRegister);
+	void LD_r1_r2(word i_DestMemory, const WordRegister& i_SrcRegister);
 	void LD_HL_SP_n();
 	void PUSH(word i_Value);
 	void POP(word& i_Value);
@@ -117,10 +124,12 @@ private:
 	void OR(byte i_Value);
 	void XOR(byte i_Value);
 	void CP(byte i_Value);
-	void INC(IRegister& i_DestRegister);
-	void INC_no_flags(IRegister& i_DestRegister);
-	void DEC(IRegister& i_DestRegister);
-	void DEC_no_flags(IRegister& i_DestRegister);
+	void INC(ByteRegister& i_DestRegister);
+	void INC_no_flags(WordRegister& i_DestRegister);
+	void INC_no_flags(Pair8BRegisters& i_DestRegister);
+	void DEC(ByteRegister& i_DestRegister);
+	void DEC_no_flags(WordRegister& i_DestRegister);
+	void DEC_no_flags(Pair8BRegisters& i_DestRegister);
 	void DAA();
 	void CPL();
 	void CCF();
@@ -141,14 +150,22 @@ private:
 	void RET();
 	void RET_cc(JumpConditions i_Condition);
 	void RETI();
-	void SWAP(IRegister& i_DestRegister);
-	void RLC_n(IRegister& i_DestRegister);
-	void RL_n(IRegister& i_DestRegister);
-	void RRC_n(IRegister& i_DestRegister);
-	void RR_n(IRegister& i_DestRegister);
-	void SLA_n(IRegister& i_DestRegister);
-	void SRA_n(IRegister& i_DestRegister);
-	void SRL_n(IRegister& i_DestRegister);
+	void SWAP(ByteRegister& i_DestRegister);
+	void SWAP(word& i_SrcMemory);
+	void RLC_n(ByteRegister& i_DestRegister);
+	void RLC_n(word& i_SrcMemory);
+	void RL_n(ByteRegister& i_DestRegister);
+	void RL_n(word& i_SrcMemory);
+	void RRC_n(ByteRegister& i_DestRegister);
+	void RRC_n(word& i_SrcMemory);
+	void RR_n(ByteRegister& i_DestRegister);
+	void RR_n(word& i_SrcMemory);
+	void SLA_n(ByteRegister& i_DestRegister);
+	void SLA_n(word& i_SrcMemory);
+	void SRA_n(ByteRegister& i_DestRegister);
+	void SRA_n(word& i_SrcMemory);
+	void SRL_n(ByteRegister& i_DestRegister);
+	void SRL_n(word& i_SrcMemory);
 	void BIT_b_r(byte i_BitNumber, byte i_Value);
 	void SET_b_r(byte i_BitNumber, byte& o_Value);
 	void RES_b_r(byte i_BitNumber, byte& o_Value);

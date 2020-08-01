@@ -1,7 +1,10 @@
 #include "cpu.h"
 
 CPU::CPU(Gameboy& i_Gameboy, MMU& i_MMU) : m_Gameboy(i_Gameboy), m_MMU(i_MMU),
-AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false), m_IsCCJump(false) {}
+AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false), m_IsCCJump(false) 
+{
+	initOpcodes();
+}
 
 void CPU::Step(uint32_t& o_Cycles)
 {
@@ -22,6 +25,7 @@ void CPU::Step(uint32_t& o_Cycles)
 	}
 
 	// execute
+	//LOG_INFO(true, NOP, "Executing OPCode: " << std::hex << (int)OPCode << " " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
 	(this->*OPCodeData.Operation)();
 	// this is for debug only, to be removed
 	//if (PC.GetValue() - 1 >= 0x95 && PC.GetValue() - 1 <= 0xA7)
@@ -146,6 +150,267 @@ void CPU::HandleInterrupts()
 	}
 }
 
+void CPU::initOpcodes()
+{
+	m_OPCodes[0x00] = &CPU::OPCode_00;
+	m_OPCodes[0x01] = &CPU::OPCode_01;
+	m_OPCodes[0x02] = &CPU::OPCode_02;
+	m_OPCodes[0x03] = &CPU::OPCode_03;
+	m_OPCodes[0x04] = &CPU::OPCode_04;
+	m_OPCodes[0x05] = &CPU::OPCode_05;
+	m_OPCodes[0x06] = &CPU::OPCode_06;
+	m_OPCodes[0x07] = &CPU::OPCode_07;
+	m_OPCodes[0x08] = &CPU::OPCode_08;
+	m_OPCodes[0x09] = &CPU::OPCode_09;
+	m_OPCodes[0x0A] = &CPU::OPCode_0A;
+	m_OPCodes[0x0B] = &CPU::OPCode_0B;
+	m_OPCodes[0x0C] = &CPU::OPCode_0C;
+	m_OPCodes[0x0D] = &CPU::OPCode_0D;
+	m_OPCodes[0x0E] = &CPU::OPCode_0E;
+	m_OPCodes[0x0F] = &CPU::OPCode_0F;
+
+	m_OPCodes[0x10] = &CPU::OPCode_10;
+	m_OPCodes[0x11] = &CPU::OPCode_11;
+	m_OPCodes[0x12] = &CPU::OPCode_12;
+	m_OPCodes[0x13] = &CPU::OPCode_13;
+	m_OPCodes[0x14] = &CPU::OPCode_14;
+	m_OPCodes[0x15] = &CPU::OPCode_15;
+	m_OPCodes[0x16] = &CPU::OPCode_16;
+	m_OPCodes[0x17] = &CPU::OPCode_17;
+	m_OPCodes[0x18] = &CPU::OPCode_18;
+	m_OPCodes[0x19] = &CPU::OPCode_19;
+	m_OPCodes[0x1A] = &CPU::OPCode_1A;
+	m_OPCodes[0x1B] = &CPU::OPCode_1B;
+	m_OPCodes[0x1C] = &CPU::OPCode_1C;
+	m_OPCodes[0x1D] = &CPU::OPCode_1D;
+	m_OPCodes[0x1E] = &CPU::OPCode_1E;
+	m_OPCodes[0x1F] = &CPU::OPCode_1F;
+	m_OPCodes[0x20] = &CPU::OPCode_20;
+	m_OPCodes[0x21] = &CPU::OPCode_21;
+	m_OPCodes[0x22] = &CPU::OPCode_22;
+	m_OPCodes[0x23] = &CPU::OPCode_23;
+	m_OPCodes[0x24] = &CPU::OPCode_24;
+	m_OPCodes[0x25] = &CPU::OPCode_25;
+	m_OPCodes[0x26] = &CPU::OPCode_26;
+	m_OPCodes[0x27] = &CPU::OPCode_27;
+	m_OPCodes[0x28] = &CPU::OPCode_28;
+	m_OPCodes[0x29] = &CPU::OPCode_29;
+	m_OPCodes[0x2A] = &CPU::OPCode_2A;
+	m_OPCodes[0x2B] = &CPU::OPCode_2B;
+	m_OPCodes[0x2C] = &CPU::OPCode_2C;
+	m_OPCodes[0x2D] = &CPU::OPCode_2D;
+	m_OPCodes[0x2E] = &CPU::OPCode_2E;
+	m_OPCodes[0x2F] = &CPU::OPCode_2F;
+	m_OPCodes[0x30] = &CPU::OPCode_30;
+	m_OPCodes[0x31] = &CPU::OPCode_31;
+	m_OPCodes[0x32] = &CPU::OPCode_32;
+	m_OPCodes[0x33] = &CPU::OPCode_33;
+	m_OPCodes[0x34] = &CPU::OPCode_34;
+	m_OPCodes[0x35] = &CPU::OPCode_35;
+	m_OPCodes[0x36] = &CPU::OPCode_36;
+	m_OPCodes[0x37] = &CPU::OPCode_37;
+	m_OPCodes[0x38] = &CPU::OPCode_38;
+	m_OPCodes[0x39] = &CPU::OPCode_39;
+	m_OPCodes[0x3A] = &CPU::OPCode_3A;
+	m_OPCodes[0x3B] = &CPU::OPCode_3B;
+	m_OPCodes[0x3C] = &CPU::OPCode_3C;
+	m_OPCodes[0x3D] = &CPU::OPCode_3D;
+	m_OPCodes[0x3E] = &CPU::OPCode_3E;
+	m_OPCodes[0x3F] = &CPU::OPCode_3F;
+	m_OPCodes[0x40] = &CPU::OPCode_40;
+	m_OPCodes[0x41] = &CPU::OPCode_41;
+	m_OPCodes[0x42] = &CPU::OPCode_42;
+	m_OPCodes[0x43] = &CPU::OPCode_43;
+	m_OPCodes[0x44] = &CPU::OPCode_44;
+	m_OPCodes[0x45] = &CPU::OPCode_45;
+	m_OPCodes[0x46] = &CPU::OPCode_46;
+	m_OPCodes[0x47] = &CPU::OPCode_47;
+	m_OPCodes[0x48] = &CPU::OPCode_48;
+	m_OPCodes[0x49] = &CPU::OPCode_49;
+	m_OPCodes[0x4A] = &CPU::OPCode_4A;
+	m_OPCodes[0x4B] = &CPU::OPCode_4B;
+	m_OPCodes[0x4C] = &CPU::OPCode_4C;
+	m_OPCodes[0x4D] = &CPU::OPCode_4D;
+	m_OPCodes[0x4E] = &CPU::OPCode_4E;
+	m_OPCodes[0x4F] = &CPU::OPCode_4F;
+	m_OPCodes[0x50] = &CPU::OPCode_50;
+	m_OPCodes[0x51] = &CPU::OPCode_51;
+	m_OPCodes[0x52] = &CPU::OPCode_52;
+	m_OPCodes[0x53] = &CPU::OPCode_53;
+	m_OPCodes[0x54] = &CPU::OPCode_54;
+	m_OPCodes[0x55] = &CPU::OPCode_55;
+	m_OPCodes[0x56] = &CPU::OPCode_56;
+	m_OPCodes[0x57] = &CPU::OPCode_57;
+	m_OPCodes[0x58] = &CPU::OPCode_58;
+	m_OPCodes[0x59] = &CPU::OPCode_59;
+	m_OPCodes[0x5A] = &CPU::OPCode_5A;
+	m_OPCodes[0x5B] = &CPU::OPCode_5B;
+	m_OPCodes[0x5C] = &CPU::OPCode_5C;
+	m_OPCodes[0x5D] = &CPU::OPCode_5D;
+	m_OPCodes[0x5E] = &CPU::OPCode_5E;
+	m_OPCodes[0x5F] = &CPU::OPCode_5F;
+	m_OPCodes[0x60] = &CPU::OPCode_60;
+	m_OPCodes[0x61] = &CPU::OPCode_61;
+	m_OPCodes[0x62] = &CPU::OPCode_62;
+	m_OPCodes[0x63] = &CPU::OPCode_63;
+	m_OPCodes[0x64] = &CPU::OPCode_64;
+	m_OPCodes[0x65] = &CPU::OPCode_65;
+	m_OPCodes[0x66] = &CPU::OPCode_66;
+	m_OPCodes[0x67] = &CPU::OPCode_67;
+	m_OPCodes[0x68] = &CPU::OPCode_68;
+	m_OPCodes[0x69] = &CPU::OPCode_69;
+	m_OPCodes[0x6A] = &CPU::OPCode_6A;
+	m_OPCodes[0x6B] = &CPU::OPCode_6B;
+	m_OPCodes[0x6C] = &CPU::OPCode_6C;
+	m_OPCodes[0x6D] = &CPU::OPCode_6D;
+	m_OPCodes[0x6E] = &CPU::OPCode_6E;
+	m_OPCodes[0x6F] = &CPU::OPCode_6F;
+	m_OPCodes[0x70] = &CPU::OPCode_70;
+	m_OPCodes[0x71] = &CPU::OPCode_71;
+	m_OPCodes[0x72] = &CPU::OPCode_72;
+	m_OPCodes[0x73] = &CPU::OPCode_73;
+	m_OPCodes[0x74] = &CPU::OPCode_74;
+	m_OPCodes[0x75] = &CPU::OPCode_75;
+	m_OPCodes[0x76] = &CPU::OPCode_76;
+	m_OPCodes[0x77] = &CPU::OPCode_77;
+	m_OPCodes[0x78] = &CPU::OPCode_78;
+	m_OPCodes[0x79] = &CPU::OPCode_79;
+	m_OPCodes[0x7A] = &CPU::OPCode_7A;
+	m_OPCodes[0x7B] = &CPU::OPCode_7B;
+	m_OPCodes[0x7C] = &CPU::OPCode_7C;
+	m_OPCodes[0x7D] = &CPU::OPCode_7D;
+	m_OPCodes[0x7E] = &CPU::OPCode_7E;
+	m_OPCodes[0x7F] = &CPU::OPCode_7F;
+	m_OPCodes[0x80] = &CPU::OPCode_80;
+	m_OPCodes[0x81] = &CPU::OPCode_81;
+	m_OPCodes[0x82] = &CPU::OPCode_82;
+	m_OPCodes[0x83] = &CPU::OPCode_83;
+	m_OPCodes[0x84] = &CPU::OPCode_84;
+	m_OPCodes[0x85] = &CPU::OPCode_85;
+	m_OPCodes[0x86] = &CPU::OPCode_86;
+	m_OPCodes[0x87] = &CPU::OPCode_87;
+	m_OPCodes[0x88] = &CPU::OPCode_88;
+	m_OPCodes[0x89] = &CPU::OPCode_89;
+	m_OPCodes[0x8A] = &CPU::OPCode_8A;
+	m_OPCodes[0x8B] = &CPU::OPCode_8B;
+	m_OPCodes[0x8C] = &CPU::OPCode_8C;
+	m_OPCodes[0x8D] = &CPU::OPCode_8D;
+	m_OPCodes[0x8E] = &CPU::OPCode_8E;
+	m_OPCodes[0x8F] = &CPU::OPCode_8F;
+	m_OPCodes[0x90] = &CPU::OPCode_90;
+	m_OPCodes[0x91] = &CPU::OPCode_91;
+	m_OPCodes[0x92] = &CPU::OPCode_92;
+	m_OPCodes[0x93] = &CPU::OPCode_93;
+	m_OPCodes[0x94] = &CPU::OPCode_94;
+	m_OPCodes[0x95] = &CPU::OPCode_95;
+	m_OPCodes[0x96] = &CPU::OPCode_96;
+	m_OPCodes[0x97] = &CPU::OPCode_97;
+	m_OPCodes[0x98] = &CPU::OPCode_98;
+	m_OPCodes[0x99] = &CPU::OPCode_99;
+	m_OPCodes[0x9A] = &CPU::OPCode_9A;
+	m_OPCodes[0x9B] = &CPU::OPCode_9B;
+	m_OPCodes[0x9C] = &CPU::OPCode_9C;
+	m_OPCodes[0x9D] = &CPU::OPCode_9D;
+	m_OPCodes[0x9E] = &CPU::OPCode_9E;
+	m_OPCodes[0x9F] = &CPU::OPCode_9F;
+	m_OPCodes[0xA0] = &CPU::OPCode_A0;
+	m_OPCodes[0xA1] = &CPU::OPCode_A1;
+	m_OPCodes[0xA2] = &CPU::OPCode_A2;
+	m_OPCodes[0xA3] = &CPU::OPCode_A3;
+	m_OPCodes[0xA4] = &CPU::OPCode_A4;
+	m_OPCodes[0xA5] = &CPU::OPCode_A5;
+	m_OPCodes[0xA6] = &CPU::OPCode_A6;
+	m_OPCodes[0xA7] = &CPU::OPCode_A7;
+	m_OPCodes[0xA8] = &CPU::OPCode_A8;
+	m_OPCodes[0xA9] = &CPU::OPCode_A9;
+	m_OPCodes[0xAA] = &CPU::OPCode_AA;
+	m_OPCodes[0xAB] = &CPU::OPCode_AB;
+	m_OPCodes[0xAC] = &CPU::OPCode_AC;
+	m_OPCodes[0xAD] = &CPU::OPCode_AD;
+	m_OPCodes[0xAE] = &CPU::OPCode_AE;
+	m_OPCodes[0xAF] = &CPU::OPCode_AF;
+	m_OPCodes[0xB0] = &CPU::OPCode_B0;
+	m_OPCodes[0xB1] = &CPU::OPCode_B1;
+	m_OPCodes[0xB2] = &CPU::OPCode_B2;
+	m_OPCodes[0xB3] = &CPU::OPCode_B3;
+	m_OPCodes[0xB4] = &CPU::OPCode_B4;
+	m_OPCodes[0xB5] = &CPU::OPCode_B5;
+	m_OPCodes[0xB6] = &CPU::OPCode_B6;
+	m_OPCodes[0xB7] = &CPU::OPCode_B7;
+	m_OPCodes[0xB8] = &CPU::OPCode_B8;
+	m_OPCodes[0xB9] = &CPU::OPCode_B9;
+	m_OPCodes[0xBA] = &CPU::OPCode_BA;
+	m_OPCodes[0xBB] = &CPU::OPCode_BB;
+	m_OPCodes[0xBC] = &CPU::OPCode_BC;
+	m_OPCodes[0xBD] = &CPU::OPCode_BD;
+	m_OPCodes[0xBE] = &CPU::OPCode_BE;
+	m_OPCodes[0xBF] = &CPU::OPCode_BF;
+	m_OPCodes[0xC0] = &CPU::OPCode_C0;
+	m_OPCodes[0xC1] = &CPU::OPCode_C1;
+	m_OPCodes[0xC2] = &CPU::OPCode_C2;
+	m_OPCodes[0xC3] = &CPU::OPCode_C3;
+	m_OPCodes[0xC4] = &CPU::OPCode_C4;
+	m_OPCodes[0xC5] = &CPU::OPCode_C5;
+	m_OPCodes[0xC6] = &CPU::OPCode_C6;
+	m_OPCodes[0xC7] = &CPU::OPCode_C7;
+	m_OPCodes[0xC8] = &CPU::OPCode_C8;
+	m_OPCodes[0xC9] = &CPU::OPCode_C9;
+	m_OPCodes[0xCA] = &CPU::OPCode_CA;
+	m_OPCodes[0xCB] = &CPU::OPCode_00; // extended
+	m_OPCodes[0xCC] = &CPU::OPCode_CC;
+	m_OPCodes[0xCD] = &CPU::OPCode_CD;
+	m_OPCodes[0xCE] = &CPU::OPCode_CE;
+	m_OPCodes[0xCF] = &CPU::OPCode_CF;
+	m_OPCodes[0xD0] = &CPU::OPCode_D0;
+	m_OPCodes[0xD1] = &CPU::OPCode_D1;
+	m_OPCodes[0xD2] = &CPU::OPCode_D2;
+	m_OPCodes[0xD3] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xD4] = &CPU::OPCode_D4;
+	m_OPCodes[0xD5] = &CPU::OPCode_D5;
+	m_OPCodes[0xD6] = &CPU::OPCode_D6;
+	m_OPCodes[0xD7] = &CPU::OPCode_D7;
+	m_OPCodes[0xD8] = &CPU::OPCode_D8;
+	m_OPCodes[0xD9] = &CPU::OPCode_D9;
+	m_OPCodes[0xDA] = &CPU::OPCode_DA;
+	m_OPCodes[0xDB] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xDC] = &CPU::OPCode_DC;
+	m_OPCodes[0xDD] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xDE] = &CPU::OPCode_DE;
+	m_OPCodes[0xDF] = &CPU::OPCode_DF;
+	m_OPCodes[0xE0] = &CPU::OPCode_E0;
+	m_OPCodes[0xE1] = &CPU::OPCode_E1;
+	m_OPCodes[0xE2] = &CPU::OPCode_E2;
+	m_OPCodes[0xE3] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xE4] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xE5] = &CPU::OPCode_E5;
+	m_OPCodes[0xE6] = &CPU::OPCode_E6;
+	m_OPCodes[0xE7] = &CPU::OPCode_E7;
+	m_OPCodes[0xE8] = &CPU::OPCode_E8;
+	m_OPCodes[0xE9] = &CPU::OPCode_E9;
+	m_OPCodes[0xEA] = &CPU::OPCode_EA;
+	m_OPCodes[0xEB] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xEC] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xED] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xEE] = &CPU::OPCode_EE;
+	m_OPCodes[0xEF] = &CPU::OPCode_EF;
+	m_OPCodes[0xF0] = &CPU::OPCode_F0;
+	m_OPCodes[0xF1] = &CPU::OPCode_F1;
+	m_OPCodes[0xF2] = &CPU::OPCode_F2;
+	m_OPCodes[0xF3] = &CPU::OPCode_F3;
+	m_OPCodes[0xF4] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xF5] = &CPU::OPCode_F5;
+	m_OPCodes[0xF6] = &CPU::OPCode_F6;
+	m_OPCodes[0xF7] = &CPU::OPCode_F7;
+	m_OPCodes[0xF8] = &CPU::OPCode_F8;
+	m_OPCodes[0xF9] = &CPU::OPCode_F9;
+	m_OPCodes[0xFA] = &CPU::OPCode_FA;
+	m_OPCodes[0xFB] = &CPU::OPCode_FB;
+	m_OPCodes[0xFC] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xFD] = &CPU::OPCode_00; // undefined
+	m_OPCodes[0xFE] = &CPU::OPCode_FE;
+	m_OPCodes[0xFF] = &CPU::OPCode_FF;
+}
+
 byte CPU::readNextByte()
 {
 	byte nextByte = m_MMU.Read(PC.GetValue());
@@ -208,7 +473,7 @@ bool CPU::checkJumpCondition(JumpConditions i_Condition)
 	Description:
 	Put value n (byte from memory) into nn (register).
 */
-void CPU::LD_nn_n(IRegister& i_DestRegister)
+void CPU::LD_nn_n(ByteRegister& i_DestRegister)
 {
 	byte n = readNextByte();
 	i_DestRegister.SetValue(n);
@@ -221,7 +486,13 @@ void CPU::LD_nn_n(IRegister& i_DestRegister)
 	Description:
 	Put value nn (word from memory) into n (16 bit register).
 */
-void CPU::LD_n_nn(IRegister& i_DestRegister)
+void CPU::LD_n_nn(WordRegister& i_DestRegister)
+{
+	word nn = readNextWord();
+	i_DestRegister.SetValue(nn);
+}
+
+void CPU::LD_n_nn(Pair8BRegisters& i_DestRegister)
 {
 	word nn = readNextWord();
 	i_DestRegister.SetValue(nn);
@@ -235,22 +506,41 @@ void CPU::LD_n_nn(IRegister& i_DestRegister)
 	Put value r2 into r1.
 
 */
-void CPU::LD_r1_r2(IRegister& i_DestRegister, const IRegister& i_SrcRegister)
+void CPU::LD_r1_r2(ByteRegister& i_DestRegister, const ByteRegister& i_SrcRegister)
 {
-	word val = i_SrcRegister.GetValue();
+	byte val = i_SrcRegister.GetValue();
 	i_DestRegister.SetValue(val);
 }
 
-void CPU::LD_r1_r2(IRegister& i_DestRegister, const word& i_SrcMemory)
+void CPU::LD_r1_r2(ByteRegister& i_DestRegister, word i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	i_DestRegister.SetValue(val);
 }
 
-void CPU::LD_r1_r2(const word& i_DestMemory, const IRegister& i_SrcRegister)
+void CPU::LD_r1_r2(word i_DestMemory, const ByteRegister& i_SrcRegister)
 {
-	byte val = static_cast<byte>(i_SrcRegister.GetValue());
+	byte val = i_SrcRegister.GetValue();
 	m_MMU.Write(i_DestMemory, val);
+}
+
+void CPU::LD_r1_r2(word i_DestMemory, byte i_Value)
+{
+	m_MMU.Write(i_DestMemory, i_Value);
+}
+
+void CPU::LD_r1_r2(WordRegister& i_DestRegister, const Pair8BRegisters& i_SrcRegister)
+{
+	word val = i_SrcRegister.GetValue();
+	i_DestRegister.SetValue(val);
+}
+
+void CPU::LD_r1_r2(word i_DestMemory, const WordRegister& i_SrcRegister)
+{
+	byte lowVal = i_SrcRegister.GetLowByte();
+	byte highVal = i_SrcRegister.GetHighByte();
+	m_MMU.Write(i_DestMemory, lowVal);
+	m_MMU.Write(i_DestMemory + 1, highVal);
 }
 
 /*
@@ -552,12 +842,11 @@ void CPU::XOR(byte i_Value)
 */
 void CPU::CP(byte i_Value)
 {
-	byte aVal = static_cast<byte>(A.GetValue());
-	byte res = aVal - i_Value;
+	byte aVal = A.GetValue();
 
-	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	aVal == i_Value ? F.SetZ(true) : F.SetZ(false);
 	F.SetN(true);
-	((aVal & 0xF) - (i_Value & 0xF)) < 0x0 ? F.SetH(true) : F.SetH(false);
+	(((aVal - i_Value) & 0xF) > (aVal & 0xF)) ? F.SetH(true) : F.SetH(false);
 	aVal < i_Value ? F.SetC(true) : F.SetC(false);
 }
 
@@ -572,10 +861,10 @@ void CPU::CP(byte i_Value)
 	H - Set if carry from bit 3
 	C - Not affected
 */
-void CPU::INC(IRegister& i_DestRegister)
+void CPU::INC(ByteRegister& i_DestRegister)
 {
 	i_DestRegister.Increment();
-	word regVal = i_DestRegister.GetValue();
+	byte regVal = i_DestRegister.GetValue();
 
 	regVal == 0x0 ? F.SetZ(true) : F.SetZ(false);
 	F.SetN(false);
@@ -591,7 +880,12 @@ void CPU::INC(IRegister& i_DestRegister)
 	nn = BC, DE, HL, SP
 	No flags affected
 */
-void CPU::INC_no_flags(IRegister& i_DestRegister)
+void CPU::INC_no_flags(WordRegister& i_DestRegister)
+{
+	i_DestRegister.Increment();
+}
+
+void CPU::INC_no_flags(Pair8BRegisters& i_DestRegister)
 {
 	i_DestRegister.Increment();
 }
@@ -607,10 +901,10 @@ void CPU::INC_no_flags(IRegister& i_DestRegister)
 	H - Set if carry from bit 3
 	C - Not affected
 */
-void CPU::DEC(IRegister& i_DestRegister)
+void CPU::DEC(ByteRegister& i_DestRegister)
 {
 	i_DestRegister.Decrement();
-	word regVal = i_DestRegister.GetValue();
+	byte regVal = i_DestRegister.GetValue();
 
 	regVal == 0x0 ? F.SetZ(true) : F.SetZ(false);
 	F.SetN(false);
@@ -626,7 +920,12 @@ void CPU::DEC(IRegister& i_DestRegister)
 	nn = BC, DE, HL, SP
 	No flags affected
 */
-void CPU::DEC_no_flags(IRegister& i_DestRegister)
+void CPU::DEC_no_flags(WordRegister& i_DestRegister)
+{
+	i_DestRegister.Decrement();
+}
+
+void CPU::DEC_no_flags(Pair8BRegisters& i_DestRegister)
 {
 	i_DestRegister.Decrement();
 }
@@ -745,7 +1044,6 @@ void CPU::CCF()
 void CPU::SCF()
 {
 	F.SetC(true);
-	
 	F.SetN(false);
 	F.SetH(false);
 }
@@ -890,13 +1188,17 @@ void CPU::JR_n()
 */
 void CPU::JR_cc_n(JumpConditions i_Condition)
 {
-	sbyte val = readNextSignedByte();
-	word pcVal = PC.GetValue();
 	if (checkJumpCondition(i_Condition))
 	{
+		sbyte val = readNextSignedByte();
+		word pcVal = PC.GetValue();
 		pcVal += val;
 		PC.SetValue(pcVal);
 		m_IsCCJump = true;
+	}
+	else
+	{
+		PC.Increment();
 	}
 }
 
@@ -1013,9 +1315,9 @@ void CPU::RETI()
 	H - Reset
 	C - Reset
 */
-void CPU::SWAP(IRegister& i_DestRegister)
+void CPU::SWAP(ByteRegister& i_DestRegister)
 {
-	byte val = static_cast<byte>(i_DestRegister.GetValue());
+	byte val = i_DestRegister.GetValue();
 	byte res = (val >> 4) | (val << 4);
 
 	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
@@ -1024,6 +1326,19 @@ void CPU::SWAP(IRegister& i_DestRegister)
 	F.SetC(false);
 
 	i_DestRegister.SetValue(res);
+}
+
+void CPU::SWAP(word& i_SrcMemory)
+{
+	byte val = m_MMU.Read(i_SrcMemory);
+	byte res = (val >> 4) | (val << 4);
+
+	res == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+	F.SetC(false);
+
+	m_MMU.Write(i_SrcMemory, res);
 }
 
 /*
@@ -1037,7 +1352,7 @@ void CPU::SWAP(IRegister& i_DestRegister)
 	H - Reset
 	C - Contains old bit 7 data
 */
-void CPU::RLC_n(IRegister& i_DestRegister)
+void CPU::RLC_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	i_DestRegister.GetBit(7) ? F.SetC(true) : F.SetC(false);
@@ -1045,6 +1360,19 @@ void CPU::RLC_n(IRegister& i_DestRegister)
 	val = (val << 1) | F.GetC(); // rotate left and add bit 7 to bit 0
 	i_DestRegister.SetValue(val);
 	
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+}
+
+void CPU::RLC_n(word& i_SrcMemory)
+{
+	byte val = m_MMU.Read(i_SrcMemory);
+	bitwise::GetBit(7, val) ? F.SetC(true) : F.SetC(false);
+
+	val = (val << 1) | F.GetC(); // rotate left and add bit 7 to bit 0
+	m_MMU.Write(i_SrcMemory, val);
+
 	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
 	F.SetN(false);
 	F.SetH(false);
@@ -1061,7 +1389,7 @@ void CPU::RLC_n(IRegister& i_DestRegister)
 	H - Reset
 	C - Contains old bit 7 data
 */
-void CPU::RL_n(IRegister& i_DestRegister)
+void CPU::RL_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	// save bit 7 from n
@@ -1069,6 +1397,23 @@ void CPU::RL_n(IRegister& i_DestRegister)
 
 	val = (val << 1) | F.GetC(); // rotate left and add carry to bit 0
 	i_DestRegister.SetValue(val);
+
+	// set old bit 7 into carry flag
+	bit7 ? F.SetC(true) : F.SetC(false);
+
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+}
+
+void CPU::RL_n(word& i_SrcMemory)
+{
+	byte val = m_MMU.Read(i_SrcMemory);
+	// save bit 7 from n
+	bool bit7 = bitwise::GetBit(7, val);
+
+	val = (val << 1) | F.GetC(); // rotate left and add carry to bit 0
+	m_MMU.Write(i_SrcMemory, val);
 
 	// set old bit 7 into carry flag
 	bit7 ? F.SetC(true) : F.SetC(false);
@@ -1089,13 +1434,26 @@ void CPU::RL_n(IRegister& i_DestRegister)
 	H - Reset
 	C - Contains old bit 0 data
 */
-void CPU::RRC_n(IRegister& i_DestRegister)
+void CPU::RRC_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	i_DestRegister.GetBit(0) ? F.SetC(true) : F.SetC(false);
 
 	val = (val >> 1) | (F.GetC() << 7); // rotate right and add bit 0 to bit 7
 	i_DestRegister.SetValue(val);
+
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+}
+
+void CPU::RRC_n(word& i_SrcMemory)
+{
+	byte val = m_MMU.Read(i_SrcMemory);
+	bitwise::GetBit(0, val) ? F.SetC(true) : F.SetC(false);
+
+	val = (val >> 1) | (F.GetC() << 7); // rotate right and add bit 0 to bit 7
+	m_MMU.Write(i_SrcMemory, val);
 
 	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
 	F.SetN(false);
@@ -1113,7 +1471,7 @@ void CPU::RRC_n(IRegister& i_DestRegister)
 	H - Reset
 	C - Contains old bit 0 data
 */
-void CPU::RR_n(IRegister& i_DestRegister)
+void CPU::RR_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	// save bit 0 from n
@@ -1121,6 +1479,23 @@ void CPU::RR_n(IRegister& i_DestRegister)
 
 	val = (val >> 1) | (F.GetC() << 7); // rotate left and add carry to bit 7
 	i_DestRegister.SetValue(val);
+
+	// set old bit 0 into carry flag
+	bit0 ? F.SetC(true) : F.SetC(false);
+
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+}
+
+void CPU::RR_n(word& i_SrcMemory)
+{
+	byte val = m_MMU.Read(i_SrcMemory);
+	// save bit 0 from n
+	bool bit0 = bitwise::GetBit(0, val);
+
+	val = (val >> 1) | (F.GetC() << 7); // rotate left and add carry to bit 7
+	m_MMU.Write(i_SrcMemory, val);
 
 	// set old bit 0 into carry flag
 	bit0 ? F.SetC(true) : F.SetC(false);
@@ -1141,13 +1516,26 @@ void CPU::RR_n(IRegister& i_DestRegister)
 	H - Reset
 	C - Contains old bit 7 data
 */
-void CPU::SLA_n(IRegister& i_DestRegister)
+void CPU::SLA_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 
 	F.SetC(i_DestRegister.GetBit(7)); // set carry to be bit 7
 	val = val << 1; // shift n left (LSB will be 0)
 	i_DestRegister.SetValue(val);
+
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+}
+
+void CPU::SLA_n(word& i_SrcMemory)
+{
+	byte val = m_MMU.Read(i_SrcMemory);
+
+	F.SetC(bitwise::GetBit(7, val)); // set carry to be bit 7
+	val = val << 1; // shift n left (LSB will be 0)
+	m_MMU.Write(i_SrcMemory, val);
 
 	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
 	F.SetN(false);
@@ -1165,7 +1553,7 @@ void CPU::SLA_n(IRegister& i_DestRegister)
 	H - Reset
 	C - Contains old bit 0 data
 */
-void CPU::SRA_n(IRegister& i_DestRegister)
+void CPU::SRA_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	bool bit7 = i_DestRegister.GetBit(7);
@@ -1183,6 +1571,24 @@ void CPU::SRA_n(IRegister& i_DestRegister)
 	F.SetH(false);
 }
 
+void CPU::SRA_n(word& i_SrcMemory)
+{
+	byte val = m_MMU.Read(i_SrcMemory);
+	bool bit7 = bitwise::GetBit(7, val);
+
+	F.SetC(bitwise::GetBit(0, val)); // set carry to be bit 0
+	val = val >> 1; // shift n right, MSB is 0 now
+	if (bit7) // if MSB was set, restore it
+	{
+		val |= (1 << 7);
+	}
+	m_MMU.Write(i_SrcMemory, val);
+
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+}
+
 /*
 	Operation:
 	SRL n
@@ -1194,12 +1600,24 @@ void CPU::SRA_n(IRegister& i_DestRegister)
 	H - Reset
 	C - Contains old bit 0 data
 */
-void CPU::SRL_n(IRegister& i_DestRegister)
+void CPU::SRL_n(ByteRegister& i_DestRegister)
 {
 	byte val = static_cast<byte>(i_DestRegister.GetValue());
 	F.SetC(i_DestRegister.GetBit(0)); // set carry to be bit 0
 	val = val >> 1; // shift n right, MSB is 0 now
 	i_DestRegister.SetValue(val);
+
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	F.SetH(false);
+}
+
+void CPU::SRL_n(word& i_SrcMemory)
+{
+	byte val = m_MMU.Read(i_SrcMemory);
+	F.SetC(bitwise::GetBit(0, val)); // set carry to be bit 0
+	val = val >> 1; // shift n right, MSB is 0 now
+	m_MMU.Write(i_SrcMemory, val);
 
 	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
 	F.SetN(false);
@@ -2097,7 +2515,7 @@ void CPU::OPCode_36()
 {
 	byte n = readNextByte();
 	word addr = HL.GetValue();
-	LD_r1_r2(addr, (ByteRegister&)n);
+	LD_r1_r2(addr, n);
 }
 
 void CPU::OPCode_0A()
@@ -2794,8 +3212,13 @@ void CPU::OPCode_34()
 {
 	word addr = HL.GetValue();
 	byte val = m_MMU.Read(addr);
-	INC((ByteRegister&)val); // the incremented value will be lost as its just a copy, however this call will adjust the cpu flag register
 	val += 1;
+
+	// affect flags 
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	(val & 0xF) == 0x0 ? F.SetH(true) : F.SetH(false);
+
 	m_MMU.Write(addr, val);
 }
 
@@ -2838,8 +3261,13 @@ void CPU::OPCode_35()
 {
 	word addr = HL.GetValue();
 	byte val = m_MMU.Read(addr);
-	DEC((ByteRegister&)val); // the decremented value will be lost as its just a copy, however this call will adjust the cpu flag register
 	val -= 1;
+
+	// affect flags
+	val == 0x0 ? F.SetZ(true) : F.SetZ(false);
+	F.SetN(false);
+	(val & 0xF) == 0x0 ? F.SetH(true) : F.SetH(false);
+
 	m_MMU.Write(addr, val);
 }
 
@@ -3168,11 +3596,7 @@ void CPU::OPCode_CB_35()
 void CPU::OPCode_CB_36()
 {
 	word addr = HL.GetValue();
-	byte val = m_MMU.Read(addr);
-	ByteRegister temp(val);
-	SWAP(temp);
-	val = static_cast<byte>(temp.GetValue());
-	m_MMU.Write(addr, val);
+	SWAP(addr);
 }
 
 void CPU::OPCode_CB_07()
@@ -3213,11 +3637,7 @@ void CPU::OPCode_CB_05()
 void CPU::OPCode_CB_06()
 {
 	word addr = HL.GetValue();
-	byte val = m_MMU.Read(addr);
-	ByteRegister temp(val);
-	RLC_n(temp);
-	val = static_cast<byte>(temp.GetValue());
-	m_MMU.Write(addr, val);
+	RLC_n(addr);
 }
 
 void CPU::OPCode_CB_17()
@@ -3258,11 +3678,7 @@ void CPU::OPCode_CB_15()
 void CPU::OPCode_CB_16()
 {
 	word addr = HL.GetValue();
-	byte val = m_MMU.Read(addr);
-	ByteRegister temp(val);
-	RL_n(temp);
-	val = static_cast<byte>(temp.GetValue());
-	m_MMU.Write(addr, val);
+	RL_n(addr);
 }
 
 void CPU::OPCode_CB_0F()
@@ -3303,11 +3719,7 @@ void CPU::OPCode_CB_0D()
 void CPU::OPCode_CB_0E()
 {
 	word addr = HL.GetValue();
-	byte val = m_MMU.Read(addr);
-	ByteRegister temp(val);
-	RRC_n(temp);
-	val = static_cast<byte>(temp.GetValue());
-	m_MMU.Write(addr, val);
+	RRC_n(addr);
 }
 
 void CPU::OPCode_CB_1F()
@@ -3348,11 +3760,7 @@ void CPU::OPCode_CB_1D()
 void CPU::OPCode_CB_1E()
 {
 	word addr = HL.GetValue();
-	byte val = m_MMU.Read(addr);
-	ByteRegister temp(val);
-	RR_n(temp);
-	val = static_cast<byte>(temp.GetValue());
-	m_MMU.Write(addr, val);
+	RR_n(addr);
 }
 
 void CPU::OPCode_CB_27()
@@ -3393,11 +3801,7 @@ void CPU::OPCode_CB_25()
 void CPU::OPCode_CB_26()
 {
 	word addr = HL.GetValue();
-	byte val = m_MMU.Read(addr);
-	ByteRegister temp(val);
-	SLA_n(temp);
-	val = static_cast<byte>(temp.GetValue());
-	m_MMU.Write(addr, val);
+	SLA_n(addr);
 }
 
 void CPU::OPCode_CB_2F()
@@ -3438,11 +3842,7 @@ void CPU::OPCode_CB_2D()
 void CPU::OPCode_CB_2E()
 {
 	word addr = HL.GetValue();
-	byte val = m_MMU.Read(addr);
-	ByteRegister temp(val);
-	SRA_n(temp);
-	val = static_cast<byte>(temp.GetValue());
-	m_MMU.Write(addr, val);
+	SRA_n(addr);
 }
 
 void CPU::OPCode_CB_3F()
@@ -3483,11 +3883,7 @@ void CPU::OPCode_CB_3D()
 void CPU::OPCode_CB_3E()
 {
 	word addr = HL.GetValue();
-	byte val = m_MMU.Read(addr);
-	ByteRegister temp(val);
-	SRL_n(temp);
-	val = static_cast<byte>(temp.GetValue());
-	m_MMU.Write(addr, val);
+	SRL_n(addr);
 }
 
 void CPU::OPCode_CB_47()

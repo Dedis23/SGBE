@@ -73,12 +73,12 @@ void SGBE::Run()
 			//cout << elapsedFrameTime.count() << endl;
 			static int test = 1;
 			test++;
-			if (test > 2)
+			if (test > 60)
 			{
 				testEnd = chrono::high_resolution_clock::now();
 				auto testElapsed = chrono::duration_cast<chrono::duration<float, milli>> (testEnd - testStart);
-				cout << "Overall 1 frames took: " << testElapsed.count() << " milliseconds" << endl;
-				test %= 2;
+				cout << "Overall 60 frames took: " << testElapsed.count() << " milliseconds" << endl;
+				test %= 60;
 				testStart = chrono::high_resolution_clock::now();
 			}
 		}

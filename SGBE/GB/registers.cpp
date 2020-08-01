@@ -1,50 +1,66 @@
 #include "registers.h"
 
-IRegister::IRegister(word i_Value) : m_Value(i_Value) {}
+//IRegister::IRegister(word i_Value) : m_Value(i_Value) {}
+//
+//inline void IRegister::SetBit(byte i_BitNumber, bool i_IsRaise)
+//{
+//	if (i_IsRaise)	m_Value |= 1 << (i_BitNumber);
+//	else m_Value &= ~(1 << (i_BitNumber));
+//}
+//
+//inline bool IRegister::GetBit(byte i_BitNumber) const
+//{
+//	return (m_Value & (1 << i_BitNumber)) > 0 ? true : false;
+//}
+//
+//inline void IRegister::Clear()
+//{
+//	m_Value = 0;
+//}
 
-inline void IRegister::SetBit(byte i_BitNumber, bool i_IsRaise)
+ByteRegister::ByteRegister(byte i_Value) : m_Value(i_Value) {}
+
+inline void ByteRegister::SetValue(byte i_Value)
+{
+	m_Value = i_Value;
+}
+
+inline byte ByteRegister::GetValue() const
+{
+	return m_Value;
+}
+
+inline void ByteRegister::Increment()
+{
+	m_Value += 1;
+}
+
+inline void ByteRegister::Decrement()
+{
+	m_Value -= 1;
+}
+
+inline void ByteRegister::SetBit(byte i_BitNumber, bool i_IsRaise)
 {
 	if (i_IsRaise)	m_Value |= 1 << (i_BitNumber);
 	else m_Value &= ~(1 << (i_BitNumber));
 }
 
-inline bool IRegister::GetBit(byte i_BitNumber) const
+inline bool ByteRegister::GetBit(byte i_BitNumber) const
 {
 	return (m_Value & (1 << i_BitNumber)) > 0 ? true : false;
 }
 
-inline void IRegister::Clear()
+inline void ByteRegister::Clear()
 {
 	m_Value = 0;
 }
 
-ByteRegister::ByteRegister(byte i_Value) : IRegister(i_Value) {}
+WordRegister::WordRegister(word i_Value) : m_Value(i_Value) {}
 
-inline void ByteRegister::SetValue(word i_NewValue)
+inline void WordRegister::SetValue(word i_Value)
 {
-	m_Value = static_cast<byte>(i_NewValue);
-}
-
-inline word ByteRegister::GetValue() const
-{
-	return static_cast<byte>(m_Value);
-}
-
-inline void ByteRegister::Increment()
-{
-	m_Value = static_cast<byte>(m_Value + 1);
-}
-
-inline void ByteRegister::Decrement()
-{
-	m_Value = static_cast<byte>(m_Value - 1);
-}
-
-WordRegister::WordRegister(word i_Value) : IRegister(i_Value) {}
-
-inline void WordRegister::SetValue(word i_NewValue)
-{
-	m_Value = i_NewValue;
+	m_Value = i_Value;
 }
 
 inline word WordRegister::GetValue() const
@@ -52,10 +68,10 @@ inline word WordRegister::GetValue() const
 	return m_Value;
 }
 
-inline void WordRegister::SetLowByte(byte i_NewLowByte)
+inline void WordRegister::SetLowByte(byte i_LowByte)
 {
 	m_Value &= 0xFF00;
-	m_Value |= i_NewLowByte;
+	m_Value |= i_LowByte;
 }
 
 inline byte WordRegister::GetLowByte() const
@@ -63,10 +79,10 @@ inline byte WordRegister::GetLowByte() const
 	return static_cast<byte>(m_Value);
 }
 
-inline void WordRegister::SetHighByte(byte i_NewHighByte)
+inline void WordRegister::SetHighByte(byte i_HighByte)
 {
 	m_Value &= 0x00FF;
-	m_Value |= static_cast<word>(i_NewHighByte << 8);
+	m_Value |= static_cast<word>(i_HighByte << 8);
 }
 
 inline byte WordRegister::GetHighByte() const
@@ -82,6 +98,22 @@ inline void WordRegister::Increment()
 inline void WordRegister::Decrement()
 {
 	m_Value -= 1;
+}
+
+inline void WordRegister::SetBit(byte i_BitNumber, bool i_IsRaise)
+{
+	if (i_IsRaise)	m_Value |= 1 << (i_BitNumber);
+	else m_Value &= ~(1 << (i_BitNumber));
+}
+
+inline bool WordRegister::GetBit(byte i_BitNumber) const
+{
+	return (m_Value & (1 << i_BitNumber)) > 0 ? true : false;
+}
+
+inline void WordRegister::Clear()
+{
+	m_Value = 0;
 }
 
 Pair8BRegisters::Pair8BRegisters(ByteRegister& i_HighByteRegister, ByteRegister& i_LowByteRegister)
@@ -124,20 +156,20 @@ inline bool Pair8BRegisters::GetBit(byte i_BitNumber) const
 	return res;
 }
 
-inline void Pair8BRegisters::Clear()
-{
-	m_LowByteRegister.Clear();
-	m_HighByteRegister.Clear();
-}
-
-inline void Pair8BRegisters::Increment()
+void Pair8BRegisters::Increment()
 {
 	SetValue(GetValue() + 1);
 }
 
-inline void Pair8BRegisters::Decrement()
+void Pair8BRegisters::Decrement()
 {
 	SetValue(GetValue() - 1);
+}
+
+inline void Pair8BRegisters::Clear()
+{
+	m_LowByteRegister.Clear();
+	m_HighByteRegister.Clear();
 }
 
 inline ByteRegister& Pair8BRegisters::GetHighRegister()

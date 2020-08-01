@@ -12,60 +12,71 @@ typedef uint8_t byte;
 typedef int8_t sbyte;
 typedef uint16_t word;
 
-class IRegister
-{
-public:
-	IRegister() = default;
-	explicit IRegister(word i_Value);
-	virtual void SetValue(word i_NewValue) = 0;
-	virtual word GetValue() const = 0;
-	virtual void SetBit(byte i_BitNumber, bool i_IsRaise);
-	virtual bool GetBit(byte i_BitNumber) const;
-	virtual void Clear();
-	virtual void Increment() = 0;
-	virtual void Decrement() = 0;
-protected:
-	word m_Value = 0;
-};
+//class IRegister
+//{
+//public:
+//	IRegister() = default;
+//	explicit IRegister(word i_Value);
+//	virtual void SetValue(word i_NewValue) = 0;
+//	virtual word GetValue() const = 0;
+//	virtual void SetBit(byte i_BitNumber, bool i_IsRaise);
+//	virtual bool GetBit(byte i_BitNumber) const;
+//	virtual void Clear();
+//	virtual void Increment() = 0;
+//	virtual void Decrement() = 0;
+//protected:
+//	word m_Value = 0;
+//};
 
 /*
 	A general 8-bit register
 */
-class ByteRegister : public IRegister
+class ByteRegister
 {
 public:
 	explicit ByteRegister(byte i_Value = 0);
 	virtual ~ByteRegister() = default;
 
-	void SetValue(word i_NewValue) override;
-	word GetValue() const override;
-	void Increment() override;
-	void Decrement() override;
+	virtual void SetValue(byte i_Value);
+	virtual byte GetValue() const;
+	virtual void Increment();
+	virtual void Decrement();
+	virtual void SetBit(byte i_BitNumber, bool i_IsRaise);
+	virtual bool GetBit(byte i_BitNumber) const;
+	virtual void Clear();
+protected:
+	byte m_Value;
 };
 
 /*
 	A general 16-bit register
 */
-class WordRegister : public IRegister
+class WordRegister
 {
 public:
 	explicit WordRegister(word i_Value = 0);
 	virtual ~WordRegister() = default;
 
-	void SetValue(word i_NewValue) override;
-	word GetValue() const override;
-	void SetLowByte(byte i_NewLowByte);
-	byte GetLowByte() const;
-	void SetHighByte(byte i_NewHighByte);
-	byte GetHighByte() const;
-	void Increment() override;
-	void Decrement() override;
+	virtual void SetValue(word i_Value);
+	virtual word GetValue() const;
+	virtual void SetLowByte(byte i_LowByte);
+	virtual byte GetLowByte() const;
+	virtual void SetHighByte(byte i_HighByte);
+	virtual byte GetHighByte() const;
+	virtual void Increment();
+	virtual void Decrement();
+	virtual void SetBit(byte i_BitNumber, bool i_IsRaise);
+	virtual bool GetBit(byte i_BitNumber) const;
+	virtual void Clear();
+
+protected:
+	word m_Value;
 };
 
 /*
 	16-bit register that is consists of 2x8-bit registers paired together
 */
-class Pair8BRegisters : public IRegister
+class Pair8BRegisters
 {
 public:
 	explicit Pair8BRegisters(ByteRegister& i_HighByteRegister, ByteRegister& i_LowByteRegister);
@@ -73,13 +84,13 @@ public:
 	Pair8BRegisters(const Pair8BRegisters&) = delete;
 	Pair8BRegisters& operator=(const Pair8BRegisters&) = delete;
 
-	void SetValue(word i_NewValue) override;
-	word GetValue() const override;
-	void SetBit(byte i_BitNumber, bool i_IsRaise) override;
-	bool GetBit(byte i_BitNumber) const override;
-	void Clear() override;
-	void Increment() override;
-	void Decrement() override;
+	void SetValue(word i_NewValue);
+	word GetValue() const;
+	void SetBit(byte i_BitNumber, bool i_IsRaise);
+	bool GetBit(byte i_BitNumber) const;
+	void Increment();
+	void Decrement();
+	void Clear();
 	ByteRegister& GetHighRegister();
 	ByteRegister& GetLowRegister();
 private:

@@ -1,30 +1,39 @@
 ﻿#include "mmu.h"
 
-MMU::MMU(Gameboy& i_Gameboy, Cartridge& i_Cartridge) : m_Gameboy(i_Gameboy), m_Cartridge(i_Cartridge) {}
+MMU::MMU(Gameboy& i_Gameboy, Cartridge& i_Cartridge) : m_Gameboy(i_Gameboy), m_Cartridge(i_Cartridge)
+{
+    memory = std::vector<byte>(0x10000);
+}
 
-byte MMU::Read(const word& i_Address) const
+byte MMU::Read(word i_Address) const
 {
     /* more info about the sections is in the h file */
 
-    if (i_Address >= 0x00 && i_Address <= 0xFF)
+    /* Cartridge ROM banks and bootstrap */
+    if (i_Address >= 0x0000 && i_Address <= 0x7FFF)
     {
-        /* bootstrap */
-        if (!isBootstrapDone())
+        if (i_Address >= 0x00 && i_Address <= 0xFF)
         {
-            return s_Bootstrap[i_Address];
+            /* bootstrap */
+            if (m_MappedIO[BOOTSTRAP_DONE_ADDR - 0xFF00] == false)
+            {
+                //cout << "read from BOOTSTRAP rom address is: " << (int)i_Address << endl;
+                //cout << "the value is: 0x" << std::hex << (int)s_Bootstrap[i_Address] << endl;
+                return s_Bootstrap[i_Address];
+            }
+            else
+            {
+                cout << "BOOTSTRAP is done!" << endl;
+                return m_Cartridge.Read(i_Address);
+            }
         }
-    }
-
-    /* Cartridge ROM banks */
-    else if (i_Address >= 0x0000 && i_Address <= 0x7FFF)
-    {
-        return m_Cartridge.Read(i_Address);
     }
 
     /* Video RAM */
     else if (i_Address >= 0x8000 && i_Address <= 0x9FFF)
     {
-        return m_VRAM[i_Address - 0x8000];
+        return memory.at(i_Address);
+        //return m_VRAM[i_Address - 0x8000];
     }
 
     /* External RAM (RAM on specific cartridge types which supported this) */
@@ -36,20 +45,24 @@ byte MMU::Read(const word& i_Address) const
     /* Internal RAM */
     else if (i_Address >= 0xC000 && i_Address <= 0xDFFF)
     {
-        return m_RAM[i_Address - 0xC000];
+        return memory.at(i_Address);
+        //return m_RAM[i_Address - 0xC000];
     }
 
     /* Shadow RAM */
     else if (i_Address >= 0xE000 && i_Address <= 0xFDFF)
     {
         /* reading exact copy from the internal RAM which is 0x2000 addresses below */
-        return m_RAM[i_Address - 0x2000];
+        auto mirrored_address = i_Address - 0x2000;
+        return memory.at(mirrored_address);
+        //return m_RAM[i_Address - 0x2000];
     }
 
     /* OAM */
     else if (i_Address >= 0xFE00 && i_Address <= 0xFE9F)
     {
-        return m_OAM[i_Address - 0xFE00];
+        return memory.at(i_Address);
+        //return m_OAM[i_Address - 0xFE00];
     }
 
     /* Unusable area - shouldn't get here */
@@ -67,28 +80,20 @@ byte MMU::Read(const word& i_Address) const
     /* Zero Page RAM */
     else if (i_Address >= 0xFF80 && i_Address <= 0xFFFF)
     {
-        return m_ZeroPageRAM[i_Address - 0xFF80];
+        return memory.at(i_Address);
+        //return m_ZeroPageRAM[i_Address - 0xFF80];
     }
 
     LOG_ERROR(true, return 0, "Attempting to read from unmapped memory address: 0x" << i_Address);
 }
 
-void MMU::Write(const word& i_Address, byte i_Value)
+void MMU::Write(word i_Address, byte i_Value)
 {
     bool wroteToAddr = false;
     /* more info about the sections is in the h file */
 
-    if (i_Address >= 0x00 && i_Address <= 0xFF)
-    {
-        /* bootstrap */
-        if (!isBootstrapDone())
-        {
-            LOG_ERROR(true, return, "Attempting to write to address: 0x" << i_Address << " while bootstrap is not done!");
-        }
-    }
-
     /* Cartridge ROM banks */
-    else if (i_Address >= 0x0000 && i_Address <= 0x7FFF)
+    if (i_Address >= 0x0000 && i_Address <= 0x7FFF)
     {
         LOG_ERROR(true, return, "Attempting to write to address: 0x" << i_Address << " which is a cartridge ROM bank address!");
     }
@@ -96,8 +101,9 @@ void MMU::Write(const word& i_Address, byte i_Value)
     /* Video RAM */
     else if (i_Address >= 0x8000 && i_Address <= 0x9FFF)
     {
-        m_VRAM[i_Address - 0x8000] = i_Value;
-        wroteToAddr = true;
+        memory.at(i_Address) = i_Value; return;
+        //m_VRAM[i_Address - 0x8000] = i_Value;
+        //wroteToAddr = true;
     }
 
     /* External RAM (RAM on specific cartridge types which supported this) */
@@ -110,8 +116,9 @@ void MMU::Write(const word& i_Address, byte i_Value)
     /* Internal RAM */
     else if (i_Address >= 0xC000 && i_Address <= 0xDFFF)
     {
-        m_RAM[i_Address - 0xC000] = i_Value;
-        wroteToAddr = true;
+        memory.at(i_Address) = i_Value; return;
+        //m_RAM[i_Address - 0xC000] = i_Value;
+        //wroteToAddr = true;
     }
 
     /* Shadow RAM */
@@ -119,15 +126,18 @@ void MMU::Write(const word& i_Address, byte i_Value)
     {
         /* writing in the Shadow RAM is like writing in the internal RAM banks. the shadow ram is an exact copy from the internal RAM which is 0x2000 addresses below */
         /* i.e writing to 0xE000 is like writing to 0xC000, so 0x2000 is reduced and then 0xC000 (0xE000 total) to get to the place in the m_RAM array */
-        m_RAM[i_Address - 0xE000] = i_Value;
-        wroteToAddr = true;
+        auto mirrored_address = i_Address - 0x2000;
+        memory.at(mirrored_address) = i_Value; return;
+        //m_RAM[i_Address - 0xE000] = i_Value;
+        //wroteToAddr = true;
     }
 
     /* OAM */
     else if (i_Address >= 0xFE00 && i_Address <= 0xFE9F)
     {
-        m_OAM[i_Address - 0xFE00] = i_Value;
-        wroteToAddr = true;
+        memory.at(i_Address) = i_Value; return;
+        //m_OAM[i_Address - 0xFE00] = i_Value;
+        //wroteToAddr = true;
     }
 
     /* Unusable area - shouldn't get here */
@@ -146,8 +156,9 @@ void MMU::Write(const word& i_Address, byte i_Value)
     /* Zero Page RAM */
     else if (i_Address >= 0xFF80 && i_Address <= 0xFFFF)
     {
-        m_ZeroPageRAM[i_Address - 0xFF80] = i_Value;
-        wroteToAddr = true;
+        memory.at(i_Address) = i_Value; return;
+        //m_ZeroPageRAM[i_Address - 0xFF80] = i_Value;
+        //wroteToAddr = true;
     }
     
     /* debug printing without timer writes, this should be commented */
@@ -175,7 +186,7 @@ void MMU::DMATransfer(byte i_SourceAdress)
     }
 }
 
-byte MMU::readMappedIO(const word& i_Address) const
+byte MMU::readMappedIO(word i_Address) const
 {
     if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
     {
@@ -194,7 +205,7 @@ byte MMU::readMappedIO(const word& i_Address) const
 
 /* write to memory modules from other componenets will sometimes invoke specific methods of the modules
    or will override the new value to a different, specifc value */
-void MMU::writeMappedIO(const word& i_Address, byte i_Value)
+void MMU::writeMappedIO(word i_Address, byte i_Value)
 {
     if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
     {

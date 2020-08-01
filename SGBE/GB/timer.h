@@ -47,8 +47,8 @@ public:
 
     void Step(const uint32_t& i_Cycles);
     void Reset();
-    byte GetRegister(const word& i_Address) const;
-    void SetRegister(const word& i_Address, byte i_Value);
+    byte GetRegister(word i_Address) const;
+    void SetRegister(word i_Address, byte i_Value);
 
 private:
     void setFrequency(TimerFrequencies i_Frequency);

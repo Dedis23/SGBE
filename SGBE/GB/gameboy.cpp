@@ -46,9 +46,9 @@ void Gameboy::Step()
 	while (currentFrameCycles < MAX_CYCLES_BEFORE_RENDERING)
 	{
 		m_CPU->Step(currentFrameCycles);
-		//m_Timer->Step(currentFrameCycles);
-		//m_GPU->Step(currentFrameCycles);
-		//m_CPU->HandleInterrupts();
+		m_Timer->Step(currentFrameCycles);
+		m_GPU->Step(currentFrameCycles);
+		m_CPU->HandleInterrupts();
 	}
 	//m_RenderScreen(m_GPU->GetFrameBuffer());
 }

@@ -58,13 +58,13 @@ public:
     MMU(const MMU&) = delete;
     MMU& operator=(const MMU&) = delete;
 	
-	byte Read(const word& i_Address) const;
-	void Write(const word& i_Address, byte i_Value);
+	byte Read(word i_Address) const;
+	void Write(word i_Address, byte i_Value);
 	void DMATransfer(byte i_SourceAdress);
 
 private:
-	byte readMappedIO(const word& i_Address) const;
-	void writeMappedIO(const word& i_Address, byte i_Value);
+	byte readMappedIO(word i_Address) const;
+	void writeMappedIO(word i_Address, byte i_Value);
 	bool isBootstrapDone() const;
 
 private:
@@ -73,6 +73,8 @@ private:
 
 	/* memory modules */
     Cartridge& m_Cartridge;
+
+	std::vector<byte> memory;
 	vector<byte> m_VRAM = vector<byte>(0x9FFF - 0x8000 + 1);
 	vector<byte> m_RAM = vector<byte>(0xFDFF - 0xC000 + 1); // including the shadow ram
 	vector<byte> m_OAM = vector<byte>(0xFEFF - 0xFE00 + 1); // including the unusable section

@@ -73,7 +73,7 @@ const Pixel* GPU::GetFrameBuffer() const
 	return m_FrameBuffer;
 }
 
-byte GPU::GetRegister(const word& i_Address) const
+byte GPU::GetRegister(word i_Address) const
 {
 	switch (i_Address)
 	{
@@ -137,7 +137,7 @@ byte GPU::GetRegister(const word& i_Address) const
 	LOG_ERROR(true, return 0, "Attempting to read from unmapped memory address: 0x" << i_Address);
 }
 
-void GPU::SetRegister(const word& i_Address, byte i_Value)
+void GPU::SetRegister(word i_Address, byte i_Value)
 {
 	switch (i_Address)
 	{
@@ -272,7 +272,7 @@ void GPU::handleVBlankMode()
 		checkForLYAndLYCCoincidence();
 
 		// check if its time to go back to line 0 and mode 2 (meaning a full frame have passed)
-		if (m_LCDCYCoordinate < V_BLANK_END_SCANLINE)
+		if (m_LCDCYCoordinate == V_BLANK_END_SCANLINE)
 		{
 			// reset Y corrdinate to 0
 			m_LCDCYCoordinate = 0;

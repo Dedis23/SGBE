@@ -56,7 +56,7 @@ void Timer::Reset()
 	m_TimerControl = 0b000000100; // the default value for the timer controler, is enabled and 4096Hz mode
 }
 
-byte Timer::GetRegister(const word& i_Address) const
+byte Timer::GetRegister(word i_Address) const
 {
 	switch (i_Address)
 	{
@@ -85,7 +85,7 @@ byte Timer::GetRegister(const word& i_Address) const
 	LOG_ERROR(true, return 0, "Attempting to read from unmapped memory address: 0x" << i_Address);
 }
 
-void Timer::SetRegister(const word& i_Address, byte i_Value)
+void Timer::SetRegister(word i_Address, byte i_Value)
 {
 	switch (i_Address)
 	{

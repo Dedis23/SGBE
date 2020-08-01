@@ -91,8 +91,8 @@ public:
     void Step(uint32_t& i_Cycles);
     void Reset();
     const Pixel* GetFrameBuffer() const;
-    byte GetRegister(const word& i_Address) const;
-    void SetRegister(const word& i_Address, byte i_Value);
+    byte GetRegister(word i_Address) const;
+    void SetRegister(word i_Address, byte i_Value);
 
 private:
     enum class Video_Mode

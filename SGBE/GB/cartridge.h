@@ -16,8 +16,8 @@ public:
     Cartridge(vector<byte>& i_ROMData);
 	virtual ~Cartridge() = default;
 
-    virtual byte Read(const word& i_Address) = 0;
-    virtual void Write(const word& i_Address, byte i_Value) = 0;
+    virtual byte Read(word i_Address) = 0;
+    virtual void Write(word i_Address, byte i_Value) = 0;
 
 protected:
     vector<byte>& m_ROMData;
@@ -30,8 +30,8 @@ public:
     NoMBC(vector<byte>& i_ROMData);
     virtual ~NoMBC() = default;
 
-    virtual byte Read(const word& i_Address) override;
-    virtual void Write(const word& i_Address, byte i_Value) override;
+    virtual byte Read(word i_Address) override;
+    virtual void Write(word i_Address, byte i_Value) override;
 };
 
 /* Cartridge Factory */
