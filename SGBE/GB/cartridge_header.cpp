@@ -2,15 +2,17 @@
 
 CartridgeHeader::CartridgeHeader(const vector<byte>& i_ROMData) :
 	m_ROMData(i_ROMData),
-	CartridgeType(CartridgeType_E::UnknownCartridgeType),
-	ROMSize(ROMSize_E::UnknownROMSize),
-	RAMSize(RAMSize_E::UnknownRAMSize)
+	m_CartridgeType(CartridgeType_E::UnknownCartridgeType),
+	m_ROMSizeE(ROMSize_E::UnknownROMSize),
+	m_RAMSizeE(RAMSize_E::UnknownRAMSize),
+	m_NumOfSwitchableRomBanks(0),
+	m_NumOfSwitchableRamBanks(0)
 {
 	readTitle();
 	readCartridgeType();
 	readROMSize();
 	readRAMSize();
-	Version	= m_ROMData[ROM_VERSION];
+	m_Version	= m_ROMData[ROM_VERSION];
 }
 
 bool CartridgeHeader::VerifyChecksum()
@@ -26,9 +28,9 @@ bool CartridgeHeader::VerifyChecksum()
 	return static_cast<byte>(checksum) == m_ROMData[HEADER_CHECKSUM];
 }
 
-std::string CartridgeHeader::CartridgeTypeToString()
+std::string CartridgeHeader::GetCartridgeTypeAsString() const
 {
-	switch (CartridgeType)
+	switch (m_CartridgeType)
 	{
 		case CartridgeType_E::NoMBC:
 			return "NoMBC";
@@ -46,9 +48,9 @@ std::string CartridgeHeader::CartridgeTypeToString()
 	}
 }
 
-std::string CartridgeHeader::ROMSizeToString()
+std::string CartridgeHeader::GetROMSizeAsString() const
 {
-	switch (ROMSize)
+	switch (m_ROMSizeE)
 	{
 		case ROMSize_E::_32KB:
 			return "32KB";
@@ -80,9 +82,9 @@ std::string CartridgeHeader::ROMSizeToString()
 	}
 }
 
-std::string CartridgeHeader::RAMSizeToString()
+std::string CartridgeHeader::GetRAMSizeAsString() const
 {
-	switch (RAMSize)
+	switch (m_RAMSizeE)
 	{
 		case RAMSize_E::None:
 			return "None";
@@ -107,7 +109,7 @@ void CartridgeHeader::readTitle()
 	int pos = TITLE_START;
 	for (int i = 0; i < (TITLE_END - TITLE_START  + 1); i++)
 	{
-		Title += static_cast<char>(m_ROMData[pos++]);
+		m_Title += static_cast<char>(m_ROMData[pos++]);
 	}
 }
 
@@ -118,23 +120,23 @@ void CartridgeHeader::readCartridgeType()
 		case 0x00:
 		case 0x08:
 		case 0x09:
-			CartridgeType = CartridgeType_E::NoMBC;
+			m_CartridgeType = CartridgeType_E::NoMBC;
 			break;
 		case 0x01:
 		case 0x02:
 		case 0x03:
-			CartridgeType = CartridgeType_E::MBC1;
+			m_CartridgeType = CartridgeType_E::MBC1;
 			break;
 		case 0x05:
 		case 0x06:
-			CartridgeType = CartridgeType_E::MBC2;
+			m_CartridgeType = CartridgeType_E::MBC2;
 			break;
 		case 0x0F:
 		case 0x10:
 		case 0x11:
 		case 0x12:
 		case 0x13:
-			CartridgeType = CartridgeType_E::MBC3;
+			m_CartridgeType = CartridgeType_E::MBC3;
 			break;
 		case 0x19:
 		case 0x1A:
@@ -142,84 +144,104 @@ void CartridgeHeader::readCartridgeType()
 		case 0x1C:
 		case 0x1D:
 		case 0x1E:
-			CartridgeType = CartridgeType_E::MBC5;
+			m_CartridgeType = CartridgeType_E::MBC5;
 			break;
 		default:
-			CartridgeType = CartridgeType_E::UnknownCartridgeType;
+			m_CartridgeType = CartridgeType_E::UnknownCartridgeType;
 			break;
 	}
 }
 
 void CartridgeHeader::readROMSize()
 {
-	switch (m_ROMData[ROM_SIZE])
+	switch (m_ROMData[ROM_BANKS_SIZE])
 	{
+		// note - each switchable rom bank is 16KB
 		case 0x00:
-			ROMSize = ROMSize_E::_32KB;
+			m_ROMSizeE = ROMSize_E::_32KB;
+			m_NumOfSwitchableRomBanks = 2;
 			break;
 		case 0x01:
-			ROMSize = ROMSize_E::_64KB;
+			m_ROMSizeE = ROMSize_E::_64KB;
+			m_NumOfSwitchableRomBanks = 4;
 			break;
 		case 0x02:
-			ROMSize = ROMSize_E::_128KB;
+			m_ROMSizeE = ROMSize_E::_128KB;
+			m_NumOfSwitchableRomBanks = 8;
 			break;
 		case 0x03:
-			ROMSize = ROMSize_E::_256KB;
+			m_ROMSizeE = ROMSize_E::_256KB;
+			m_NumOfSwitchableRomBanks = 16;
 			break;
 		case 0x04:
-			ROMSize = ROMSize_E::_512KB;
+			m_ROMSizeE = ROMSize_E::_512KB;
+			m_NumOfSwitchableRomBanks = 32;
 			break;
 		case 0x05:
-			ROMSize = ROMSize_E::_1MB;
+			m_ROMSizeE = ROMSize_E::_1MB;
+			m_NumOfSwitchableRomBanks = 64;
 			break;
 		case 0x06:
-			ROMSize = ROMSize_E::_2MB;
+			m_ROMSizeE = ROMSize_E::_2MB;
+			m_NumOfSwitchableRomBanks = 128;
 			break;
 		case 0x07:
-			ROMSize = ROMSize_E::_4MB;
+			m_ROMSizeE = ROMSize_E::_4MB;
+			m_NumOfSwitchableRomBanks = 256;
 			break;
 		case 0x08:
-			ROMSize = ROMSize_E::_8MB;
+			m_ROMSizeE = ROMSize_E::_8MB;
+			m_NumOfSwitchableRomBanks = 512;
 			break;
 		case 0x52:
-			ROMSize = ROMSize_E::_1_1MB;
+			m_ROMSizeE = ROMSize_E::_1_1MB;
+			m_NumOfSwitchableRomBanks = 72;
 			break;
 		case 0x53:
-			ROMSize = ROMSize_E::_1_2MB;
+			m_ROMSizeE = ROMSize_E::_1_2MB;
+			m_NumOfSwitchableRomBanks = 80;
 			break;
 		case 0x54:
-			ROMSize = ROMSize_E::_1_5MB;
+			m_ROMSizeE = ROMSize_E::_1_5MB;
+			m_NumOfSwitchableRomBanks = 96;
 			break;
 		default:
-			ROMSize = ROMSize_E::UnknownROMSize;
+			m_ROMSizeE = ROMSize_E::UnknownROMSize;
 			break;
 	}
 }
 
 void CartridgeHeader::readRAMSize()
 {
-	switch (m_ROMData[RAM_SIZE])
+	// note - each switchable ram bank is 8KB
+	switch (m_ROMData[RAM_BANKS_SIZE])
 	{
 	case 0x00:
-		RAMSize = RAMSize_E::None;
+		m_RAMSizeE = RAMSize_E::None;
+		m_NumOfSwitchableRamBanks = 0;
 		break;
 	case 0x01:
-		RAMSize = RAMSize_E::_2KB;
+		m_RAMSizeE = RAMSize_E::_2KB;
+		m_NumOfSwitchableRamBanks = 1;
 		break;
 	case 0x02:
-		RAMSize = RAMSize_E::_8KB;
+		m_RAMSizeE = RAMSize_E::_8KB;
+		m_NumOfSwitchableRamBanks = 1;
 		break;
 	case 0x03:
-		RAMSize = RAMSize_E::_32KB;
+		m_RAMSizeE = RAMSize_E::_32KB;
+		m_NumOfSwitchableRamBanks = 4;
 		break;
 	case 0x04:
-		RAMSize = RAMSize_E::_128KB;
+		m_RAMSizeE = RAMSize_E::_128KB;
+		m_NumOfSwitchableRamBanks = 16;
 		break;
 	case 0x05:
-		RAMSize = RAMSize_E::_64KB;
+		m_RAMSizeE = RAMSize_E::_64KB;
+		m_NumOfSwitchableRamBanks = 8;
 		break;
 	default:
-		RAMSize = RAMSize_E::UnknownRAMSize;
+		m_RAMSizeE = RAMSize_E::UnknownRAMSize;
 		break;
 	}
 }

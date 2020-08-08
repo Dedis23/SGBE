@@ -64,7 +64,8 @@ private:
 		C,
 	};
 
-	void initOpcodes();
+	void initOPCodes();
+	void initExtendedOPCodes();
 	byte readNextByte();
 	word readNextWord();
 	sbyte readNextSignedByte();
@@ -77,8 +78,8 @@ private:
 	WordRegister SP, PC; // 16-bit registers, stack pointer and program counter
 	Pair8BRegisters AF, BC, DE, HL; // 2x8-bit registers paired together
 	bool m_IME; // Interrupt master enable
-	bool m_HALT; // is cpu halted boolean (wait until an interrupt occurs)
-	bool m_IsCCJump;
+	bool m_HALT;
+	bool m_IsConditionalJumpTaken;
 
 	/* components */
 	MMU& m_MMU;
@@ -87,9 +88,20 @@ private:
 	Gameboy& m_Gameboy;
 
 private:
-	/* OPCodes - struct and map */
+	/* OPCode maps */
 	typedef void(CPU::* OPCodeFuntion)();
+
+	/* regular opcodes */
 	OPCodeFuntion m_OPCodes[256];
+	string m_OPCodesNames[256];
+	uint32_t m_OPCodesCycles[256];
+	uint32_t m_OPCodesConditionalCycles[256];
+
+	/* extended opcodes (CB) */
+	OPCodeFuntion m_ExtendedOPCodes[256];
+	string m_ExtendedOPCodesNames[256];
+	uint32_t m_ExtendedOPCodesCycles[256];
+
 	OPCodeFuntion m_OPCodesCB[256];
 	struct OPCodeData
 	{
@@ -473,6 +485,19 @@ private:
 	void OPCode_D8();
 
 	void OPCode_D9();
+
+	void OPCode_CB();
+	void OPCode_D3();
+	void OPCode_DB();
+	void OPCode_DD();
+	void OPCode_E3();
+	void OPCode_E4();
+	void OPCode_EB();
+	void OPCode_EC();
+	void OPCode_ED();
+	void OPCode_F4();
+	void OPCode_FC();
+	void OPCode_FD();
 
 	void OPCode_CB_37();
 	void OPCode_CB_30();

@@ -1,6 +1,6 @@
 ﻿#include "gpu.h"
 
-GPU::GPU(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsLCDEnabled(true), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0),
+GPU::GPU(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsLCDEnabled(true), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0), m_VBlankCycles(0),
 m_LCDControl(0), m_LCDStatus(0), m_ScrollY(0), m_ScrollX(0), m_LCDCYCoordinate(0), m_LYCompare(0), m_BGPaletteData(0),
 m_ObjectPalette0(0), m_ObjectPalette1(0), m_WindowYPosition(0), m_WindowXPositionMinus7(0)
 {
@@ -36,7 +36,7 @@ void GPU::Step(uint32_t& i_Cycles)
 			handleHBlankMode();
 			break;
 		case GPU::Video_Mode::V_Blank:
-			handleVBlankMode();
+			handleVBlankMode(i_Cycles);
 			break;
 		case GPU::Video_Mode::Searching_OAM:
 			handleSearchSpritesAttributesMode();
@@ -63,6 +63,7 @@ void GPU::Reset()
 	m_WindowXPositionMinus7 = 0;
 	m_IsLCDEnabled = true;
 	m_VideoCycles = 0;
+	m_VBlankCycles = 0;
 	// reset all pixels to white 255 in RGB
 	memset(m_FrameBuffer, 0xFF, sizeof(m_FrameBuffer));
 	setMode(Video_Mode::Searching_OAM);
@@ -224,7 +225,7 @@ void GPU::handleHBlankMode()
 {
 	if (m_VideoCycles >= MIN_H_BLANK_MODE_CYCLES)
 	{
-		m_VideoCycles %= MIN_H_BLANK_MODE_CYCLES;
+		m_VideoCycles -= MIN_H_BLANK_MODE_CYCLES;
 
 		// increment the y scanline
 		m_LCDCYCoordinate++;
@@ -259,36 +260,38 @@ void GPU::handleHBlankMode()
 }
 
 /* mode 1 handler */
-void GPU::handleVBlankMode()
+void GPU::handleVBlankMode(const uint32_t& i_Cycles)
 {
-	if (m_VideoCycles >= MIN_V_BLANK_MODE_SINGLE_LINE_CYCLES)
+	m_VBlankCycles += i_Cycles;
+
+	if (m_VBlankCycles >= MIN_V_BLANK_MODE_CYCLES)
 	{
-		m_VideoCycles %= MIN_V_BLANK_MODE_SINGLE_LINE_CYCLES;
+		m_VBlankCycles = 0;
 
 		// increment the y corrdinate
 		m_LCDCYCoordinate++;
 
 		// after a change in the scanline, check for LY and LYC coincidence interrupt
 		checkForLYAndLYCCoincidence();
+	}
 
-		// check if its time to go back to line 0 and mode 2 (meaning a full frame have passed)
-		if (m_LCDCYCoordinate == V_BLANK_END_SCANLINE)
+	if (m_VBlankCycles >= MAX_V_BLANK_MODE_CYCLES)
+	{
+		m_VBlankCycles = 0;
+		m_VideoCycles = 0;
+
+		m_LCDCYCoordinate = 0;
+
+		checkForLYAndLYCCoincidence();
+
+		// check for mode 2 interrupt bit
+		if (bitwise::GetBit(LCDC_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
 		{
-			// reset Y corrdinate to 0
-			m_LCDCYCoordinate = 0;
-
-			// after a change in the scanline, check for LY and LYC coincidence interrupt
-			checkForLYAndLYCCoincidence();
-
-			// check for mode 2 interrupt bit
-			if (bitwise::GetBit(LCDC_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
-			{
-				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
-			}
-
-			// move to mode 2
-			setMode(Video_Mode::Searching_OAM);
+			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 		}
+
+		// move to mode 2
+		setMode(Video_Mode::Searching_OAM);
 	}
 }
 
@@ -297,7 +300,7 @@ void GPU::handleSearchSpritesAttributesMode()
 {
 	if (m_VideoCycles >= MIN_SEARCHING_OAM_MODE_CYCLES)
 	{
-		m_VideoCycles %= MIN_SEARCHING_OAM_MODE_CYCLES;
+		m_VideoCycles -= MIN_SEARCHING_OAM_MODE_CYCLES;
 
 		// move to mode 3 (Transfer data to LCD)
 		setMode(Video_Mode::Transfer_Data_To_LCD);
@@ -309,7 +312,7 @@ void GPU::handleLCDTransferMode()
 {
 	if (m_VideoCycles >= MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES)
 	{
-		m_VideoCycles %= MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES;
+		m_VideoCycles -= MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES;
 
 		// write a single scanline
 		drawCurrentScanline();
@@ -366,13 +369,10 @@ void GPU::checkForLYAndLYCCoincidence()
 
 void GPU::drawBackground()
 {
-	//byte LCDC = m_Gameboy.GetMMU().Read(GPU_LCD_CONTROL_ADDR);
-	//byte scrollY = m_Gameboy.GetMMU().Read(GPU_SCROLL_Y_ADDR);
-	//byte scrollX = m_Gameboy.GetMMU().Read(GPU_SCROLL_X_ADDR);
-	//byte currScanLine = m_Gameboy.GetMMU().Read(GPU_LCDC_Y_COORDINATE_ADDR);
+
 }
 
-/* the window is behind the sprites and above the background (unless specified otherwise) 
+/* the window is behind the sprites and above the background (unless specified otherwise)
    it is generally used for UI and its a fixed panel that will generaly not scroll */
 void GPU::drawWindow()
 {

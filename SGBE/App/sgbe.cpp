@@ -63,8 +63,19 @@ void SGBE::Run()
 	chrono::time_point<chrono::high_resolution_clock> startFrameTime, endFrameTime, elapsedFrameTime;
 	if (m_Gameboy->IsCartridgeLoadedSuccessfully())
 	{
+		SDL_Event event;
 		while (true) // change this with SDL quit check i.e press X or click ESC
 		{
+			// TODO - move this into the SDLWrapper
+			while (SDL_PollEvent(&event))
+			{
+				if (event.type == SDL_QUIT ||
+					event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					exit(EXIT_SUCCESS);
+				}
+			}
+
 			startFrameTime = chrono::high_resolution_clock::now();
 			// main loop here
 			m_Gameboy->Step(); // step a single frame
@@ -77,7 +88,7 @@ void SGBE::Run()
 			{
 				testEnd = chrono::high_resolution_clock::now();
 				auto testElapsed = chrono::duration_cast<chrono::duration<float, milli>> (testEnd - testStart);
-				cout << "Overall 60 frames took: " << testElapsed.count() << " milliseconds" << endl;
+				//cout << "Overall 60 frames took: " << testElapsed.count() << " milliseconds" << endl;
 				test %= 60;
 				testStart = chrono::high_resolution_clock::now();
 			}

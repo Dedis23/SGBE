@@ -50,6 +50,17 @@
 /* special locations addresses in memory */
 const word BOOTSTRAP_DONE_ADDR = 0xFF50;
 
+/* serial data transfer addresses in memory */
+const word SERIAL_TRANSFER_DATA_ADDR = 0xFF01;
+const word SERIAL_TRANSFER_CONTROL_ADDR = 0xFF02;
+
+/* size of memory components */
+const word VRAM_SIZE = (0x9FFF - 0x8000 + 1);
+const word RAM_SIZE = (0xFDFF - 0xC000 + 1); // including the shadow ram
+const word OAM_SIZE = (0xFEFF - 0xFE00 + 1); // including the unusable section
+const word MAPPED_IO_SIZE = (0xFF7F - 0xFF00 + 1);
+const word ZERO_PAGE_SIZE = (0xFFFF - 0xFF80 + 1);
+
 class MMU
 {
 public:
@@ -74,11 +85,10 @@ private:
 	/* memory modules */
     Cartridge& m_Cartridge;
 
-	std::vector<byte> memory;
-	vector<byte> m_VRAM = vector<byte>(0x9FFF - 0x8000 + 1);
-	vector<byte> m_RAM = vector<byte>(0xFDFF - 0xC000 + 1); // including the shadow ram
-	vector<byte> m_OAM = vector<byte>(0xFEFF - 0xFE00 + 1); // including the unusable section
-	vector<byte> m_MappedIO = vector<byte>(0xFF7F - 0xFF00 + 1);
-	vector<byte> m_ZeroPageRAM = vector<byte>(0xFFFF - 0xFF80 + 1);
+	vector<byte> m_VRAM = vector<byte>(VRAM_SIZE, 0);
+	vector<byte> m_RAM = vector<byte>(RAM_SIZE, 0); // including the shadow ram
+	vector<byte> m_OAM = vector<byte>(OAM_SIZE, 0); // including the unusable section
+	vector<byte> m_MappedIO = vector<byte>(MAPPED_IO_SIZE, 0);
+	vector<byte> m_ZeroPageRAM = vector<byte>(ZERO_PAGE_SIZE, 0);
 	static const vector<byte> s_Bootstrap;
 };

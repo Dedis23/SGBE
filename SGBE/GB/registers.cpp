@@ -172,12 +172,12 @@ inline void Pair8BRegisters::Clear()
 	m_HighByteRegister.Clear();
 }
 
-inline ByteRegister& Pair8BRegisters::GetHighRegister()
+ByteRegister& Pair8BRegisters::GetHighRegister()
 {
 	return m_HighByteRegister;
 }
 
-inline ByteRegister& Pair8BRegisters::GetLowRegister()
+ByteRegister& Pair8BRegisters::GetLowRegister()
 {
 	return m_LowByteRegister;
 }

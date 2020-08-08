@@ -29,8 +29,8 @@ const word NEW_LICENSE_CODE_START = 0x144; // 2 bytes
 const word NEW_LICENSE_CODE_END = 0x145;
 const word SGB_FLAG = 0x146; // 1 byte
 const word CARTRIDGE_TYPE = 0x147; // 1 byte
-const word ROM_SIZE = 0x148; // 1 byte
-const word RAM_SIZE = 0x149; // 1 byte
+const word ROM_BANKS_SIZE = 0x148; // 1 byte
+const word RAM_BANKS_SIZE = 0x149; // 1 byte
 const word DESTINATION_CODE = 0x14A; // 1 byte
 const word OLD_LICENSE_CODE = 0x14B; // 1 byte
 const word ROM_VERSION = 0x14C; // 1 byte
@@ -50,7 +50,6 @@ public:
         MBC5,
         UnknownCartridgeType,
     };
-    std::string CartridgeTypeToString();
 
     enum class ROMSize_E
     {
@@ -68,7 +67,6 @@ public:
         _1_5MB,
         UnknownROMSize,
     };
-    std::string ROMSizeToString();
 
     enum class RAMSize_E
     {
@@ -80,20 +78,21 @@ public:
        _128KB,
        UnknownRAMSize,
     };
-    std::string RAMSizeToString();
+
 
 public:
     CartridgeHeader(const vector<byte>& i_ROMData);
 	virtual ~CartridgeHeader() = default;
 
     bool VerifyChecksum();
-
-public:
-    std::string Title;
-    CartridgeType_E CartridgeType;
-    ROMSize_E ROMSize;
-    RAMSize_E RAMSize;
-    int Version;
+    std::string GetTitle() const { return m_Title; }
+    uint32_t GetVersion() const { return m_Version; }
+    CartridgeType_E GetCartridgeType() const { return m_CartridgeType; }
+    uint32_t GetNumOfSwitchableROMBanks() const { return m_NumOfSwitchableRomBanks; }
+    uint32_t GetNumOfSwitchableRAMBanks() const { return m_NumOfSwitchableRamBanks; }
+    std::string GetCartridgeTypeAsString() const;
+    std::string GetROMSizeAsString() const;
+    std::string GetRAMSizeAsString() const;
 
 private:
     void readTitle();
@@ -103,4 +102,11 @@ private:
 
 private:
     const vector<byte>& m_ROMData;
+    std::string m_Title;
+    CartridgeType_E m_CartridgeType;
+    ROMSize_E m_ROMSizeE;
+    uint32_t m_NumOfSwitchableRomBanks;
+    RAMSize_E m_RAMSizeE;
+    uint32_t m_NumOfSwitchableRamBanks;
+    uint32_t m_Version;
 };

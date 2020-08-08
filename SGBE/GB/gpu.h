@@ -53,7 +53,8 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 
 /* Various mode definitions */
 #define MIN_H_BLANK_MODE_CYCLES 204 // Mode 0 cycles
-#define MIN_V_BLANK_MODE_SINGLE_LINE_CYCLES 456 // Mode 1 single line cycle, overall it takes 10 times this number
+#define MIN_V_BLANK_MODE_CYCLES 456 // Mode 1 cycles (for 1 line)
+#define MAX_V_BLANK_MODE_CYCLES 4560 // Mode 1 overall cycles (10 lines) 
 #define MIN_SEARCHING_OAM_MODE_CYCLES 80 // Mode 2 cycles
 #define MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES 172 // Mode 3 cycles
 #define V_BLANK_START_SCANLINE 144
@@ -105,17 +106,20 @@ private:
 
     void setMode(Video_Mode i_NewMode);
     void handleHBlankMode();
-    void handleVBlankMode();
+    void handleVBlankMode(const uint32_t& i_Cycles);
     void handleSearchSpritesAttributesMode();
     void handleLCDTransferMode();
     void checkForLYAndLYCCoincidence();
     void drawCurrentScanline();
+
+    /* everything from gbemu */
     void drawBackground();
     void drawWindow();
     void drawSprites();
 
     bool m_IsLCDEnabled;
     Video_Mode m_Mode;
+    uint32_t m_VBlankCycles;
     uint32_t m_VideoCycles;
     Pixel m_FrameBuffer[GAMEBOY_SCREEN_WIDTH * GAMEBOY_SCREEN_HEIGHT];
     byte m_LCDControl;
@@ -129,7 +133,6 @@ private:
     byte m_ObjectPalette1;
     byte m_WindowYPosition;
     byte m_WindowXPositionMinus7;
-
 
     /* gameboy ref */
     Gameboy& m_Gameboy;

@@ -45,12 +45,14 @@ void Gameboy::Step()
 	uint32_t currentFrameCycles = 0;
 	while (currentFrameCycles < MAX_CYCLES_BEFORE_RENDERING)
 	{
-		m_CPU->Step(currentFrameCycles);
-		m_Timer->Step(currentFrameCycles);
-		m_GPU->Step(currentFrameCycles);
+		uint32_t cyclesCurrentOperation = 0;
+		m_CPU->Step(cyclesCurrentOperation);
+		m_Timer->Step(cyclesCurrentOperation);
+		m_GPU->Step(cyclesCurrentOperation);
 		m_CPU->HandleInterrupts();
+		currentFrameCycles += cyclesCurrentOperation;
 	}
-	//m_RenderScreen(m_GPU->GetFrameBuffer());
+	m_RenderScreen(m_GPU->GetFrameBuffer());
 }
 
 CPU& Gameboy::GetCPU()
@@ -84,14 +86,14 @@ bool Gameboy::initializeCartridge()
 	LOG_ERROR(res == false, return true, "Failed to verify cartridge checksum");
 	LOG_INFO(true, NOP, "Cartridge checksum verified successfully.");
 
-	LOG_INFO(true, NOP, "Cartridge title: " << m_CartridgeHeader->Title);
-	LOG_INFO(true, NOP, "Version: " << m_CartridgeHeader->Version);
-	LOG_INFO(true, NOP, "Cartridge type: " << m_CartridgeHeader->CartridgeTypeToString());
-	LOG_INFO(true, NOP, "Total ROM size: " << m_CartridgeHeader->ROMSizeToString());
-	LOG_INFO(true, NOP, "Additional RAM size: " << m_CartridgeHeader->RAMSizeToString());
+	LOG_INFO(true, NOP, "Cartridge title: " << m_CartridgeHeader->GetTitle());
+	LOG_INFO(true, NOP, "Version: " << m_CartridgeHeader->GetVersion());
+	LOG_INFO(true, NOP, "Cartridge type: " << m_CartridgeHeader->GetCartridgeTypeAsString());
+	LOG_INFO(true, NOP, "Total ROM size: " << m_CartridgeHeader->GetROMSizeAsString());
+	LOG_INFO(true, NOP, "Additional RAM size: " << m_CartridgeHeader->GetRAMSizeAsString());
 
-	m_Cartridge = CartridgeFactory::CreateCartridge(m_ROMData, m_CartridgeHeader->CartridgeType);
-	LOG_ERROR(m_Cartridge == nullptr, NOP, "Cartridge type " << m_CartridgeHeader->CartridgeTypeToString() << " is unsupported");
+	m_Cartridge = CartridgeFactory::CreateCartridge(m_ROMData, *m_CartridgeHeader);
+	LOG_ERROR(m_Cartridge == nullptr, NOP, "Cartridge type " << m_CartridgeHeader->GetCartridgeTypeAsString() << " is unsupported");
 
 	return true;
 }
