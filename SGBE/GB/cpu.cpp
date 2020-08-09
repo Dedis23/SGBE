@@ -2115,7 +2115,7 @@ bool CPU::checkJumpCondition(JumpConditions i_Condition)
 	Description:
 	Put value n (byte from memory) into nn (register).
 */
-void CPU::LD_nn_n(ByteRegister& i_DestRegister)
+inline inline void CPU::LD_nn_n(ByteRegister& i_DestRegister)
 {
 	byte n = readNextByte();
 	i_DestRegister.SetValue(n);
@@ -2128,13 +2128,13 @@ void CPU::LD_nn_n(ByteRegister& i_DestRegister)
 	Description:
 	Put value nn (word from memory) into n (16 bit register).
 */
-void CPU::LD_n_nn(WordRegister& i_DestRegister)
+inline void CPU::LD_n_nn(WordRegister& i_DestRegister)
 {
 	word nn = readNextWord();
 	i_DestRegister.SetValue(nn);
 }
 
-void CPU::LD_n_nn(Pair8BRegisters& i_DestRegister)
+inline void CPU::LD_n_nn(Pair8BRegisters& i_DestRegister)
 {
 	word nn = readNextWord();
 	i_DestRegister.SetValue(nn);
@@ -2148,36 +2148,36 @@ void CPU::LD_n_nn(Pair8BRegisters& i_DestRegister)
 	Put value r2 into r1.
 
 */
-void CPU::LD_r1_r2(ByteRegister& i_DestRegister, const ByteRegister& i_SrcRegister)
+inline void CPU::LD_r1_r2(ByteRegister& i_DestRegister, const ByteRegister& i_SrcRegister)
 {
 	byte val = i_SrcRegister.GetValue();
 	i_DestRegister.SetValue(val);
 }
 
-void CPU::LD_r1_r2(ByteRegister& i_DestRegister, word i_SrcMemory)
+inline void CPU::LD_r1_r2(ByteRegister& i_DestRegister, word i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	i_DestRegister.SetValue(val);
 }
 
-void CPU::LD_r1_r2(word i_DestMemory, const ByteRegister& i_SrcRegister)
+inline void CPU::LD_r1_r2(word i_DestMemory, const ByteRegister& i_SrcRegister)
 {
 	byte val = i_SrcRegister.GetValue();
 	m_MMU.Write(i_DestMemory, val);
 }
 
-void CPU::LD_r1_r2(word i_DestMemory, byte i_Value)
+inline void CPU::LD_r1_r2(word i_DestMemory, byte i_Value)
 {
 	m_MMU.Write(i_DestMemory, i_Value);
 }
 
-void CPU::LD_r1_r2(WordRegister& i_DestRegister, const Pair8BRegisters& i_SrcRegister)
+inline void CPU::LD_r1_r2(WordRegister& i_DestRegister, const Pair8BRegisters& i_SrcRegister)
 {
 	word val = i_SrcRegister.GetValue();
 	i_DestRegister.SetValue(val);
 }
 
-void CPU::LD_r1_r2(word i_DestMemory, const WordRegister& i_SrcRegister)
+inline void CPU::LD_r1_r2(word i_DestMemory, const WordRegister& i_SrcRegister)
 {
 	byte lowVal = i_SrcRegister.GetLowByte();
 	byte highVal = i_SrcRegister.GetHighByte();
@@ -2197,7 +2197,7 @@ void CPU::LD_r1_r2(word i_DestMemory, const WordRegister& i_SrcRegister)
 	H - Set or reset according to operation
 	C - Set or reset according to operation
 */
-void CPU::LD_HL_SP_n()
+inline void CPU::LD_HL_SP_n()
 {
 	sbyte n = readNextSignedByte();
 	word spVal = SP.GetValue();
@@ -2219,7 +2219,7 @@ void CPU::LD_HL_SP_n()
 	Push nn onto stack
 	Decrement Stack Pointer (SP) twice
 */
-void CPU::PUSH(word i_Value)
+inline void CPU::PUSH(word i_Value)
 {
 	SP.Decrement();
 	word addr = SP.GetValue();
@@ -2240,7 +2240,7 @@ void CPU::PUSH(word i_Value)
 	Pop two bytes off stack into nn
 	Increment Stack Pointer (SP) twice
 */
-void CPU::POP(word& i_Value)
+inline void CPU::POP(word& i_Value)
 {
 	word addr = SP.GetValue();
 	byte lowVal = m_MMU.Read(addr);
@@ -2264,7 +2264,7 @@ void CPU::POP(word& i_Value)
 	H - Set if carry from bit 3
 	C - Set if carry from bit 7
 */
-void CPU::ADD(byte i_Value)
+inline void CPU::ADD(byte i_Value)
 {
 	byte aVal = A.GetValue();
 	int res = aVal + i_Value;
@@ -2287,7 +2287,7 @@ void CPU::ADD(byte i_Value)
 	H - Set if carry from bit 11
 	C - Set if carry from bit 15
 */
-void CPU::ADD_HL(word i_Value)
+inline void CPU::ADD_HL(word i_Value)
 {
 	word hlVal = HL.GetValue();
 	HL.SetValue(hlVal + i_Value);
@@ -2309,7 +2309,7 @@ void CPU::ADD_HL(word i_Value)
 	H - Set or reset according to operation
 	C - Set or reset according to operation
 */
-void CPU::ADD_SP()
+inline void CPU::ADD_SP()
 {
 	sbyte val = readNextSignedByte();
 	word spVal = SP.GetValue();
@@ -2333,7 +2333,7 @@ void CPU::ADD_SP()
 	H - Set if carry from bit 3
 	C - Set if carry from bit 7
 */
-void CPU::ADC(byte i_Value)
+inline void CPU::ADC(byte i_Value)
 {
 	byte aVal = A.GetValue();
 	byte carry = F.GetC();
@@ -2357,7 +2357,7 @@ void CPU::ADC(byte i_Value)
 	H - Set if no borrow from bit 4
 	C - Set if no borrow
 */
-void CPU::SUB(byte i_Value)
+inline void CPU::SUB(byte i_Value)
 {
 	byte aVal = A.GetValue();
 	int res = aVal - i_Value;
@@ -2380,7 +2380,7 @@ void CPU::SUB(byte i_Value)
 	H - Set if no borrow from bit 4
 	C - Set if no borrow
 */
-void CPU::SBC(byte i_Value)
+inline void CPU::SBC(byte i_Value)
 {
 	byte aVal = A.GetValue();
 	byte carry = F.GetC();
@@ -2404,7 +2404,7 @@ void CPU::SBC(byte i_Value)
 	H - Set
 	C - Reset
 */
-void CPU::AND(byte i_Value)
+inline void CPU::AND(byte i_Value)
 {
 	byte aVal = A.GetValue();
 	byte res = aVal & i_Value;
@@ -2427,7 +2427,7 @@ void CPU::AND(byte i_Value)
 	H - Reset
 	C - Reset
 */
-void CPU::OR(byte i_Value)
+inline void CPU::OR(byte i_Value)
 {
 	byte aVal = A.GetValue();
 	byte res = aVal | i_Value;
@@ -2450,7 +2450,7 @@ void CPU::OR(byte i_Value)
 	H - Reset
 	C - Reset
 */
-void CPU::XOR(byte i_Value)
+inline void CPU::XOR(byte i_Value)
 {
 	byte aVal = A.GetValue();
 	byte res = aVal ^ i_Value;
@@ -2474,7 +2474,7 @@ void CPU::XOR(byte i_Value)
 	H - Set if no borrow from bit 4
 	C - Set if no borrow
 */
-void CPU::CP(byte i_Value)
+inline void CPU::CP(byte i_Value)
 {
 	byte aVal = A.GetValue();
 
@@ -2495,7 +2495,7 @@ void CPU::CP(byte i_Value)
 	H - Set if carry from bit 3
 	C - Not affected
 */
-void CPU::INC(ByteRegister& i_DestRegister)
+inline void CPU::INC(ByteRegister& i_DestRegister)
 {
 	i_DestRegister.Increment();
 	byte regVal = i_DestRegister.GetValue();
@@ -2514,12 +2514,12 @@ void CPU::INC(ByteRegister& i_DestRegister)
 	nn = BC, DE, HL, SP
 	No flags affected
 */
-void CPU::INC_no_flags(WordRegister& i_DestRegister)
+inline void CPU::INC_no_flags(WordRegister& i_DestRegister)
 {
 	i_DestRegister.Increment();
 }
 
-void CPU::INC_no_flags(Pair8BRegisters& i_DestRegister)
+inline void CPU::INC_no_flags(Pair8BRegisters& i_DestRegister)
 {
 	i_DestRegister.Increment();
 }
@@ -2535,7 +2535,7 @@ void CPU::INC_no_flags(Pair8BRegisters& i_DestRegister)
 	H - Set if carry from bit 3
 	C - Not affected
 */
-void CPU::DEC(ByteRegister& i_DestRegister)
+inline void CPU::DEC(ByteRegister& i_DestRegister)
 {
 	i_DestRegister.Decrement();
 	byte regVal = i_DestRegister.GetValue();
@@ -2554,12 +2554,12 @@ void CPU::DEC(ByteRegister& i_DestRegister)
 	nn = BC, DE, HL, SP
 	No flags affected
 */
-void CPU::DEC_no_flags(WordRegister& i_DestRegister)
+inline void CPU::DEC_no_flags(WordRegister& i_DestRegister)
 {
 	i_DestRegister.Decrement();
 }
 
-void CPU::DEC_no_flags(Pair8BRegisters& i_DestRegister)
+inline void CPU::DEC_no_flags(Pair8BRegisters& i_DestRegister)
 {
 	i_DestRegister.Decrement();
 }
@@ -2580,7 +2580,7 @@ void CPU::DEC_no_flags(Pair8BRegisters& i_DestRegister)
 	H - Reset.
 	C - Set or reset according to operation.
 */
-void CPU::DAA()
+inline void CPU::DAA()
 {
 	int res = A.GetValue();
 	
@@ -2627,7 +2627,7 @@ void CPU::DAA()
 	H - Set
 	C - Not affected
 */
-void CPU::CPL()
+inline void CPU::CPL()
 {
 	byte aVal = A.GetValue();
 	aVal = ~aVal;
@@ -2650,7 +2650,7 @@ void CPU::CPL()
 	H - Reset
 	C - Complemented
 */
-void CPU::CCF()
+inline void CPU::CCF()
 {
 	F.SetC(!F.GetC());
 
@@ -2669,7 +2669,7 @@ void CPU::CCF()
 	H - Reset
 	C - Set
 */
-void CPU::SCF()
+inline void CPU::SCF()
 {
 	F.SetC(true);
 	F.SetN(false);
@@ -2683,7 +2683,7 @@ void CPU::SCF()
 	Description:
 	No operation
 */
-void CPU::_NOP()
+inline void CPU::_NOP()
 {
 	// Do nothing
 }
@@ -2696,7 +2696,7 @@ void CPU::_NOP()
 	Power down CPU until an interrupt occurs. Use this
 	when ever possible to reduce energy consumption.
 */
-void CPU::HALT()
+inline void CPU::HALT()
 {
 	m_HALT = true;
 }
@@ -2708,7 +2708,7 @@ void CPU::HALT()
 	Description:
 	Halt CPU & LCD display until button pressed.
 */
-void CPU::STOP()
+inline void CPU::STOP()
 {
 	// do nothing
 }
@@ -2720,7 +2720,7 @@ void CPU::STOP()
 	Description:
 	This instruction disables interrupts
 */
-void CPU::DI()
+inline void CPU::DI()
 {
 	m_IME = false;
 }
@@ -2732,7 +2732,7 @@ void CPU::DI()
 	Description:
 	This intruction enables interrupts
 */
-void CPU::EI()
+inline void CPU::EI()
 {
 	m_IME = true;
 }
@@ -2745,7 +2745,7 @@ void CPU::EI()
 	Jump to address nn
 	nn = two byte immediate value. (LS byte first.)
 */
-void CPU::JP_nn()
+inline void CPU::JP_nn()
 {
 	word addr = readNextWord();
 	PC.SetValue(addr);
@@ -2762,12 +2762,11 @@ void CPU::JP_nn()
 	cc = NC, Jump if C flag is reset
 	cc = C, Jump if C flag is set
 */
-void CPU::JP_cc_nn(JumpConditions i_Condition)
+inline void CPU::JP_cc_nn(JumpConditions i_Condition)
 {
 	if (checkJumpCondition(i_Condition))
 	{
-		word addr = readNextWord();
-		PC.SetValue(addr);
+		JP_nn();
 		m_IsConditionalJumpTaken = true;
 	}
 	else
@@ -2785,7 +2784,7 @@ void CPU::JP_cc_nn(JumpConditions i_Condition)
 	Description:
 	Jump to address contained in HL
 */
-void CPU::JP_hl()
+inline void CPU::JP_hl()
 {
 	word addr = HL.GetValue();
 	PC.SetValue(addr);
@@ -2798,12 +2797,11 @@ void CPU::JP_hl()
 	Description:
 	Add n to current address and jump to it
 */
-void CPU::JR_n()
+inline void CPU::JR_n()
 {
-	sbyte val = readNextSignedByte();
-	word pcVal = PC.GetValue();
-	pcVal += val;
-	PC.SetValue(pcVal);
+	sbyte nextSb = readNextSignedByte();
+	word newPc = static_cast<word>(PC.GetValue() + nextSb);
+	PC.SetValue(newPc);
 }
 
 /*
@@ -2819,14 +2817,11 @@ void CPU::JR_n()
 	cc = NC, Jump if C flag is reset
 	cc = C, Jump if C flag is set
 */
-void CPU::JR_cc_n(JumpConditions i_Condition)
+inline void CPU::JR_cc_n(JumpConditions i_Condition)
 {
 	if (checkJumpCondition(i_Condition))
 	{
-		sbyte val = readNextSignedByte();
-		word pcVal = PC.GetValue();
-		pcVal += val;
-		PC.SetValue(pcVal);
+		JR_n();
 		m_IsConditionalJumpTaken = true;
 	}
 	else
@@ -2842,7 +2837,7 @@ void CPU::JR_cc_n(JumpConditions i_Condition)
 	Description:
 	Push address of next instruction onto stack and then jump to address nn
 */
-void CPU::CALL_nn()
+inline void CPU::CALL_nn()
 {
 	word addr = readNextWord(); // addr = nn, pc now is post instruction CALL nn
 	word pcVal = PC.GetValue();
@@ -2861,14 +2856,11 @@ void CPU::CALL_nn()
 	cc = NC, Call if C flag is reset
 	cc = C, Call if C flag is set
 */
-void CPU::CALL_cc_nn(JumpConditions i_Condition)
+inline void CPU::CALL_cc_nn(JumpConditions i_Condition)
 {
 	if (checkJumpCondition(i_Condition))
 	{
-		word addr = readNextWord(); // addr = nn, pc now is post instruction CALL cc nn
-		word pcVal = PC.GetValue();
-		PUSH(pcVal); // store PC in the stack
-		PC.SetValue(addr); // jump to nn
+		CALL_nn();
 		m_IsConditionalJumpTaken = true;
 	}
 	else
@@ -2886,7 +2878,7 @@ void CPU::CALL_cc_nn(JumpConditions i_Condition)
 	Push present address onto stack
 	Jump to address $0000 + n
 */
-void CPU::RST_n(word i_Value)
+inline void CPU::RST_n(word i_Value)
 {
 	word pcVal = PC.GetValue();
 	PUSH(pcVal);
@@ -2900,7 +2892,7 @@ void CPU::RST_n(word i_Value)
 	Description:
 	Pop two bytes from stack & jump to that address
 */
-void CPU::RET()
+inline void CPU::RET()
 {
 	word val = 0x0;
 	POP(val);
@@ -2918,7 +2910,7 @@ void CPU::RET()
 	cc = NC, Return if C flag is reset
 	cc = C, Return if C flag is set
 */
-void CPU::RET_cc(JumpConditions i_Condition)
+inline void CPU::RET_cc(JumpConditions i_Condition)
 {
 	if (checkJumpCondition(i_Condition))
 	{
@@ -2936,7 +2928,7 @@ void CPU::RET_cc(JumpConditions i_Condition)
 	and enable interrupts 
 	this is being called after an interrupt routine
 */
-void CPU::RETI()
+inline void CPU::RETI()
 {
 	RET();
 	m_IME = true;
@@ -2953,7 +2945,7 @@ void CPU::RETI()
 	H - Reset
 	C - Reset
 */
-void CPU::SWAP(ByteRegister& i_DestRegister)
+inline void CPU::SWAP(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	byte res = (val >> 4) | (val << 4);
@@ -2966,7 +2958,7 @@ void CPU::SWAP(ByteRegister& i_DestRegister)
 	i_DestRegister.SetValue(res);
 }
 
-void CPU::SWAP(word& i_SrcMemory)
+inline void CPU::SWAP(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	byte res = (val >> 4) | (val << 4);
@@ -2990,7 +2982,7 @@ void CPU::SWAP(word& i_SrcMemory)
 	H - Reset
 	C - Contains old bit 7 data
 */
-void CPU::RLC_n(ByteRegister& i_DestRegister)
+inline void CPU::RLC_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	i_DestRegister.GetBit(7) ? F.SetC(true) : F.SetC(false);
@@ -3003,7 +2995,7 @@ void CPU::RLC_n(ByteRegister& i_DestRegister)
 	F.SetH(false);
 }
 
-void CPU::RLC_n(word& i_SrcMemory)
+inline void CPU::RLC_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	bitwise::GetBit(7, val) ? F.SetC(true) : F.SetC(false);
@@ -3027,7 +3019,7 @@ void CPU::RLC_n(word& i_SrcMemory)
 	H - Reset
 	C - Contains old bit 7 data
 */
-void CPU::RL_n(ByteRegister& i_DestRegister)
+inline void CPU::RL_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	// save bit 7 from n
@@ -3044,7 +3036,7 @@ void CPU::RL_n(ByteRegister& i_DestRegister)
 	F.SetH(false);
 }
 
-void CPU::RL_n(word& i_SrcMemory)
+inline void CPU::RL_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	// save bit 7 from n
@@ -3072,7 +3064,7 @@ void CPU::RL_n(word& i_SrcMemory)
 	H - Reset
 	C - Contains old bit 0 data
 */
-void CPU::RRC_n(ByteRegister& i_DestRegister)
+inline void CPU::RRC_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	i_DestRegister.GetBit(0) ? F.SetC(true) : F.SetC(false);
@@ -3085,7 +3077,7 @@ void CPU::RRC_n(ByteRegister& i_DestRegister)
 	F.SetH(false);
 }
 
-void CPU::RRC_n(word& i_SrcMemory)
+inline void CPU::RRC_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	bitwise::GetBit(0, val) ? F.SetC(true) : F.SetC(false);
@@ -3109,7 +3101,7 @@ void CPU::RRC_n(word& i_SrcMemory)
 	H - Reset
 	C - Contains old bit 0 data
 */
-void CPU::RR_n(ByteRegister& i_DestRegister)
+inline void CPU::RR_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	// save bit 0 from n
@@ -3126,7 +3118,7 @@ void CPU::RR_n(ByteRegister& i_DestRegister)
 	F.SetH(false);
 }
 
-void CPU::RR_n(word& i_SrcMemory)
+inline void CPU::RR_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	// save bit 0 from n
@@ -3154,7 +3146,7 @@ void CPU::RR_n(word& i_SrcMemory)
 	H - Reset
 	C - Contains old bit 7 data
 */
-void CPU::SLA_n(ByteRegister& i_DestRegister)
+inline void CPU::SLA_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 
@@ -3167,7 +3159,7 @@ void CPU::SLA_n(ByteRegister& i_DestRegister)
 	F.SetH(false);
 }
 
-void CPU::SLA_n(word& i_SrcMemory)
+inline void CPU::SLA_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 
@@ -3191,7 +3183,7 @@ void CPU::SLA_n(word& i_SrcMemory)
 	H - Reset
 	C - Contains old bit 0 data
 */
-void CPU::SRA_n(ByteRegister& i_DestRegister)
+inline void CPU::SRA_n(ByteRegister& i_DestRegister)
 {
 	byte val = i_DestRegister.GetValue();
 	bool bit7 = i_DestRegister.GetBit(7);
@@ -3209,7 +3201,7 @@ void CPU::SRA_n(ByteRegister& i_DestRegister)
 	F.SetH(false);
 }
 
-void CPU::SRA_n(word& i_SrcMemory)
+inline void CPU::SRA_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	bool bit7 = bitwise::GetBit(7, val);
@@ -3238,7 +3230,7 @@ void CPU::SRA_n(word& i_SrcMemory)
 	H - Reset
 	C - Contains old bit 0 data
 */
-void CPU::SRL_n(ByteRegister& i_DestRegister)
+inline void CPU::SRL_n(ByteRegister& i_DestRegister)
 {
 	byte val = static_cast<byte>(i_DestRegister.GetValue());
 	F.SetC(i_DestRegister.GetBit(0)); // set carry to be bit 0
@@ -3250,7 +3242,7 @@ void CPU::SRL_n(ByteRegister& i_DestRegister)
 	F.SetH(false);
 }
 
-void CPU::SRL_n(word& i_SrcMemory)
+inline void CPU::SRL_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	F.SetC(bitwise::GetBit(0, val)); // set carry to be bit 0
@@ -3273,7 +3265,7 @@ void CPU::SRL_n(word& i_SrcMemory)
 	H - Set
 	C - Not affected
 */
-void CPU::BIT_b_r(byte i_BitNumber, byte i_Value)
+inline void CPU::BIT_b_r(byte i_BitNumber, byte i_Value)
 {
 	bool res = !bitwise::GetBit(i_BitNumber, i_Value);
 	
@@ -3289,7 +3281,7 @@ void CPU::BIT_b_r(byte i_BitNumber, byte i_Value)
 	Description:
 	Sets the specified bit in register r
 */
-void CPU::SET_b_r(byte i_BitNumber, byte& o_Value)
+inline void CPU::SET_b_r(byte i_BitNumber, byte& o_Value)
 {
 	bitwise::SetBit(i_BitNumber, true, o_Value);
 }
@@ -3301,7 +3293,7 @@ void CPU::SET_b_r(byte i_BitNumber, byte& o_Value)
 	Description:
 	Resets the specified bit in register r
 */
-void CPU::RES_b_r(byte i_BitNumber, byte& o_Value)
+inline void CPU::RES_b_r(byte i_BitNumber, byte& o_Value)
 {
 	bitwise::SetBit(i_BitNumber, false, o_Value);
 }
@@ -5048,7 +5040,7 @@ void CPU::OPCode_0F()
 void CPU::OPCode_1F()
 {
 	RR_n(A);
-		F.SetZ(false);
+	F.SetZ(false);
 }
 
 void CPU::OPCode_C3()
@@ -5063,19 +5055,16 @@ void CPU::OPCode_C2()
 
 void CPU::OPCode_CA()
 {
-	word addr = readNextWord();
 	JP_cc_nn(JumpConditions::Z);
 }
 
 void CPU::OPCode_D2()
 {
-	word addr = readNextWord();
 	JP_cc_nn(JumpConditions::NC);
 }
 
 void CPU::OPCode_DA()
 {
-	word addr = readNextWord();
 	JP_cc_nn(JumpConditions::C);
 }
 
