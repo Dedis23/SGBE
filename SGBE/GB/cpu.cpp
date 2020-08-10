@@ -10,68 +10,68 @@ AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false), m_IsConditi
 void CPU::Step(uint32_t& o_Cycles)
 {
 	static bool isOkToPrint = false;
-	static bool lastPCCorrect = false;
-	//cout << "PC: 0x" << std::hex << PC.GetValue() << endl;
-	if (PC.GetValue() == 0xC4DD)
-	{
-		lastPCCorrect = true;
-	}
-	if (false /*PC.GetValue() == 0xC503 && A.GetValue() == 0x01*/) // done till C501
-	{
-		isOkToPrint = true;
-		cout << "STOP" << endl;
-		dumpRegisters();
-	}
+	//static bool lastPCCorrect = false;
+	////cout << "PC: 0x" << std::hex << PC.GetValue() << endl;
+	//if (PC.GetValue() == 0xC4DD)
+	//{
+	//	lastPCCorrect = true;
+	//}
+	//if (false /*PC.GetValue() == 0xC503 && A.GetValue() == 0x01*/) // done till C501
+	//{
+	//	isOkToPrint = true;
+	//	cout << "STOP" << endl;
+	//	dumpRegisters();
+	//}
 	if (m_HALT) return;
 	// read next instruction opcode
 	byte OPCode = readNextByte();
 
-	if (m_MMU.Read(BOOTSTRAP_DONE_ADDR) != 0x01)
-	{
-		// set memory
-
-		// gpu init
-		m_MMU.Write(GPU_LCD_CONTROL_ADDR, 0x91);
-		m_MMU.Write(GPU_LCDC_STATUS_ADDR, 0x81);
-		m_MMU.Write(GPU_SCROLL_Y_ADDR, 0x00);
-		m_MMU.Write(GPU_SCROLL_X_ADDR, 0x00);
-		m_MMU.Write(GPU_LCDC_Y_COORDINATE_ADDR, 0x90);
-		m_MMU.Write(GPU_LY_COMPARE_ADDR, 0x00);
-		m_MMU.Write(GPU_DMA_TRANSFER_AND_START_ADDR, 0x00);
-		m_MMU.Write(GPU_BG_PALETTE_DATA_ADDR, 0xFC);
-		m_MMU.Write(GPU_OBJECT_PALETTE_0_DATA_ADDR, 0x00);
-		m_MMU.Write(GPU_OBJECT_PALETTE_1_DATA_ADDR, 0x00);
-		m_MMU.Write(GPU_WINDOW_Y_POSITION_ADDR, 0x00);
-		m_MMU.Write(GPU_WINDOW_X_POSITION_MINUS_7_ADDR, 0x00);
-
-		// various stuff
-		m_MMU.Write(0xFF70, 0xF8);
-		m_MMU.Write(0xFF4F, 0xFE);
-		m_MMU.Write(0xFF4D, 0x7E);
-		m_MMU.Write(0xFF00, 0xCF);
-		m_MMU.Write(0xFF01, 0x00);
-		m_MMU.Write(0xFF02, 0x7C);
-		m_MMU.Write(0xFF04, 0x1E);
-		m_MMU.Write(0xFF05, 0x00);
-		m_MMU.Write(0xFF06, 0x00);
-		m_MMU.Write(0xFF07, 0xF8);
-		m_MMU.Write(0xFF0F, 0xE1);
-		m_MMU.Write(0xFFFF, 0x00);
-
-		m_MMU.Write(BOOTSTRAP_DONE_ADDR, 0x01);
-
-		// set registers
-		PC.SetValue(0x100);
-		SP.SetValue(0xFFFE);
-		//if (m_bCGB)
-		//	AF.SetValue(0x11B0);
-		//else
-			AF.SetValue(0x1180);
-		BC.SetValue(0x0000);
-		DE.SetValue(0xFF56);
-		HL.SetValue(0x000D);
-		return;
-	}
+	//if (m_MMU.Read(BOOTSTRAP_DONE_ADDR) != 0x01)
+	//{
+	//	// set memory
+	//
+	//	// gpu init
+	//	m_MMU.Write(GPU_LCD_CONTROL_ADDR, 0x91);
+	//	m_MMU.Write(GPU_LCDC_STATUS_ADDR, 0x81);
+	//	m_MMU.Write(GPU_SCROLL_Y_ADDR, 0x00);
+	//	m_MMU.Write(GPU_SCROLL_X_ADDR, 0x00);
+	//	m_MMU.Write(GPU_LCDC_Y_COORDINATE_ADDR, 0x90);
+	//	m_MMU.Write(GPU_LY_COMPARE_ADDR, 0x00);
+	//	m_MMU.Write(GPU_DMA_TRANSFER_AND_START_ADDR, 0x00);
+	//	m_MMU.Write(GPU_BG_PALETTE_DATA_ADDR, 0xFC);
+	//	m_MMU.Write(GPU_OBJECT_PALETTE_0_DATA_ADDR, 0x00);
+	//	m_MMU.Write(GPU_OBJECT_PALETTE_1_DATA_ADDR, 0x00);
+	//	m_MMU.Write(GPU_WINDOW_Y_POSITION_ADDR, 0x00);
+	//	m_MMU.Write(GPU_WINDOW_X_POSITION_MINUS_7_ADDR, 0x00);
+	//
+	//	// various stuff
+	//	m_MMU.Write(0xFF70, 0xF8);
+	//	m_MMU.Write(0xFF4F, 0xFE);
+	//	m_MMU.Write(0xFF4D, 0x7E);
+	//	m_MMU.Write(0xFF00, 0xCF);
+	//	m_MMU.Write(0xFF01, 0x00);
+	//	m_MMU.Write(0xFF02, 0x7C);
+	//	m_MMU.Write(0xFF04, 0x1E);
+	//	m_MMU.Write(0xFF05, 0x00);
+	//	m_MMU.Write(0xFF06, 0x00);
+	//	m_MMU.Write(0xFF07, 0xF8);
+	//	m_MMU.Write(0xFF0F, 0xE1);
+	//	m_MMU.Write(0xFFFF, 0x00);
+	//
+	//	m_MMU.Write(BOOTSTRAP_DONE_ADDR, 0x01);
+	//
+	//	// set registers
+	//	PC.SetValue(0x100);
+	//	SP.SetValue(0xFFFE);
+	//	//if (m_bCGB)
+	//	//	AF.SetValue(0x11B0);
+	//	//else
+	//		AF.SetValue(0x1180);
+	//	BC.SetValue(0x0000);
+	//	DE.SetValue(0xFF56);
+	//	HL.SetValue(0x000D);
+	//	return;
+	//}
 
 	//cout << "PC is: " << PC.GetValue() << endl;
 	//cout << "SP is: " << SP.GetValue() << endl;
@@ -100,7 +100,7 @@ void CPU::Step(uint32_t& o_Cycles)
 	{
 		LOG_INFO(isOkToPrint, NOP, "Executing OPCode: " << std::hex << (int)OPCode << " " << m_OPCodesNames[OPCode] << " in address 0x" << std::hex << PC.GetValue() - 1);
 		(this->*m_OPCodes[OPCode])();
-		if (isOkToPrint) dumpRegisters();
+		//if (isOkToPrint) dumpRegisters();
 		//OPCodeData = m_TestArr[OPCode];
 		//OPCodeData = m_OPCodeDataMap[OPCode];
 		//(this->*m_OPCodes[OPCode])();
@@ -125,14 +125,6 @@ void CPU::Step(uint32_t& o_Cycles)
 	//}
 
 	// calculate cycles
-	//if (m_IsCCJump)
-	//{
-	//	o_Cycles += OPCodeData.ConditionalCycles;
-	//}
-	//else
-	//{
-	//	o_Cycles += OPCodeData.Cycles;
-	//}
 	if (OPCode == 0xCB)
 	{
 		o_Cycles += m_ExtendedOPCodesCycles[OPCode];
@@ -2115,7 +2107,7 @@ bool CPU::checkJumpCondition(JumpConditions i_Condition)
 	Description:
 	Put value n (byte from memory) into nn (register).
 */
-inline inline void CPU::LD_nn_n(ByteRegister& i_DestRegister)
+inline void CPU::LD_nn_n(ByteRegister& i_DestRegister)
 {
 	byte n = readNextByte();
 	i_DestRegister.SetValue(n);
@@ -3297,526 +3289,6 @@ inline void CPU::RES_b_r(byte i_BitNumber, byte& o_Value)
 {
 	bitwise::SetBit(i_BitNumber, false, o_Value);
 }
-
-const std::vector<CPU::OPCodeData> CPU::m_OPCodeDataMap
-{
-	{ &OPCode_00, "NOP", 4, 4 },
-	{ &OPCode_01, "LD BC, nn", 12, 12 },
-	{ &OPCode_02, "LD (BC), A", 8, 8 },
-	{ &OPCode_03, "INC BC", 8, 8 },
-	{ &OPCode_04, "INC B", 4, 4 },
-	{ &OPCode_05, "DEC B", 4, 4 },
-	{ &OPCode_06, "LD B, n", 8, 8 },
-	{ &OPCode_07, "RLCA", 4, 4 },
-	{ &OPCode_08, "LD (nn), SP", 20, 20 },
-	{ &OPCode_09, "ADD HL, BC", 8, 8 },
-	{ &OPCode_0A, "LD A, (BC)", 8, 8 },
-	{ &OPCode_0B, "DEC BC", 8, 8 },
-	{ &OPCode_0C, "INC C", 4, 4 },
-	{ &OPCode_0D, "DEC C", 4, 4 },
-	{ &OPCode_0E, "LD C, n", 8, 8 },
-	{ &OPCode_0F, "RRCA", 4, 4 },
-	{ &OPCode_10, "STOP", 4, 4 },
-	{ &OPCode_11, "LD DE, nn", 12, 12 },
-	{ &OPCode_12, "LD (DE), A", 8, 8 },
-	{ &OPCode_13, "INC DE", 8, 8 },
-	{ &OPCode_14, "INC D", 4, 4 },
-	{ &OPCode_15, "DEC D", 4, 4 },
-	{ &OPCode_16, "LD D, n", 8, 8 },
-	{ &OPCode_17, "RLA", 4, 4 },
-	{ &OPCode_18, "JR n", 12, 12 },
-	{ &OPCode_19, "ADD HL, DE", 8, 8 },
-	{ &OPCode_1A, "LD A, (DE)", 8, 8 },
-	{ &OPCode_1B, "DEC DE", 8, 8 },
-	{ &OPCode_1C, "INC E", 4, 4 },
-	{ &OPCode_1D, "DEC E", 4, 4 },
-	{ &OPCode_1E, "LD E, n", 8, 8 },
-	{ &OPCode_1F, "RRA", 4, 4 },
-	{ &OPCode_20, "JR NZ, n", 8, 12 },
-	{ &OPCode_21, "LD HL, nn", 12, 12 },
-	{ &OPCode_22, "LDI (HL), A", 8, 8 },
-	{ &OPCode_23, "INC HL", 8, 8 },
-	{ &OPCode_24, "INC H", 4, 4 },
-	{ &OPCode_25, "DEC H", 4, 4 },
-	{ &OPCode_26, "LD H, n", 8, 8 },
-	{ &OPCode_27, "DAA", 4, 4 },
-	{ &OPCode_28, "JR Z, n", 8, 12 },
-	{ &OPCode_29, "ADD HL, HL", 8, 8 },
-	{ &OPCode_2A, "LDI A, (HL)", 8, 8 },
-	{ &OPCode_2B, "DEC HL", 8, 8 },
-	{ &OPCode_2C, "INC L", 4, 4 },
-	{ &OPCode_2D, "DEC L", 4, 4 },
-	{ &OPCode_2E, "LD L, n", 8, 8 },
-	{ &OPCode_2F, "CPL", 4, 4 },
-	{ &OPCode_30, "JR NC, n", 8, 12 },
-	{ &OPCode_31, "LD SP, nn", 12, 12 },
-	{ &OPCode_32, "LDD (HL), A", 8, 8 },
-	{ &OPCode_33, "INC SP", 8, 8 },
-	{ &OPCode_34, "INC (HL)", 12, 12 },
-	{ &OPCode_35, "DEC (HL)", 12, 12 },
-	{ &OPCode_36, "LD (HL), n", 12, 12 },
-	{ &OPCode_37, "SCF", 4, 4 },
-	{ &OPCode_38, "JR C, n", 8, 12 },
-	{ &OPCode_39, "ADD HL, SP", 8, 8 },
-	{ &OPCode_3A, "LDD A, (HL)", 8, 8 },
-	{ &OPCode_3B, "DEC SP", 8, 8 },
-	{ &OPCode_3C, "INC A", 4, 4 },
-	{ &OPCode_3D, "DEC A", 4, 4 },
-	{ &OPCode_3E, "LD A, n", 8, 8 },
-	{ &OPCode_3F, "CCF", 4, 4 },
-	{ &OPCode_40, "LD B, B", 4, 4 },
-	{ &OPCode_41, "LD B, C", 4, 4 },
-	{ &OPCode_42, "LD B, D", 4, 4 },
-	{ &OPCode_43, "LD B, E", 4, 4 },
-	{ &OPCode_44, "LD B, H", 4, 4 },
-	{ &OPCode_45, "LD B, L", 4, 4 },
-	{ &OPCode_46, "LD B, (HL)", 8, 8 },
-	{ &OPCode_47, "LD B, A", 4, 4 },
-	{ &OPCode_48, "LD C, B", 4, 4 },
-	{ &OPCode_49, "LD C, C", 4, 4 },
-	{ &OPCode_4A, "LD C, D", 4, 4 },
-	{ &OPCode_4B, "LD C, E", 4, 4 },
-	{ &OPCode_4C, "LD C, H", 4, 4 },
-	{ &OPCode_4D, "LD C, L", 4, 4 },
-	{ &OPCode_4E, "LD C, (HL)", 8, 8 },
-	{ &OPCode_4F, "LD C, A", 4, 4 },
-	{ &OPCode_50, "LD D, B", 4, 4 },
-	{ &OPCode_51, "LD D, C", 4, 4 },
-	{ &OPCode_52, "LD D, D", 4, 4 },
-	{ &OPCode_53, "LD D, E", 4, 4 },
-	{ &OPCode_54, "LD D, H", 4, 4 },
-	{ &OPCode_55, "LD D, L", 4, 4 },
-	{ &OPCode_56, "LD D, (HL)", 8, 8 },
-	{ &OPCode_57, "LD D, A", 4, 4 },
-	{ &OPCode_58, "LD E, B", 4, 4 },
-	{ &OPCode_59, "LD E, C", 4, 4 },
-	{ &OPCode_5A, "LD E, D", 4, 4 },
-	{ &OPCode_5B, "LD E, E", 4, 4 },
-	{ &OPCode_5C, "LD E, H", 4, 4 },
-	{ &OPCode_5D, "LD E, L", 4, 4 },
-	{ &OPCode_5E, "LD E, (HL)", 8, 8 },
-	{ &OPCode_5F, "LD E, A", 4, 4 },
-	{ &OPCode_60, "LD H, B", 4, 4 },
-	{ &OPCode_61, "LD H, C", 4, 4 },
-	{ &OPCode_62, "LD H, D", 4, 4 },
-	{ &OPCode_63, "LD H, E", 4, 4 },
-	{ &OPCode_64, "LD H, H", 4, 4 },
-	{ &OPCode_65, "LD H, L", 4, 4 },
-	{ &OPCode_66, "LD H, (HL)", 8, 8 },
-	{ &OPCode_67, "LD H, A", 4, 4 },
-	{ &OPCode_68, "LD L, B", 4, 4 },
-	{ &OPCode_69, "LD L, C", 4, 4 },
-	{ &OPCode_6A, "LD L, D", 4, 4 },
-	{ &OPCode_6B, "LD L, E", 4, 4 },
-	{ &OPCode_6C, "LD L, H", 4, 4 },
-	{ &OPCode_6D, "LD L, L", 4, 4 },
-	{ &OPCode_6E, "LD L, (HL)", 8, 8 },
-	{ &OPCode_6F, "LD L, A", 4, 4 },
-	{ &OPCode_70, "LD (HL), B", 8, 8 },
-	{ &OPCode_71, "LD (HL), C", 8, 8 },
-	{ &OPCode_72, "LD (HL), D", 8, 8 },
-	{ &OPCode_73, "LD (HL), E", 8, 8 },
-	{ &OPCode_74, "LD (HL), H", 8, 8 },
-	{ &OPCode_75, "LD (HL), L", 8, 8 },
-	{ &OPCode_76, "HALT", 4, 4 },
-	{ &OPCode_77, "LD (HL), A", 8, 8 },
-	{ &OPCode_78, "LD A, B", 4, 4 },
-	{ &OPCode_79, "LD A, C", 4, 4 },
-	{ &OPCode_7A, "LD A, D", 4, 4 },
-	{ &OPCode_7B, "LD A, E", 4, 4 },
-	{ &OPCode_7C, "LD A, H", 4, 4 },
-	{ &OPCode_7D, "LD A, L", 4, 4 },
-	{ &OPCode_7E, "LD A, (HL)", 8, 8 },
-	{ &OPCode_7F, "LD A, A", 4, 4 },
-	{ &OPCode_80, "ADD A, B", 4, 4 },
-	{ &OPCode_81, "ADD A, C", 4, 4 },
-	{ &OPCode_82, "ADD A, D", 4, 4 },
-	{ &OPCode_83, "ADD A, E", 4, 4 },
-	{ &OPCode_84, "ADD A, H", 4, 4 },
-	{ &OPCode_85, "ADD A, L", 4, 4 },
-	{ &OPCode_86, "ADD A, (HL)", 8, 8 },
-	{ &OPCode_87, "ADD A, A", 4, 4 },
-	{ &OPCode_88, "ADC A, B", 4, 4 },
-	{ &OPCode_89, "ADC A, C", 4, 4 },
-	{ &OPCode_8A, "ADC A, D", 4, 4 },
-	{ &OPCode_8B, "ADC A, E", 4, 4 },
-	{ &OPCode_8C, "ADC A, H", 4, 4 },
-	{ &OPCode_8D, "ADC A, L", 4, 4 },
-	{ &OPCode_8E, "ADC A, (HL)", 8, 8 },
-	{ &OPCode_8F, "ADC A, A", 4, 4 },
-	{ &OPCode_90, "SUB B", 4, 4 },
-	{ &OPCode_91, "SUB C", 4, 4 },
-	{ &OPCode_92, "SUB D", 4, 4 },
-	{ &OPCode_93, "SUB E", 4, 4 },
-	{ &OPCode_94, "SUB H", 4, 4 },
-	{ &OPCode_95, "SUB L", 4, 4 },
-	{ &OPCode_96, "SUB (HL)", 8, 8 },
-	{ &OPCode_97, "SUB A", 4, 4 },
-	{ &OPCode_98, "SBC A, B", 4, 4 },
-	{ &OPCode_99, "SBC A, C", 4, 4 },
-	{ &OPCode_9A, "SBC A, D", 4, 4 },
-	{ &OPCode_9B, "SBC A, E", 4, 4 },
-	{ &OPCode_9C, "SBC A, H", 4, 4 },
-	{ &OPCode_9D, "SBC A, L", 4, 4 },
-	{ &OPCode_9E, "SBC A, (HL)", 8, 8 },
-	{ &OPCode_9F, "SBC A, A", 4, 4 },
-	{ &OPCode_A0, "AND B", 4, 4 },
-	{ &OPCode_A1, "AND C", 4, 4 },
-	{ &OPCode_A2, "AND D", 4, 4 },
-	{ &OPCode_A3, "AND E", 4, 4 },
-	{ &OPCode_A4, "AND H", 4, 4 },
-	{ &OPCode_A5, "AND L", 4, 4 },
-	{ &OPCode_A6, "AND (HL)", 8, 8 },
-	{ &OPCode_A7, "AND A", 4, 4 },
-	{ &OPCode_A8, "XOR B", 4, 4 },
-	{ &OPCode_A9, "XOR C", 4, 4 },
-	{ &OPCode_AA, "XOR D", 4, 4 },
-	{ &OPCode_AB, "XOR E", 4, 4 },
-	{ &OPCode_AC, "XOR H", 4, 4 },
-	{ &OPCode_AD, "XOR L", 4, 4 },
-	{ &OPCode_AE, "XOR (HL)", 8, 8 },
-	{ &OPCode_AF, "XOR A", 4, 4 },
-	{ &OPCode_B0, "OR B", 4, 4 },
-	{ &OPCode_B1, "OR C", 4, 4 },
-	{ &OPCode_B2, "OR D", 4, 4 },
-	{ &OPCode_B3, "OR E", 4, 4 },
-	{ &OPCode_B4, "OR H", 4, 4 },
-	{ &OPCode_B5, "OR L", 4, 4 },
-	{ &OPCode_B6, "OR (HL)", 8, 8 },
-	{ &OPCode_B7, "OR A", 4, 4 },
-	{ &OPCode_B8, "CP B", 4, 4 },
-	{ &OPCode_B9, "CP C", 4, 4 },
-	{ &OPCode_BA, "CP D", 4, 4 },
-	{ &OPCode_BB, "CP E", 4, 4 },
-	{ &OPCode_BC, "CP H", 4, 4 },
-	{ &OPCode_BD, "CP L", 4, 4 },
-	{ &OPCode_BE, "CP (HL)", 8, 8 },
-	{ &OPCode_BF, "CP A", 4, 4 },
-	{ &OPCode_C0, "RET NZ", 8, 20 },
-	{ &OPCode_C1, "POP BC", 12, 12 },
-	{ &OPCode_C2, "JP NZ, nn", 12, 16 },
-	{ &OPCode_C3, "JP nn", 16, 16 },
-	{ &OPCode_C4, "CALL NZ, nn", 12, 24 },
-	{ &OPCode_C5, "PUSH BC", 16, 16 },
-	{ &OPCode_C6, "ADD A, n", 8, 8 },
-	{ &OPCode_C7, "RST 00H", 16, 16 },
-	{ &OPCode_C8, "RET Z", 8, 20 },
-	{ &OPCode_C9, "RET", 16, 16 },
-	{ &OPCode_CA, "JP Z, nn", 12, 16 },
-	{ &_NOP, "", 0, 0 }, // CB - Extended OPcodes
-	{ &OPCode_CC, "CALL Z, nn", 12, 24 },
-	{ &OPCode_CD, "CALL nn", 24, 24 },
-	{ &OPCode_CE, "ADC A, n", 8, 8 },
-	{ &OPCode_CF, "RST 08H", 16, 16 },
-	{ &OPCode_D0, "RET NC", 8, 20 },
-	{ &OPCode_D1, "POP DE", 12, 12 },
-	{ &OPCode_D2, "JP NC, nn", 12, 16 },
-	{ &_NOP, "", 0, 0 }, /* D3 is undefined in the gb cpu */
-	{ &OPCode_D4, "CALL NC, nn", 12, 24 },
-	{ &OPCode_D5, "PUSH DE", 16, 16 },
-	{ &OPCode_D6, "SUB n", 8, 8 },
-	{ &OPCode_D7, "RST 10H", 16, 16 },
-	{ &OPCode_D8, "RET C", 8, 20 },
-	{ &OPCode_D9, "RETI", 16, 16 },
-	{ &OPCode_DA, "JP C, nn", 12, 16 },
-	{ &_NOP, "", 0, 0 }, /* DB is undefined in the gb cpu */
-	{ &OPCode_DC, "CALL C, nn", 12, 24 },
-	{ &_NOP, "", 0, 0 }, /* DD is undefined in the gb cpu */
-	{ &OPCode_DE, "SBC A, n", 8, 8 },
-	{ &OPCode_DF, "RST 18H", 16, 16 },
-	{ &OPCode_E0, "LDH (n), A", 12, 12 },
-	{ &OPCode_E1, "POP HL", 12, 12 },
-	{ &OPCode_E2, "LD (C), A", 8, 8 },
-	{ &_NOP, "", 0, 0 }, /* E3 is undefined in the gb cpu */
-	{ &_NOP, "", 0, 0 }, /* E4 is undefined in the gb cpu */
-	{ &OPCode_E5, "PUSH HL", 16, 16 },
-	{ &OPCode_E6, "AND n", 8, 8 },
-	{ &OPCode_E7, "RST 20H", 16, 16 },
-	{ &OPCode_E8, "ADD SP, #", 16, 16 },
-	{ &OPCode_E9, "JP (HL)", 4, 4 },
-	{ &OPCode_EA, "LD (nn), A", 16, 16 },
-	{ &_NOP, "", 0, 0 }, /* EB is undefined in the gb cpu */
-	{ &_NOP, "", 0, 0 }, /* EC is undefined in the gb cpu */
-	{ &_NOP, "", 0, 0 }, /* ED is undefined in the gb cpu */
-	{ &OPCode_EE, "XOR n", 8, 8 },
-	{ &OPCode_EF, "RST 28H", 16, 16 },
-	{ &OPCode_F0, "LDH A, (n)", 12, 12 },
-	{ &OPCode_F1, "POP AF", 12, 12 },
-	{ &OPCode_F2, "LD A, (C)", 8, 8 },
-	{ &OPCode_F3, "DI", 4, 4 },
-	{ &_NOP, "", 0, 0 }, /* F4 is undefined in the gb cpu */
-	{ &OPCode_F5, "PUSH AF", 16, 16 },
-	{ &OPCode_F6, "OR n", 8, 8 },
-	{ &OPCode_F7, "RST 30H", 16, 16 },
-	{ &OPCode_F8, "LDHL SP, n", 12, 12 },
-	{ &OPCode_F9, "LD SP, HL", 8, 8 },
-	{ &OPCode_FA, "LD A, (nn)", 16, 16 },
-	{ &OPCode_FB, "EI", 4, 4 },
-	{ &_NOP, "", 0, 0 }, /* FC is undefined in the gb cpu */
-	{ &_NOP, "", 0, 0 }, /* FD is undefined in the gb cpu */
-	{ &OPCode_FE, "CP n", 8, 8 },
-	{ &OPCode_FF, "RST 38H", 16, 16 },
-};
-
-const std::vector<CPU::OPCodeData> CPU::m_CB_OPCodeDataMap
-{
-	{ &OPCode_CB_00, "RLC B", 8, 8 },
-	{ &OPCode_CB_01, "RLC C", 8, 8 },
-	{ &OPCode_CB_02, "RLC D", 8, 8 },
-	{ &OPCode_CB_03, "RLC E", 8, 8 },
-	{ &OPCode_CB_04, "RLC H", 8, 8 },
-	{ &OPCode_CB_05, "RLC L", 8, 8 },
-	{ &OPCode_CB_06, "RLC (HL)", 16, 16 },
-	{ &OPCode_CB_07, "RLC A", 8, 8 },
-	{ &OPCode_CB_08, "RRC B", 8, 8 },
-	{ &OPCode_CB_09, "RRC C", 8, 8 },
-	{ &OPCode_CB_0A, "RRC D", 8, 8 },
-	{ &OPCode_CB_0B, "RRC E", 8, 8 },
-	{ &OPCode_CB_0C, "RRC H", 8, 8 },
-	{ &OPCode_CB_0D, "RRC L", 8, 8 },
-	{ &OPCode_CB_0E, "RRC (HL)", 16, 16 },
-	{ &OPCode_CB_0F, "RRC A", 8, 8 },
-	{ &OPCode_CB_10, "RL B", 8, 8 },
-	{ &OPCode_CB_11, "RL C", 8, 8 },
-	{ &OPCode_CB_12, "RL D", 8, 8 },
-	{ &OPCode_CB_13, "RL E", 8, 8 },
-	{ &OPCode_CB_14, "RL H", 8, 8 },
-	{ &OPCode_CB_15, "RL L", 8, 8 },
-	{ &OPCode_CB_16, "RL (HL)", 16, 16 },
-	{ &OPCode_CB_17, "RL A", 8, 8 },
-	{ &OPCode_CB_18, "RR B", 8, 8 },
-	{ &OPCode_CB_19, "RR C", 8, 8 },
-	{ &OPCode_CB_1A, "RR D", 8, 8 },
-	{ &OPCode_CB_1B, "RR E", 8, 8 },
-	{ &OPCode_CB_1C, "RR H", 8, 8 },
-	{ &OPCode_CB_1D, "RR L", 8, 8 },
-	{ &OPCode_CB_1E, "RR (HL)", 16, 16 },
-	{ &OPCode_CB_1F, "RR A", 8, 8 },
-	{ &OPCode_CB_20, "SLA B", 8, 8 },
-	{ &OPCode_CB_21, "SLA C", 8, 8 },
-	{ &OPCode_CB_22, "SLA D", 8, 8 },
-	{ &OPCode_CB_23, "SLA E", 8, 8 },
-	{ &OPCode_CB_24, "SLA H", 8, 8 },
-	{ &OPCode_CB_25, "SLA L", 8, 8 },
-	{ &OPCode_CB_26, "SLA (HL)", 16, 16 },
-	{ &OPCode_CB_27, "SLA A", 8, 8 },
-	{ &OPCode_CB_28, "SRA B", 8, 8 },
-	{ &OPCode_CB_29, "SRA C", 8, 8 },
-	{ &OPCode_CB_2A, "SRA D", 8, 8 },
-	{ &OPCode_CB_2B, "SRA E", 8, 8 },
-	{ &OPCode_CB_2C, "SRA H", 8, 8 },
-	{ &OPCode_CB_2D, "SRA L", 8, 8 },
-	{ &OPCode_CB_2E, "SRA (HL)", 16, 16 },
-	{ &OPCode_CB_2F, "SRA A", 8, 8 },
-	{ &OPCode_CB_30, "SWAP B", 8, 8 },
-	{ &OPCode_CB_31, "SWAP C", 8, 8 },
-	{ &OPCode_CB_32, "SWAP D", 8, 8 },
-	{ &OPCode_CB_33, "SWAP E", 8, 8 },
-	{ &OPCode_CB_34, "SWAP H", 8, 8 },
-	{ &OPCode_CB_35, "SWAP L", 8, 8 },
-	{ &OPCode_CB_36, "SWAP (HL)", 16, 16 },
-	{ &OPCode_CB_37, "SWAP A", 8, 8 },
-	{ &OPCode_CB_38, "SRL B", 8, 8 },
-	{ &OPCode_CB_39, "SRL C", 8, 8 },
-	{ &OPCode_CB_3A, "SRL D", 8, 8 },
-	{ &OPCode_CB_3B, "SRL E", 8, 8 },
-	{ &OPCode_CB_3C, "SRL H", 8, 8 },
-	{ &OPCode_CB_3D, "SRL L", 8, 8 },
-	{ &OPCode_CB_3E, "SRL (HL)", 16, 16 },
-	{ &OPCode_CB_3F, "SRL A", 8, 8 },
-	{ &OPCode_CB_40, "BIT 0, B", 8, 8 },
-	{ &OPCode_CB_41, "BIT 0, C", 8, 8 },
-	{ &OPCode_CB_42, "BIT 0, D", 8, 8 },
-	{ &OPCode_CB_43, "BIT 0, E", 8, 8 },
-	{ &OPCode_CB_44, "BIT 0, H", 8, 8 },
-	{ &OPCode_CB_45, "BIT 0, L", 8, 8 },
-	{ &OPCode_CB_46, "BIT 0, (HL)", 12, 12 },
-	{ &OPCode_CB_47, "BIT 0, A", 8, 8 },
-	{ &OPCode_CB_48, "BIT 1, B", 8, 8 },
-	{ &OPCode_CB_49, "BIT 1, C", 8, 8 },
-	{ &OPCode_CB_4A, "BIT 1, D", 8, 8 },
-	{ &OPCode_CB_4B, "BIT 1, E", 8, 8 },
-	{ &OPCode_CB_4C, "BIT 1, H", 8, 8 },
-	{ &OPCode_CB_4D, "BIT 1, L", 8, 8 },
-	{ &OPCode_CB_4E, "BIT 1, (HL)", 12, 12 },
-	{ &OPCode_CB_4F, "BIT 1, A", 8, 8 },
-	{ &OPCode_CB_50, "BIT 2, B", 8, 8 },
-	{ &OPCode_CB_51, "BIT 2, C", 8, 8 },
-	{ &OPCode_CB_52, "BIT 2, D", 8, 8 },
-	{ &OPCode_CB_53, "BIT 2, E", 8, 8 },
-	{ &OPCode_CB_54, "BIT 2, H", 8, 8 },
-	{ &OPCode_CB_55, "BIT 2, L", 8, 8 },
-	{ &OPCode_CB_56, "BIT 2, (HL)", 12, 12 },
-	{ &OPCode_CB_57, "BIT 2, A", 8, 8 },
-	{ &OPCode_CB_58, "BIT 3, B", 8, 8 },
-	{ &OPCode_CB_59, "BIT 3, C", 8, 8 },
-	{ &OPCode_CB_5A, "BIT 3, D", 8, 8 },
-	{ &OPCode_CB_5B, "BIT 3, E", 8, 8 },
-	{ &OPCode_CB_5C, "BIT 3, H", 8, 8 },
-	{ &OPCode_CB_5D, "BIT 3, L", 8, 8 },
-	{ &OPCode_CB_5E, "BIT 3, (HL)", 12, 12 },
-	{ &OPCode_CB_5F, "BIT 3, A", 8, 8 },
-	{ &OPCode_CB_60, "BIT 4, B", 8, 8 },
-	{ &OPCode_CB_61, "BIT 4, C", 8, 8 },
-	{ &OPCode_CB_62, "BIT 4, D", 8, 8 },
-	{ &OPCode_CB_63, "BIT 4, E", 8, 8 },
-	{ &OPCode_CB_64, "BIT 4, H", 8, 8 },
-	{ &OPCode_CB_65, "BIT 4, L", 8, 8 },
-	{ &OPCode_CB_66, "BIT 4, (HL)", 12, 12 },
-	{ &OPCode_CB_67, "BIT 4, A", 8, 8 },
-	{ &OPCode_CB_68, "BIT 5, B", 8, 8 },
-	{ &OPCode_CB_69, "BIT 5, C", 8, 8 },
-	{ &OPCode_CB_6A, "BIT 5, D", 8, 8 },
-	{ &OPCode_CB_6B, "BIT 5, E", 8, 8 },
-	{ &OPCode_CB_6C, "BIT 5, H", 8, 8 },
-	{ &OPCode_CB_6D, "BIT 5, L", 8, 8 },
-	{ &OPCode_CB_6E, "BIT 5, (HL)", 12, 12 },
-	{ &OPCode_CB_6F, "BIT 5, A", 8, 8 },
-	{ &OPCode_CB_70, "BIT 6, B", 8, 8 },
-	{ &OPCode_CB_71, "BIT 6, C", 8, 8 },
-	{ &OPCode_CB_72, "BIT 6, D", 8, 8 },
-	{ &OPCode_CB_73, "BIT 6, E", 8, 8 },
-	{ &OPCode_CB_74, "BIT 6, H", 8, 8 },
-	{ &OPCode_CB_75, "BIT 6, L", 8, 8 },
-	{ &OPCode_CB_76, "BIT 6, (HL)", 12, 12 },
-	{ &OPCode_CB_77, "BIT 6, A", 8, 8 },
-	{ &OPCode_CB_78, "BIT 7, B", 8, 8 },
-	{ &OPCode_CB_79, "BIT 7, C", 8, 8 },
-	{ &OPCode_CB_7A, "BIT 7, D", 8, 8 },
-	{ &OPCode_CB_7B, "BIT 7, E", 8, 8 },
-	{ &OPCode_CB_7C, "BIT 7, H", 8, 8 },
-	{ &OPCode_CB_7D, "BIT 7, L", 8, 8 },
-	{ &OPCode_CB_7E, "BIT 7, (HL)", 12, 12 },
-	{ &OPCode_CB_7F, "BIT 7, A", 8, 8 },
-	{ &OPCode_CB_80, "RES 0, B", 8, 8 },
-	{ &OPCode_CB_81, "RES 0, C", 8, 8 },
-	{ &OPCode_CB_82, "RES 0, D", 8, 8 },
-	{ &OPCode_CB_83, "RES 0, E", 8, 8 },
-	{ &OPCode_CB_84, "RES 0, H", 8, 8 },
-	{ &OPCode_CB_85, "RES 0, L", 8, 8 },
-	{ &OPCode_CB_86, "RES 0, (HL)", 16, 16 },
-	{ &OPCode_CB_87, "RES 0, A", 8, 8 },
-	{ &OPCode_CB_88, "RES 1, B", 8, 8 },
-	{ &OPCode_CB_89, "RES 1, C", 8, 8 },
-	{ &OPCode_CB_8A, "RES 1, D", 8, 8 },
-	{ &OPCode_CB_8B, "RES 1, E", 8, 8 },
-	{ &OPCode_CB_8C, "RES 1, H", 8, 8 },
-	{ &OPCode_CB_8D, "RES 1, L", 8, 8 },
-	{ &OPCode_CB_8E, "RES 1, (HL)", 16, 16 },
-	{ &OPCode_CB_8F, "RES 1, A", 8, 8 },
-	{ &OPCode_CB_90, "RES 2, B", 8, 8 },
-	{ &OPCode_CB_91, "RES 2, C", 8, 8 },
-	{ &OPCode_CB_92, "RES 2, D", 8, 8 },
-	{ &OPCode_CB_93, "RES 2, E", 8, 8 },
-	{ &OPCode_CB_94, "RES 2, H", 8, 8 },
-	{ &OPCode_CB_95, "RES 2, L", 8, 8 },
-	{ &OPCode_CB_96, "RES 2, (HL)", 16, 16 },
-	{ &OPCode_CB_97, "RES 2, A", 8, 8 },
-	{ &OPCode_CB_98, "RES 3, B", 8, 8 },
-	{ &OPCode_CB_99, "RES 3, C", 8, 8 },
-	{ &OPCode_CB_9A, "RES 3, D", 8, 8 },
-	{ &OPCode_CB_9B, "RES 3, E", 8, 8 },
-	{ &OPCode_CB_9C, "RES 3, H", 8, 8 },
-	{ &OPCode_CB_9D, "RES 3, L", 8, 8 },
-	{ &OPCode_CB_9E, "RES 3, (HL)", 16, 16 },
-	{ &OPCode_CB_9F, "RES 3, A", 8, 8 },
-	{ &OPCode_CB_A0, "RES 4, B", 8, 8 },
-	{ &OPCode_CB_A1, "RES 4, C", 8, 8 },
-	{ &OPCode_CB_A2, "RES 4, D", 8, 8 },
-	{ &OPCode_CB_A3, "RES 4, E", 8, 8 },
-	{ &OPCode_CB_A4, "RES 4, H", 8, 8 },
-	{ &OPCode_CB_A5, "RES 4, L", 8, 8 },
-	{ &OPCode_CB_A6, "RES 4, (HL)", 16, 16 },
-	{ &OPCode_CB_A7, "RES 4, A", 8, 8 },
-	{ &OPCode_CB_A8, "RES 5, B", 8, 8 },
-	{ &OPCode_CB_A9, "RES 5, C", 8, 8 },
-	{ &OPCode_CB_AA, "RES 5, D", 8, 8 },
-	{ &OPCode_CB_AB, "RES 5, E", 8, 8 },
-	{ &OPCode_CB_AC, "RES 5, H", 8, 8 },
-	{ &OPCode_CB_AD, "RES 5, L", 8, 8 },
-	{ &OPCode_CB_AE, "RES 5, (HL)", 16, 16 },
-	{ &OPCode_CB_AF, "RES 5, A", 8, 8 },
-	{ &OPCode_CB_B0, "RES 6, B", 8, 8 },
-	{ &OPCode_CB_B1, "RES 6, C", 8, 8 },
-	{ &OPCode_CB_B2, "RES 6, D", 8, 8 },
-	{ &OPCode_CB_B3, "RES 6, E", 8, 8 },
-	{ &OPCode_CB_B4, "RES 6, H", 8, 8 },
-	{ &OPCode_CB_B5, "RES 6, L", 8, 8 },
-	{ &OPCode_CB_B6, "RES 6, (HL)", 16, 16 },
-	{ &OPCode_CB_B7, "RES 6, A", 8, 8 },
-	{ &OPCode_CB_B8, "RES 7, B", 8, 8 },
-	{ &OPCode_CB_B9, "RES 7, C", 8, 8 },
-	{ &OPCode_CB_BA, "RES 7, D", 8, 8 },
-	{ &OPCode_CB_BB, "RES 7, E", 8, 8 },
-	{ &OPCode_CB_BC, "RES 7, H", 8, 8 },
-	{ &OPCode_CB_BD, "RES 7, L", 8, 8 },
-	{ &OPCode_CB_BE, "RES 7, (HL)", 16, 16 },
-	{ &OPCode_CB_BF, "RES 7, A", 8, 8 },
-	{ &OPCode_CB_C0, "SET 0, B", 8, 8 },
-	{ &OPCode_CB_C1, "SET 0, C", 8, 8 },
-	{ &OPCode_CB_C2, "SET 0, D", 8, 8 },
-	{ &OPCode_CB_C3, "SET 0, E", 8, 8 },
-	{ &OPCode_CB_C4, "SET 0, H", 8, 8 },
-	{ &OPCode_CB_C5, "SET 0, L", 8, 8 },
-	{ &OPCode_CB_C6, "SET 0, (HL)", 16, 16 },
-	{ &OPCode_CB_C7, "SET 0, A", 8, 8 },
-	{ &OPCode_CB_C8, "SET 1, B", 8, 8 },
-	{ &OPCode_CB_C9, "SET 1, C", 8, 8 },
-	{ &OPCode_CB_CA, "SET 1, D", 8, 8 },
-	{ &OPCode_CB_CB, "SET 1, E", 8, 8 },
-	{ &OPCode_CB_CC, "SET 1, H", 8, 8 },
-	{ &OPCode_CB_CD, "SET 1, L", 8, 8 },
-	{ &OPCode_CB_CE, "SET 1, (HL)", 16, 16 },
-	{ &OPCode_CB_CF, "SET 1, A", 8, 8 },
-	{ &OPCode_CB_D0, "SET 2, B", 8, 8 },
-	{ &OPCode_CB_D1, "SET 2, C", 8, 8 },
-	{ &OPCode_CB_D2, "SET 2, D", 8, 8 },
-	{ &OPCode_CB_D3, "SET 2, E", 8, 8 },
-	{ &OPCode_CB_D4, "SET 2, H", 8, 8 },
-	{ &OPCode_CB_D5, "SET 2, L", 8, 8 },
-	{ &OPCode_CB_D6, "SET 2, (HL)", 16, 16 },
-	{ &OPCode_CB_D7, "SET 2, A", 8, 8 },
-	{ &OPCode_CB_D8, "SET 3, B", 8, 8 },
-	{ &OPCode_CB_D9, "SET 3, C", 8, 8 },
-	{ &OPCode_CB_DA, "SET 3, D", 8, 8 },
-	{ &OPCode_CB_DB, "SET 3, E", 8, 8 },
-	{ &OPCode_CB_DC, "SET 3, H", 8, 8 },
-	{ &OPCode_CB_DD, "SET 3, L", 8, 8 },
-	{ &OPCode_CB_DE, "SET 3, (HL)", 16, 16 },
-	{ &OPCode_CB_DF, "SET 3, A", 8, 8 },
-	{ &OPCode_CB_E0, "SET 4, B", 8, 8 },
-	{ &OPCode_CB_E1, "SET 4, C", 8, 8 },
-	{ &OPCode_CB_E2, "SET 4, D", 8, 8 },
-	{ &OPCode_CB_E3, "SET 4, E", 8, 8 },
-	{ &OPCode_CB_E4, "SET 4, H", 8, 8 },
-	{ &OPCode_CB_E5, "SET 4, L", 8, 8 },
-	{ &OPCode_CB_E6, "SET 4, (HL)", 16, 16 },
-	{ &OPCode_CB_E7, "SET 4, A", 8, 8 },
-	{ &OPCode_CB_E8, "SET 5, B", 8, 8 },
-	{ &OPCode_CB_E9, "SET 5, C", 8, 8 },
-	{ &OPCode_CB_EA, "SET 5, D", 8, 8 },
-	{ &OPCode_CB_EB, "SET 5, E", 8, 8 },
-	{ &OPCode_CB_EC, "SET 5, H", 8, 8 },
-	{ &OPCode_CB_ED, "SET 5, L", 8, 8 },
-	{ &OPCode_CB_EE, "SET 5, (HL)", 16, 16 },
-	{ &OPCode_CB_EF, "SET 5, A", 8, 8 },
-	{ &OPCode_CB_F0, "SET 6, B", 8, 8 },
-	{ &OPCode_CB_F1, "SET 6, C", 8, 8 },
-	{ &OPCode_CB_F2, "SET 6, D", 8, 8 },
-	{ &OPCode_CB_F3, "SET 6, E", 8, 8 },
-	{ &OPCode_CB_F4, "SET 6, H", 8, 8 },
-	{ &OPCode_CB_F5, "SET 6, L", 8, 8 },
-	{ &OPCode_CB_F6, "SET 6, (HL)", 16, 16 },
-	{ &OPCode_CB_F7, "SET 6, A", 8, 8 },
-	{ &OPCode_CB_F8, "SET 7, B", 8, 8 },
-	{ &OPCode_CB_F9, "SET 7, C", 8, 8 },
-	{ &OPCode_CB_FA, "SET 7, D", 8, 8 },
-	{ &OPCode_CB_FB, "SET 7, E", 8, 8 },
-	{ &OPCode_CB_FC, "SET 7, H", 8, 8 },
-	{ &OPCode_CB_FD, "SET 7, L", 8, 8 },
-	{ &OPCode_CB_FE, "SET 7, (HL)", 16, 16 },
-	{ &OPCode_CB_FF, "SET 7, A", 8, 8 },
-};
 
 void CPU::OPCode_06()
 {

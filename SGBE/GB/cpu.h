@@ -102,17 +102,6 @@ private:
 	string m_ExtendedOPCodesNames[256];
 	uint32_t m_ExtendedOPCodesCycles[256];
 
-	OPCodeFuntion m_OPCodesCB[256];
-	struct OPCodeData
-	{
-		OPCodeFuntion Operation;
-		std::string Name;
-		uint32_t Cycles;
-		uint32_t ConditionalCycles; // some conditional jump instructions will require more cycles if the condition is met
-	};
-	static const std::vector<OPCodeData> m_OPCodeDataMap;
-	static const std::vector<OPCodeData> m_CB_OPCodeDataMap;
-
 	/* CPU Operations */
 	void LD_nn_n(ByteRegister& i_DestRegister);
 	void LD_n_nn(WordRegister& i_DestRegister);

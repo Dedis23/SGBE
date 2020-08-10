@@ -7,6 +7,7 @@
 #pragma once
 #include "gameboy.h"
 #include "utility.h"
+#include <cstring>
 
 /*  Most of the information were take from:                  *
  *  Pan Docs:                                                *
@@ -77,7 +78,7 @@ struct Pixel
     }
 };
 
-const Pixel GAMEBOY_POCKET_PALLETE[4] = { { 255, 255, 255 }, { 192, 192, 192 }, { 96, 96, 96 }, { 0, 0, 0 } };
+const Pixel GAMEBOY_POCKET_PALLETE[4] = { { 255, 255, 255 }, { 192, 192, 192 }, { 96, 96, 96 }, { 0, 0, 0 } }; // TODO readd this again
 
 class Gameboy;
 
@@ -112,7 +113,6 @@ private:
     void checkForLYAndLYCCoincidence();
     void drawCurrentScanline();
 
-    /* everything from gbemu */
     void drawBackground();
     void drawWindow();
     void drawSprites();

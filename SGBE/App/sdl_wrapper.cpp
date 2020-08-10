@@ -32,7 +32,6 @@ bool SDLWrapper::Initialize(const string& i_WindowTitle, int i_WindowWidth, int 
 	return true;
 }
 
-
 void SDLWrapper::RenderScreen(const Pixel* i_FrameBuffer)
 {
 	int res = -1;
