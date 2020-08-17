@@ -7,8 +7,8 @@
 
 #pragma once
 #include "sdl_wrapper.h"
-#include "../Generic/cli.h"
-#include "../GB/gameboy.h"
+#include "../common/cli.h"
+#include "../gb/gameboy.h"
 #include <chrono>
 
 class SGBE

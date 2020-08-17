@@ -1,23 +1,5 @@
 #include "registers.h"
 
-//IRegister::IRegister(word i_Value) : m_Value(i_Value) {}
-//
-//inline void IRegister::SetBit(byte i_BitNumber, bool i_IsRaise)
-//{
-//	if (i_IsRaise)	m_Value |= 1 << (i_BitNumber);
-//	else m_Value &= ~(1 << (i_BitNumber));
-//}
-//
-//inline bool IRegister::GetBit(byte i_BitNumber) const
-//{
-//	return (m_Value & (1 << i_BitNumber)) > 0 ? true : false;
-//}
-//
-//inline void IRegister::Clear()
-//{
-//	m_Value = 0;
-//}
-
 ByteRegister::ByteRegister(byte i_Value) : m_Value(i_Value) {}
 
 inline void ByteRegister::SetValue(byte i_Value)

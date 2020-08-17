@@ -12,7 +12,7 @@
 
 #pragma once
 #include <iomanip>
-#include "utility.h"
+#include "registers.h"
 #include "mmu.h"
 
 /* Interrupt registers addresses in memory */

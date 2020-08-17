@@ -8,7 +8,7 @@
 #pragma once
 #include "SDL.h"
 #include <string>
-#include "../Generic/logger.h"
+#include "../common/logger.h"
 
 using namespace std;
 

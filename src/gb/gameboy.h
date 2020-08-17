@@ -14,6 +14,7 @@
 #include "gpu.h"
 #include "timer.h"
 #include <functional>
+#include "utility.h"
 
 class CPU;
 class MMU;

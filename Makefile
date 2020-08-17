@@ -7,9 +7,9 @@ APP_DIR  := $(BUILD)/
 TARGET   := SGBE
 INCLUDE  := -I /usr/include/SDL2
 SRC      :=                      \
-   $(wildcard Generic/*.cpp) \
-   $(wildcard GB/*.cpp) \
-   $(wildcard App/*.cpp) \
+   $(wildcard src/common/*.cpp) \
+   $(wildcard src/gb/*.cpp) \
+   $(wildcard src/sgbe_app/*.cpp) \
 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 

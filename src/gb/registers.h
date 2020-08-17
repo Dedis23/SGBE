@@ -7,26 +7,7 @@
 
 #pragma once
 #include <iostream>
-
-typedef uint8_t byte;
-typedef int8_t sbyte;
-typedef uint16_t word;
-
-//class IRegister
-//{
-//public:
-//	IRegister() = default;
-//	explicit IRegister(word i_Value);
-//	virtual void SetValue(word i_NewValue) = 0;
-//	virtual word GetValue() const = 0;
-//	virtual void SetBit(byte i_BitNumber, bool i_IsRaise);
-//	virtual bool GetBit(byte i_BitNumber) const;
-//	virtual void Clear();
-//	virtual void Increment() = 0;
-//	virtual void Decrement() = 0;
-//protected:
-//	word m_Value = 0;
-//};
+#include "utility.h"
 
 /*
 	A general 8-bit register
