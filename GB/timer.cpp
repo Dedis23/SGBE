@@ -7,7 +7,7 @@ Timer::Timer(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsEnabled(true),
 m_RemainingCyclesToTickTheCounter(CyclesArr[(int)TimerFrequencies::_4096Hz]),
 m_RemainingCyclesToTickTheDivider(CyclesArr[(int)TimerFrequencies::_16384Hz]),
 m_CurrentFrequency(TimerFrequencies::_4096Hz),
-m_DividerCounter(0), m_TimerCounter(0), m_TimerModulo(0), m_TimerControl(0b000000100) {}
+m_DividerCounter(0), m_TimerCounter(0), m_TimerModulo(0), m_TimerControl(4) {}
 
 void Timer::Step(const uint32_t& i_Cycles)
 {
@@ -53,7 +53,7 @@ void Timer::Reset()
 	m_DividerCounter = 0;
 	m_TimerCounter = 0;
 	m_TimerModulo = 0;
-	m_TimerControl = 0b000000100; // the default value for the timer controler, is enabled and 4096Hz mode
+	m_TimerControl = 4; // the default value for the timer controler, is enabled and 4096Hz mode
 }
 
 byte Timer::GetRegister(word i_Address) const

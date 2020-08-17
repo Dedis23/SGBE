@@ -93,7 +93,7 @@ void Logger::initFileStream()
 	m_FileStream.open(s_FileName.c_str(), std::ios_base::app);
 	if (!m_FileStream.is_open() || !m_FileStream.good())
 	{
-		throw exception("Error opening file!");
+		throw exception();
 	}
 }
 
@@ -161,7 +161,7 @@ string Logger::getCurrentTime()
 	std::time_t now_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());;
 	char buffer[20];
 	tm t;
-	localtime_s(&t, &now_time);
+	//localtime_s(&t, &now_time);
 	strftime(buffer, 20, "%Y-%m-%d %H:%M:%S", &t);
 	return buffer;
 }
