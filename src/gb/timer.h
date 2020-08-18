@@ -51,13 +51,11 @@ public:
     void SetRegister(word i_Address, byte i_Value);
 
 private:
-    void setFrequency(TimerFrequencies i_Frequency);
-
-private:
     bool m_IsEnabled;
     TimerFrequencies m_CurrentFrequency;
-    int32_t m_RemainingCyclesToTickTheCounter;
-    int32_t m_RemainingCyclesToTickTheDivider;
+    int32_t m_TimerCounterCycles;
+    int32_t m_DividerCycles;
+    const uint32_t m_DividerCyclesUntillTick;
     byte m_DividerCounter;
     byte m_TimerCounter;
     byte m_TimerModulo;
