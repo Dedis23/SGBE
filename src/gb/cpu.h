@@ -50,10 +50,10 @@ public:
 	CPU(const CPU&) = delete;
 	CPU& operator=(const CPU&) = delete;
 
-	void Step(uint32_t& o_Cycles);
+	string Step(uint32_t& o_Cycles); // TODO alter this to return void again (was for debug)
 	void Reset();
 	void RequestInterrupt(InterruptType i_InterruptType);
-	void HandleInterrupts();
+	void HandleInterrupts(uint32_t& o_Cycles);
 
 private:
 	enum class JumpConditions
@@ -776,8 +776,8 @@ private:
 	void OPCode_CB_BD();
 	void OPCode_CB_BE();
 
-private:
+public: // TODO change this back to private
 
 	/* debug methods */
-	void dumpRegisters();
+	void dumpRegisters(std::ostream& i_OStream);
 };

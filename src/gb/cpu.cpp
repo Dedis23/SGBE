@@ -7,7 +7,7 @@ AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false), m_IsConditi
 	initExtendedOPCodes();
 }
 
-void CPU::Step(uint32_t& o_Cycles)
+string CPU::Step(uint32_t& o_Cycles)
 {
 	static bool isOkToPrint = false;
 	//static bool lastPCCorrect = false;
@@ -22,7 +22,11 @@ void CPU::Step(uint32_t& o_Cycles)
 	//	cout << "STOP" << endl;
 	//	dumpRegisters();
 	//}
-	if (m_HALT) return;
+	if (m_HALT)
+	{
+		o_Cycles += 4;
+		return m_OPCodesNames[0x76];
+	}
 	// read next instruction opcode
 	byte OPCode = readNextByte();
 
@@ -95,6 +99,9 @@ void CPU::Step(uint32_t& o_Cycles)
 		//OPCodeData = m_CB_OPCodeDataMap[cbOPCode];
 		LOG_INFO(isOkToPrint, NOP, "Executing OPCode: " << std::hex << (int)OPCode << " " << m_ExtendedOPCodesNames[OPCode] << " in address 0x" << std::hex << PC.GetValue() - 1);
 		(this->*m_ExtendedOPCodes[cbOPCode])();
+		// calculate cycles
+		o_Cycles += m_ExtendedOPCodesCycles[cbOPCode];
+		return m_ExtendedOPCodesNames[cbOPCode];
 	}
 	else
 	{
@@ -104,6 +111,16 @@ void CPU::Step(uint32_t& o_Cycles)
 		//OPCodeData = m_TestArr[OPCode];
 		//OPCodeData = m_OPCodeDataMap[OPCode];
 		//(this->*m_OPCodes[OPCode])();
+		// calculate cycles
+		if (m_IsConditionalJumpTaken)
+		{
+			o_Cycles += m_OPCodesConditionalCycles[OPCode];
+		}
+		else
+		{
+			o_Cycles += m_OPCodesCycles[OPCode];
+		}
+		return m_OPCodesNames[OPCode];
 	}
 
 	// execute
@@ -124,24 +141,8 @@ void CPU::Step(uint32_t& o_Cycles)
 	//	//(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
 	//}
 
-	// calculate cycles
-	if (OPCode == 0xCB)
-	{
-		o_Cycles += m_ExtendedOPCodesCycles[OPCode];
-	}
-	else
-	{
-		if (m_IsConditionalJumpTaken)
-		{
-			o_Cycles += m_OPCodesConditionalCycles[OPCode];
-		}
-		else
-		{
-			o_Cycles += m_OPCodesCycles[OPCode];
-		}
-	}
 
-	m_IsConditionalJumpTaken = false; // set is conditional jump flag to false state before next step
+
 }
 
 void CPU::Reset()
@@ -189,23 +190,25 @@ void CPU::RequestInterrupt(InterruptType i_InterruptType)
 	m_MMU.Write(INTERRUPT_REQUREST_ADDR, interruptRequest);
 }
 
-void CPU::HandleInterrupts()
+void CPU::HandleInterrupts(uint32_t& o_Cycles)
 {
-	if (m_IME) // if interrupts are enabled 
-	{
-		// every bit represent a different interrupt, lowest bits = highest priority
-		// need to check whether a bit was requested from the Interrup Request byte
-		// and whether the or not this interrupt type is currently enabled
-		byte interruptRequest = m_MMU.Read(INTERRUPT_REQUREST_ADDR);
-		byte interruptEnabled = m_MMU.Read(INTERRUPT_ENABLED_ADDR);
-		byte activeInterrupts = interruptRequest & interruptEnabled;
 
-		if (activeInterrupts > 0)
+	// every bit represent a different interrupt, lowest bits = highest priority
+	// need to check whether a bit was requested from the Interrup Request byte
+	// and whether the or not this interrupt type is currently enabled
+	byte interruptRequest = m_MMU.Read(INTERRUPT_REQUREST_ADDR);
+	byte interruptEnabled = m_MMU.Read(INTERRUPT_ENABLED_ADDR);
+	byte activeInterrupts = interruptRequest & interruptEnabled;
+	if (activeInterrupts > 0)
+	{
+		if (m_IME)
 		{
 			// disable IME during the time we serivce the interrupt
 			m_IME = false;
+
 			// cpu is not halt during the interrupt
 			m_HALT = false;
+
 			// save current PC into stack
 			PUSH(PC.GetValue());
 			// set PC to the interrupt routine based on priority and clear the request bit from request flag
@@ -236,6 +239,7 @@ void CPU::HandleInterrupts()
 			}
 
 			m_MMU.Write(INTERRUPT_REQUREST_ADDR, interruptRequest);
+			o_Cycles += 20;
 		}
 	}
 }
@@ -2766,6 +2770,7 @@ inline void CPU::JP_cc_nn(JumpConditions i_Condition)
 		// consume next word
 		PC.Increment();
 		PC.Increment();
+		m_IsConditionalJumpTaken = false;
 	}
 }
 
@@ -2819,6 +2824,7 @@ inline void CPU::JR_cc_n(JumpConditions i_Condition)
 	else
 	{
 		PC.Increment();
+		m_IsConditionalJumpTaken = false;
 	}
 }
 
@@ -2859,6 +2865,7 @@ inline void CPU::CALL_cc_nn(JumpConditions i_Condition)
 	{
 		PC.Increment();
 		PC.Increment();
+		m_IsConditionalJumpTaken = false;
 	}
 }
 
@@ -2908,6 +2915,10 @@ inline void CPU::RET_cc(JumpConditions i_Condition)
 	{
 		RET();
 		m_IsConditionalJumpTaken = true;
+	}
+	else
+	{
+		m_IsConditionalJumpTaken = false;
 	}
 }
 
@@ -6360,16 +6371,16 @@ void CPU::OPCode_CB_BE()
 
 /* debug methods */
 
-/* simple registers dump into stdout */
-void CPU::dumpRegisters()
+/* registers dump into input ostream (could be stdout or a file) */
+void CPU::dumpRegisters(std::ostream& i_OStream)
 {
-	cout << "Registers dump:" << endl;
-	cout << "A: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)A.GetValue() << " | F: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)F.GetValue() << " | AF: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)AF.GetValue() << endl;
-	cout << "B: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)B.GetValue() << " | C: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)C.GetValue() << " | BC: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)BC.GetValue() << endl;
-	cout << "D: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)D.GetValue() << " | E: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)E.GetValue() << " | DE: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)DE.GetValue() << endl;
-	cout << "H: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)H.GetValue() << " | L: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)L.GetValue() << " | HL: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)HL.GetValue() << endl;
-	cout << "------------------------------" << endl;
-	cout << "PC: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)PC.GetValue() << " | SP: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)SP.GetValue() << " | (HL): 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)m_MMU.Read(HL.GetValue()) << endl;
-	cout << "------------------------------" << endl;
-	cout << "Z: " << F.GetZ() << " | N: " << F.GetN() << " | H: " << F.GetH() << " | C: " << F.GetC() << endl;
+	i_OStream << "Registers dump:" << endl;
+	i_OStream << "A: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)A.GetValue() << " | F: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)F.GetValue() << " | AF: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)AF.GetValue() << endl;
+	i_OStream << "B: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)B.GetValue() << " | C: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)C.GetValue() << " | BC: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)BC.GetValue() << endl;
+	i_OStream << "D: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)D.GetValue() << " | E: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)E.GetValue() << " | DE: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)DE.GetValue() << endl;
+	i_OStream << "H: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)H.GetValue() << " | L: 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)L.GetValue() << " | HL: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)HL.GetValue() << endl;
+	i_OStream << "------------------------------" << endl;
+	i_OStream << "PC: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)PC.GetValue() << " | SP: 0x" << std::hex << std::setfill('0') << std::setw(4) << (int)SP.GetValue() << " | (HL): 0x" << std::hex << std::setfill('0') << std::setw(2) << (int)m_MMU.Read(HL.GetValue()) << endl;
+	i_OStream << "------------------------------" << endl;
+	i_OStream << "Z: " << F.GetZ() << " | N: " << F.GetN() << " | H: " << F.GetH() << " | C: " << F.GetC() << endl;
 }

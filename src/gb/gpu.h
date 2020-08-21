@@ -78,7 +78,7 @@ struct Pixel
     }
 };
 
-const Pixel GAMEBOY_POCKET_PALLETE[4] = { { 255, 255, 255 }, { 192, 192, 192 }, { 96, 96, 96 }, { 0, 0, 0 } }; // TODO readd this again
+const Pixel GAMEBOY_POCKET_PALLETE[4] = { { 255, 255, 255 }, { 192, 192, 192 }, { 96, 96, 96 }, { 0, 0, 0 } };
 
 class Gameboy;
 
@@ -90,7 +90,7 @@ public:
     GPU(const GPU&) = delete;
     GPU& operator=(const GPU&) = delete;
 
-    void Step(uint32_t& i_Cycles);
+    void Step(bool write, std::ostream& os, const uint32_t& i_Cycles); // TODO remove this ostream from here, (its for debug)
     void Reset();
     const Pixel* GetFrameBuffer() const;
     byte GetRegister(word i_Address) const;
@@ -119,7 +119,6 @@ private:
 
     bool m_IsLCDEnabled;
     Video_Mode m_Mode;
-    uint32_t m_VBlankCycles;
     uint32_t m_VideoCycles;
     Pixel m_FrameBuffer[GAMEBOY_SCREEN_WIDTH * GAMEBOY_SCREEN_HEIGHT];
     byte m_LCDControl;

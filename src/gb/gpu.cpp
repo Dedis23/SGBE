@@ -1,11 +1,10 @@
 ﻿#include "gpu.h"
 
-GPU::GPU(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsLCDEnabled(true), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0), m_VBlankCycles(0),
+GPU::GPU(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsLCDEnabled(true), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0),
 m_LCDControl(0), m_LCDStatus(0), m_ScrollY(0), m_ScrollX(0), m_LCDCYCoordinate(0), m_LYCompare(0), m_BGPaletteData(0),
 m_ObjectPalette0(0), m_ObjectPalette1(0), m_WindowYPosition(0), m_WindowXPositionMinus7(0)
 {
-	// reset all pixels to white 255 in RGB
-	memset(m_FrameBuffer, 0xFF, sizeof(m_FrameBuffer));
+	Reset();
 }
 
 /*
@@ -21,7 +20,7 @@ m_ObjectPalette0(0), m_ObjectPalette1(0), m_WindowYPosition(0), m_WindowXPositio
 	then mode 1 (VBlank) happens for the next 10 lines 144-153
 	all of this happens per frame and in total it takes 70224 cycles
 */
-void GPU::Step(uint32_t& i_Cycles)
+void GPU::Step(bool write, std::ostream& os, const uint32_t& i_Cycles)
 {
 	// synchronization explained:
 	// in order to synchronize between the CPU and GPU in the emulation,
@@ -29,7 +28,30 @@ void GPU::Step(uint32_t& i_Cycles)
 	// only once the cpu have made enough (the minimum) cycles that correspond to the current mode, then we actualy do the mode operation
 	if (m_IsLCDEnabled)
 	{
+		if (write) // TODO remove this part (just for debug)
+		{
+			os << "GPU Registers dump:" << std::endl;
+			os << "m_LCDControl; " << std::hex << (int)m_LCDControl << std::endl;
+			os << "m_LCDStatus; " << std::hex << (int)m_LCDStatus << std::endl;
+			os << "m_ScrollY; " << std::hex << (int)m_ScrollY << std::endl;
+			os << "m_ScrollX; " << std::hex << (int)m_ScrollX << std::endl;
+			os << "m_LCDCYCoordinate; " << std::hex << (int)m_LCDCYCoordinate << std::endl;
+			os << "m_LYCompare; " << std::hex << (int)m_LYCompare << std::endl;
+			os << "m_BGPaletteData; " << std::hex << (int)m_BGPaletteData << std::endl;
+			os << "m_ObjectPalette0; " << std::hex << (int)m_ObjectPalette0 << std::endl;
+			os << "m_ObjectPalette1; " << std::hex << (int)m_ObjectPalette1 << std::endl;
+			os << "m_WindowYPosition; " << std::hex << (int)m_WindowYPosition << std::endl;
+			os << "m_WindowXPositionMinus7; " << std::hex << (int)m_WindowXPositionMinus7 << std::endl;
+		}
+		//if (write)
+		//{
+		//	os << "video cycles before: " << m_VideoCycles << std::endl;
+		//}
 		m_VideoCycles += i_Cycles;
+		//if (write)
+		//{
+		//	os << "video cycles after: " << m_VideoCycles << std::endl;
+		//}
 		switch (m_Mode)
 		{
 		case GPU::Video_Mode::H_Blank:
@@ -63,7 +85,6 @@ void GPU::Reset()
 	m_WindowXPositionMinus7 = 0;
 	m_IsLCDEnabled = true;
 	m_VideoCycles = 0;
-	m_VBlankCycles = 0;
 	// reset all pixels to white 255 in RGB
 	memset(m_FrameBuffer, 0xFF, sizeof(m_FrameBuffer));
 	setMode(Video_Mode::Searching_OAM);
@@ -236,6 +257,9 @@ void GPU::handleHBlankMode()
 		// move either to mode 2 or mode 1, based on current scanline
 		if (m_LCDCYCoordinate == V_BLANK_START_SCANLINE)
 		{
+			// request vblank interrupt
+			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::VBlank);
+
 			// check for mode 1 interrupt bit
 			if (bitwise::GetBit(LCDC_STATUS_MODE_1_V_BLANK_INTERRUPT_BIT, m_LCDStatus))
 			{
@@ -262,36 +286,34 @@ void GPU::handleHBlankMode()
 /* mode 1 handler */
 void GPU::handleVBlankMode(const uint32_t& i_Cycles)
 {
-	m_VBlankCycles += i_Cycles;
+	m_VideoCycles += i_Cycles;
 
-	if (m_VBlankCycles >= MIN_V_BLANK_MODE_CYCLES)
+	if (m_VideoCycles >= MIN_V_BLANK_MODE_CYCLES)
 	{
-		m_VBlankCycles = 0;
+		m_VideoCycles -= MIN_V_BLANK_MODE_CYCLES;
 
 		// increment the y corrdinate
 		m_LCDCYCoordinate++;
 
 		// after a change in the scanline, check for LY and LYC coincidence interrupt
 		checkForLYAndLYCCoincidence();
-	}
 
-	if (m_VBlankCycles >= MAX_V_BLANK_MODE_CYCLES)
-	{
-		m_VBlankCycles = 0;
-		m_VideoCycles = 0;
-
-		m_LCDCYCoordinate = 0;
-
-		checkForLYAndLYCCoincidence();
-
-		// check for mode 2 interrupt bit
-		if (bitwise::GetBit(LCDC_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
+		if (m_LCDCYCoordinate == V_BLANK_END_SCANLINE)
 		{
-			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+			m_VideoCycles = 0;
+			m_LCDCYCoordinate = 0;
+	
+			checkForLYAndLYCCoincidence();
+	
+			// check for mode 2 interrupt bit
+			if (bitwise::GetBit(LCDC_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
+			{
+				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+			}
+	
+			// move to mode 2
+			setMode(Video_Mode::Searching_OAM);
 		}
-
-		// move to mode 2
-		setMode(Video_Mode::Searching_OAM);
 	}
 }
 

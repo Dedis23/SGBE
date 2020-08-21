@@ -14,7 +14,7 @@
  
  0x4000-0x7FFF: Switchable 16K ROM banks (the cartridge can switch rom banks so that the cpu can access more memory. (up to 256 banks) minimum cartridge 32KB max 4MB
  
- 0x8000-0x9FFF: Video RAM (internal video memory)
+ 0x8000-0x9FFF: 8K Video RAM (internal video memory)
  
  0xA000-0xBFFF: 8K External RAM banks (the cartridge can have additional RAM banks that the cpu can access, up to 4 banks) 
  
