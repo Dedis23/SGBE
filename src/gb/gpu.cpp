@@ -346,7 +346,11 @@ void GPU::drawCurrentScanline()
 		// check for window display bit
 		if (bitwise::GetBit(LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT, m_LCDControl))
 		{
-			drawWindow();
+			// draw the window only if its within the LCDY range
+			if (m_WindowYPosition <= m_LCDCYCoordinate)
+			{
+				drawWindow();
+			}
 		}
 	}
 	// check for sprite bit

@@ -19,29 +19,65 @@
  *  gameboy cpu manual pdf:                                  *
  *  http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf           */
 
- /* gpu releated registers addresses in memory */
+/* gpu releated registers addresses in memory: */
+
+/* lcd control register */
 const word GPU_LCD_CONTROL_ADDR = 0xFF40;
+
+/* lcd status register */
 const word GPU_LCDC_STATUS_ADDR = 0xFF41;
+
+/* the Y position out of 256 which the BG will start to be displayed 
+   (from there 144 rows shall be displayed (wraps around if passed the edge)) */
 const word GPU_SCROLL_Y_ADDR = 0xFF42;
+
+/* the X position out of 256 which the BG will start to be displayed 
+   (from there 160 cols shall be displayed (wraps around if passed the edge)) */
 const word GPU_SCROLL_X_ADDR = 0xFF43;
+
+/* current line to be drawn in the frame (out of 144 lines total) */
 const word GPU_LCDC_Y_COORDINATE_ADDR = 0xFF44;
+
+/* the value will be compared with lyc.
+   if both are the same and there is a request, an interrupt will be requested */
 const word GPU_LY_COMPARE_ADDR = 0xFF45;
-const word GPU_DMA_TRANSFER_AND_START_ADDR = 0xFF46;
-const word GPU_BG_PALETTE_DATA_ADDR = 0xFF47;
-const word GPU_OBJECT_PALETTE_0_DATA_ADDR = 0xFF48; 
-const word GPU_OBJECT_PALETTE_1_DATA_ADDR = 0xFF49; 
+
+/* writing here will launch DMA transfer process */
+const word GPU_DMA_TRANSFER_AND_START_ADDR = 0xFF46; 
+
+/* assigns shades to the color numbers out of four options (0-3) to bg and window tiles.
+   every 2 bits represent a shade: 
+   7-6 -> Color 3 5-4 -> Color 2 
+   3-2 -> Color 1 1-0 -> Color 0 */
+const word GPU_BG_AND_WINDOW_PALETTE_DATA_ADDR = 0xFF47;
+
+/* assigns shades for sprites, palette number 0
+   works like bg and window palette */
+const word GPU_SPRITES_PALETTE_0_DATA_ADDR = 0xFF48; 
+
+/* assigns shades for sprites, palette number 0
+   works like bg and window palette */
+const word GPU_SPRITES_PALETTE_1_DATA_ADDR = 0xFF49; 
+
+/* the y position if the window, the window can be displayed above the background
+   and sprites may be displayed above or behind the window
+   the window becomes visible if it is enabled in the controller,
+   the Y is in 0-143 range and the X is in 0-166 range.
+   for upper left the values should be Y=0, X=7 and it will be on top on background */
 const word GPU_WINDOW_Y_POSITION_ADDR = 0xFF4A;
+
+/* the x position of the window. the details written above */
 const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 
 /* LCD Control bits */
 #define LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT             7 // 0 off, 1 on
 #define LCD_CONTROL_WINDOW_TILE_MAP_DISPLAY_SELECT_BIT 6 // 0 take data from 0x9800, 1 take data from 0x9c00
 #define LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT          5 // 0 off, 1 on
-#define LCD_CONTROL_BG_WINDOW_TILE_DATA_SELECT_BIT     4 // 0 take data from 0x8800, 1 take data from 0x8000
+#define LCD_CONTROL_BG_AND_WINDOW_TILE_DATA_SELECT_BIT 4 // 0 take data from 0x8800, 1 take data from 0x8000
 #define LCD_CONTROL_BG_TILE_MAP_DISPLAY_SELECT_BIT     3 // 0 take data from 0x9800, 1 take data from 0x9c00
 #define LCD_CONTROL_SPRITE_SIZE_BIT                    2 // 0 is 8x8 sprite size, 1 is 8x16 sprite size
 #define LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT          1 // 0 off, 1 on
-#define LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT     0 // 0 off, 1 on
+#define LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT     0 // 0 = window and bg off, 1 on, in CGB mode, there more to do here with priority
 
 /* LCDC Status bits */
 #define LCDC_STATUS_LYC_EQUALS_LY_COINCIDENCE_INTERRUPT_BIT 6 // 1 = Enable

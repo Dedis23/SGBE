@@ -27,7 +27,7 @@ void NoMBC::Write(word i_Address, byte i_Value)
 MBC1::MBC1(vector<byte>& i_ROMData, const CartridgeHeader& i_CartridgeHeader) : Cartridge(i_ROMData, i_CartridgeHeader), m_IsRAMEnabled(false),
 m_Mode(Banking_Mode::Rom_Banks_Only), m_RomBankNumber(1), m_RamBankNumber(0), m_HigherROMBankNumBits(0)
 {
-    // m_RomBankControl is set to 1 by default because 0 rom bank is the base bank that every cartridge has, the switchables is from 1 and above
+    // m_RomBankNumber is set to 1 by default because 0 rom bank is the base bank that every cartridge has, the switchables is from 1 and above
 }
 
 byte MBC1::Read(word i_Address) const
