@@ -777,7 +777,6 @@ private:
 	void OPCode_CB_BE();
 
 public: // TODO change this back to private
-
 	/* debug methods */
 	void dumpRegisters(std::ostream& i_OStream);
 };

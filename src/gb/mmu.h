@@ -20,7 +20,7 @@
  
  0xC000-0xDFFF: 8K Internal RAM
  
- 0xE000-0xFDFF: Shadow RAM - exact copy of the internal RAM - 7680 bytes excluding the higher 512 bytes. (this is due to a wiring in the hardware)
+ 0xE000-0xFDFF: Shadow RAM - exact copy of the internal RAM in: C000-DDFF - (7680 bytes excluding the higher 512 bytes)
  
  0xFE00-0xFE9F: OAM - "Object Attribute Memory" - stores information about the sprites
  
@@ -32,10 +32,9 @@
 */
 
 /*
-    memory map info:
+    info mostly taken from:
     http://bgb.bircd.org/pandocs.htm#gameboytechnicaldata
     http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Memory
-	bootstrap:
 	https://realboyemulator.wordpress.com/2013/01/03/a-look-at-the-game-boy-bootstrap-let-the-fun-begin/
 */
 

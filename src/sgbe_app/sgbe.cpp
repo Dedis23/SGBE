@@ -80,8 +80,6 @@ void SGBE::Run()
 			// main loop here
 			m_Gameboy->Step(); // step a single frame
 			endFrameTime = chrono::high_resolution_clock::now();
-			auto elapsedFrameTime = chrono::duration_cast<chrono::duration<float, milli>> (endFrameTime - startFrameTime);
-			//cout << elapsedFrameTime.count() << endl;
 			static int test = 1;
 			test++;
 			if (test > 60)
@@ -130,8 +128,8 @@ bool SGBE::loadROM(const string& i_RomFileName)
 	std::streampos fileSize = romFile.tellg();
 	romFile.seekg(0, std::ios::beg);
 
-	// read the data - fill the stream into vector<char>
-	vector<char> container(fileSize);
+	// read the data - fill the stream into vector<byte>
+	vector<byte> container(fileSize);
 	romFile.read(&container[0], fileSize);
 
 	// move to member vector of type byte

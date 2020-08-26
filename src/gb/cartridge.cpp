@@ -10,6 +10,11 @@ byte NoMBC::Read(word i_Address) const
     {
         return m_ROMData[i_Address];
     }
+    else if (i_Address <= 0xBFFF)
+    {
+        return 0x00;
+    }
+    
     LOG_ERROR(true, return 0, "Attempting to read address: 0x" << std::hex << i_Address << " it is out of range of the cartridge banks");
 }
 

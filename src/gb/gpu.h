@@ -59,7 +59,7 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 #define MIN_SEARCHING_OAM_MODE_CYCLES 80 // Mode 2 cycles
 #define MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES 172 // Mode 3 cycles
 #define V_BLANK_START_SCANLINE 144
-#define V_BLANK_END_SCANLINE 153
+#define V_BLANK_END_SCANLINE 154 // lines 144 till 153 are for vblank mode (10 lines)
 
 const uint32_t MAX_CYCLES_BEFORE_RENDERING = 70224; // this is calcualted like so:  144 lines in modes 2, 3, 0 (144*456 cycles)
                                                     // plus 10 lines in mode 1 (10*456) = 65664 + 4560 = 70224

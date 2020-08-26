@@ -13,6 +13,7 @@
 #include "mmu.h"
 #include "gpu.h"
 #include "timer.h"
+#include "joypad.h"
 #include <functional>
 #include "utility.h"
 
@@ -20,6 +21,7 @@ class CPU;
 class MMU;
 class GPU;
 class Timer;
+class Joypad;
 struct Pixel;
 
 class Gameboy
@@ -35,8 +37,9 @@ public:
 	void Step();
 	CPU& GetCPU();
 	MMU& GetMMU();
-	Timer& GetTimer();
 	GPU& GetGPU();
+	Timer& GetTimer();
+	Joypad& GetJoypad();
 
 private:
 	bool initializeCartridge();
@@ -47,6 +50,7 @@ private:
 	MMU* m_MMU;
 	GPU* m_GPU;
 	Timer* m_Timer;
+	Joypad* m_Joypad;
 	// user input cartridge data
 	vector<byte>& m_ROMData;
 	CartridgeHeader* m_CartridgeHeader;

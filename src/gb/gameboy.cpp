@@ -25,11 +25,14 @@ bool Gameboy::Initialize()
 	m_CPU = new CPU(*this, *m_MMU);
 	LOG_ERROR(m_CPU == nullptr, return false, "Failed to initialize the CPU");
 
+	m_GPU = new GPU(*this);
+	LOG_ERROR(m_GPU == nullptr, return false, "Failed to initalize the GPU");
+
 	m_Timer = new Timer(*this);
 	LOG_ERROR(m_Timer == nullptr, return false, "Failed to initialize the Timer");
 
-	m_GPU = new GPU(*this);
-	LOG_ERROR(m_GPU == nullptr, return false, "Failed to initalize the GPU");
+	m_Joypad = new Joypad(*this);
+	LOG_ERROR(m_Joypad == nullptr, return false, "Failed to initalize the Joypad");
 
 	return true;
 }
@@ -44,7 +47,14 @@ void Gameboy::Step()
 {
 	static int frameNum = 1;
 	uint32_t commandNum = 1;
-	bool write = false;
+	static bool write = false;
+	static bool isInBoot = false;
+	static int startFrameToCapture = 334;
+	if (frameNum == 335)
+	{
+		//std::cout << "frameNum is: " << std::hex << frameNum << std::endl;
+		//write = true;
+	}
 	std::ofstream testFile;
 	if (frameNum == 1)
 	{
@@ -56,7 +66,6 @@ void Gameboy::Step()
 	}	
 	if (write)
 	{
-
 		if (!testFile.is_open())
 		{
 			//exit(1);
@@ -72,10 +81,10 @@ void Gameboy::Step()
 	{
 		static std::string lastComTest;
 
-		//if (frameNum == 4 && commandNum == 0x1866)
-		//{
-		//	std::cout << "STOP!" << std::endl;
-		//}
+		if (frameNum == 335 && commandNum == 7221)
+		{
+			std::cout << "STOP!" << std::endl;
+		}
 
 		uint32_t cyclesCurrentOperation = 0;
 		std::string last_command = m_CPU->Step(cyclesCurrentOperation);
@@ -86,10 +95,10 @@ void Gameboy::Step()
 		currentFrameCycles += cyclesCurrentOperation;
 		if (write)
 		{
-			testFile << "Frame number: " << frameNum << std::endl
-			<< "Command number: " << commandNum++ << " - " << last_command
-			<< " took: " << cyclesCurrentOperation << std::endl
-			<< "Overall cycles: " << currentFrameCycles << std::endl;
+			testFile << "Frame number: " << std::dec << frameNum << std::endl
+			<< "Command number: " << std::dec << commandNum++ << " - " << last_command
+			<< " took: " << std::dec << cyclesCurrentOperation << std::endl
+			<< "Overall cycles: " << std::dec << currentFrameCycles << std::endl;
 			if (write)
 			{
 				m_CPU->dumpRegisters(testFile);
@@ -103,12 +112,11 @@ void Gameboy::Step()
 	m_RenderScreen(m_GPU->GetFrameBuffer());
 	if (write)
 	{
-		std::cout << "done writing full frame number: " << frameNum << " to the file" << std::endl;
-		frameNum++;
-		if (frameNum == 11)
+		std::cout << "done writing full frame number: " << frameNum++ << " to the file" << std::endl;
+		if (frameNum == startFrameToCapture + 2)
 		{ 
 			testFile.close();
-			exit(0);
+			exit(1);
 		}
 	}
 	else
@@ -127,14 +135,19 @@ MMU& Gameboy::GetMMU()
 	return *m_MMU;
 }
 
+GPU& Gameboy::GetGPU()
+{
+	return *m_GPU;
+}
+
 Timer& Gameboy::GetTimer()
 {
 	return *m_Timer;
 }
 
-GPU& Gameboy::GetGPU()
+Joypad& Gameboy::GetJoypad()
 {
-	return *m_GPU;
+	return *m_Joypad;
 }
 
 bool Gameboy::initializeCartridge()

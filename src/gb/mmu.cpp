@@ -24,7 +24,7 @@ byte MMU::Read(word i_Address) const
     /* External RAM (RAM on specific cartridge types which supported this) */
     if (i_Address >= 0xA000 && i_Address <= 0xBFFF)
     {
-        return m_Cartridge.Read(i_Address - 0xA000);
+        return m_Cartridge.Read(i_Address);
     }
 
     /* Internal RAM */
@@ -37,7 +37,7 @@ byte MMU::Read(word i_Address) const
     if (i_Address >= 0xE000 && i_Address <= 0xFDFF)
     {
         /* reading exact copy from the internal RAM which is 0x2000 addresses below */
-        return m_RAM[i_Address - 0x2000];
+        return m_RAM[i_Address - 0xE000];
     }
 
     /* OAM */
@@ -100,6 +100,10 @@ void MMU::Write(word i_Address, byte i_Value)
     if (i_Address >= 0xC000 && i_Address <= 0xDFFF)
     {
         m_RAM[i_Address - 0xC000] = i_Value;
+        if (i_Address <= 0xDDFF)
+        {
+            m_RAM[i_Address - 0xC000 + 0x2000] = i_Value; // write to shadow
+        }
         wroteToAddr = true;
         return;
     }
@@ -110,6 +114,7 @@ void MMU::Write(word i_Address, byte i_Value)
         /* writing in the Shadow RAM is like writing in the internal RAM banks. the shadow ram is an exact copy from the internal RAM which is 0x2000 addresses below */
         /* i.e writing to 0xE000 is like writing to 0xC000, so 0x2000 is reduced and then 0xC000 (0xE000 total) to get to the place in the m_RAM array */
         m_RAM[i_Address - 0xE000] = i_Value;
+        m_RAM[i_Address - 0xE000 - 0x2000] = i_Value;
         wroteToAddr = true;
         return;
     }
@@ -125,7 +130,8 @@ void MMU::Write(word i_Address, byte i_Value)
     /* Unusable area - shouldn't get here */
     if (i_Address >= 0xFEA0 && i_Address <= 0xFEFF)
     {
-        LOG_ERROR(true, return, "Attempting to write to an unusable memory address: 0x" << i_Address);
+        return;
+        //LOG_ERROR(true, return, "Attempting to write to an unusable memory address: 0x" << std::hex << i_Address);
     }
 
     /* Mapped IO */
@@ -143,16 +149,9 @@ void MMU::Write(word i_Address, byte i_Value)
         wroteToAddr = true;
     }
 
-    /* debug printing without timer writes, this should be commented */
-    //LOG_INFO(wroteToAddr == true
-    //    && i_Address.GetValue() != TIMER_DIVIDER_ADDR
-    //    && i_Address.GetValue() != TIMER_COUNTER_ADDR
-    //    && i_Address.GetValue() != TIMER_MODULO_ADDR
-    //    && i_Address.GetValue() != TIMER_CONTROL_ADDR,
-    //    return, "Wrote 0x" << std::hex << static_cast<word>(i_Value) << " in address 0x" << std::hex << i_Address.GetValue());
     if (wroteToAddr) return;
 
-    LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << i_Address);
+    LOG_ERROR(true, return, "Attempting to write to an unmapped memory address: 0x" << std::hex << i_Address);
 }
 
 /* When the game writes to the 0xFF46 it will initiate
@@ -170,17 +169,20 @@ void MMU::DMATransfer(byte i_SourceAdress)
 
 byte MMU::readMappedIO(word i_Address) const
 {
-    if (i_Address == SERIAL_TRANSFER_DATA_ADDR)
+    if (i_Address == JOYPAD_ADDR)
+    {
+        m_Gameboy.GetJoypad().GetJoypadState();
+    }
+    else if (i_Address == SERIAL_TRANSFER_DATA_ADDR)
     {
         return m_MappedIO[i_Address - 0xFF00];
     }
-    if (i_Address == SERIAL_TRANSFER_CONTROL_ADDR)
+    else if (i_Address == SERIAL_TRANSFER_CONTROL_ADDR)
     {
         LOG_ERROR(true, NOP, "Attempting to read to the serial transfer control");
         return 0xFF;
     }
-
-    if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
+    else if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
     {
         return m_Gameboy.GetTimer().GetRegister(i_Address);
     }
@@ -199,11 +201,15 @@ byte MMU::readMappedIO(word i_Address) const
    or will override the new value to a different, specifc value */
 void MMU::writeMappedIO(word i_Address, byte i_Value)
 {
+    if (i_Address == JOYPAD_ADDR)
+    {
+        m_Gameboy.GetJoypad().SetJoypadState(i_Value);
+    }
     if (i_Address == SERIAL_TRANSFER_DATA_ADDR)
     {
         m_MappedIO[i_Address - 0xFF00] = i_Value;
     }
-    if (i_Address == SERIAL_TRANSFER_CONTROL_ADDR)
+    else if (i_Address == SERIAL_TRANSFER_CONTROL_ADDR)
     {
         if (bitwise::GetBit(i_Value, 7))
         {
@@ -212,8 +218,7 @@ void MMU::writeMappedIO(word i_Address, byte i_Value)
             fflush(stdout);
         }
     }
-
-    if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
+    else if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
     {
         m_Gameboy.GetTimer().SetRegister(i_Address, i_Value);
     }

@@ -4,7 +4,6 @@ GPU::GPU(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsLCDEnabled(true), m_Mod
 m_LCDControl(0), m_LCDStatus(0), m_ScrollY(0), m_ScrollX(0), m_LCDCYCoordinate(0), m_LYCompare(0), m_BGPaletteData(0),
 m_ObjectPalette0(0), m_ObjectPalette1(0), m_WindowYPosition(0), m_WindowXPositionMinus7(0)
 {
-	Reset();
 }
 
 /*
@@ -30,28 +29,28 @@ void GPU::Step(bool write, std::ostream& os, const uint32_t& i_Cycles)
 	{
 		if (write) // TODO remove this part (just for debug)
 		{
-			os << "GPU Registers dump:" << std::endl;
-			os << "m_LCDControl; " << std::hex << (int)m_LCDControl << std::endl;
-			os << "m_LCDStatus; " << std::hex << (int)m_LCDStatus << std::endl;
-			os << "m_ScrollY; " << std::hex << (int)m_ScrollY << std::endl;
-			os << "m_ScrollX; " << std::hex << (int)m_ScrollX << std::endl;
-			os << "m_LCDCYCoordinate; " << std::hex << (int)m_LCDCYCoordinate << std::endl;
-			os << "m_LYCompare; " << std::hex << (int)m_LYCompare << std::endl;
-			os << "m_BGPaletteData; " << std::hex << (int)m_BGPaletteData << std::endl;
-			os << "m_ObjectPalette0; " << std::hex << (int)m_ObjectPalette0 << std::endl;
-			os << "m_ObjectPalette1; " << std::hex << (int)m_ObjectPalette1 << std::endl;
-			os << "m_WindowYPosition; " << std::hex << (int)m_WindowYPosition << std::endl;
-			os << "m_WindowXPositionMinus7; " << std::hex << (int)m_WindowXPositionMinus7 << std::endl;
+			//os << "GPU Registers dump:" << std::endl;
+			//os << "m_LCDControl; " << std::dec << (int)m_LCDControl << std::endl;
+			//os << "m_LCDStatus; " << std::dec << (int)m_LCDStatus << std::endl;
+			//os << "m_ScrollY; " << std::dec << (int)m_ScrollY << std::endl;
+			//os << "m_ScrollX; " << (int)m_ScrollX << std::endl;
+			//os << "m_LCDCYCoordinate; " << std::dec << (int)m_LCDCYCoordinate << std::endl;
+			//os << "m_LYCompare; " << std::dec << (int)m_LYCompare << std::endl;
+			//os << "m_BGPaletteData; " << std::dec << (int)m_BGPaletteData << std::endl;
+			//os << "m_ObjectPalette0; " << std::dec << (int)m_ObjectPalette0 << std::endl;
+			//os << "m_ObjectPalette1; " << std::dec << (int)m_ObjectPalette1 << std::endl;
+			//os << "m_WindowYPosition; " << std::dec << (int)m_WindowYPosition << std::endl;
+			//os << "m_WindowXPositionMinus7; " << std::dec << (int)m_WindowXPositionMinus7 << std::endl;
 		}
-		//if (write)
-		//{
-		//	os << "video cycles before: " << m_VideoCycles << std::endl;
-		//}
+		if (write)
+		{
+			//os << "video cycles before: " << std::dec << (int)m_VideoCycles << std::endl;
+		}
 		m_VideoCycles += i_Cycles;
-		//if (write)
-		//{
-		//	os << "video cycles after: " << m_VideoCycles << std::endl;
-		//}
+		if (write)
+		{
+			//os << "video cycles after: " << std::dec << (int)m_VideoCycles << std::endl;
+		}
 		switch (m_Mode)
 		{
 		case GPU::Video_Mode::H_Blank:
@@ -165,17 +164,6 @@ void GPU::SetRegister(word i_Address, byte i_Value)
 	{
 	case GPU_LCD_CONTROL_ADDR:
 		{
-			// if the LCD is currently on and the new value clears the LCD enable bit, we will reset the GPU
-			if (m_IsLCDEnabled == true &&
-				bitwise::GetBit(LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT, i_Value) == false)
-			{
-				Reset();
-			}
-			else if (m_IsLCDEnabled == false &&
-				bitwise::GetBit(LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT, i_Value) == true)
-			{
-				m_IsLCDEnabled = true;
-			}
 			m_LCDControl = i_Value;
 		}
 		break;
@@ -286,34 +274,32 @@ void GPU::handleHBlankMode()
 /* mode 1 handler */
 void GPU::handleVBlankMode(const uint32_t& i_Cycles)
 {
-	m_VideoCycles += i_Cycles;
-
 	if (m_VideoCycles >= MIN_V_BLANK_MODE_CYCLES)
 	{
 		m_VideoCycles -= MIN_V_BLANK_MODE_CYCLES;
-
 		// increment the y corrdinate
 		m_LCDCYCoordinate++;
-
 		// after a change in the scanline, check for LY and LYC coincidence interrupt
 		checkForLYAndLYCCoincidence();
-
-		if (m_LCDCYCoordinate == V_BLANK_END_SCANLINE)
+	}
+	
+	// if its the end of vblank mode
+	if (m_LCDCYCoordinate > V_BLANK_END_SCANLINE)
+	{
+		m_VideoCycles = 0;
+		// reset y coordinate
+		m_LCDCYCoordinate = 0;
+		// after a change in the scanline, check for LY and LYC coincidence interrupt
+		checkForLYAndLYCCoincidence();
+	
+		// check for mode 2 interrupt bit
+		if (bitwise::GetBit(LCDC_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
 		{
-			m_VideoCycles = 0;
-			m_LCDCYCoordinate = 0;
-	
-			checkForLYAndLYCCoincidence();
-	
-			// check for mode 2 interrupt bit
-			if (bitwise::GetBit(LCDC_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
-			{
-				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
-			}
-	
-			// move to mode 2
-			setMode(Video_Mode::Searching_OAM);
+			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 		}
+	
+		// move to mode 2
+		setMode(Video_Mode::Searching_OAM);
 	}
 }
 
