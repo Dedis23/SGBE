@@ -71,24 +71,24 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 
 /* LCD Control bits */
 #define LCD_CONTROL_LCD_DISPLAY_ENABLE_BIT             7 // 0 off, 1 on
-#define LCD_CONTROL_WINDOW_TILE_MAP_DISPLAY_SELECT_BIT 6 // 0 take data from 0x9800, 1 take data from 0x9c00
+#define LCD_CONTROL_WINDOW_TILE_MAP_INDEX_SELECT_BIT   6 // 0 = take tile index from 0x9800-0x9BFF, 1 = take tile index from 0x9c00-0x9FFF
 #define LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT          5 // 0 off, 1 on
-#define LCD_CONTROL_BG_AND_WINDOW_TILE_DATA_SELECT_BIT 4 // 0 take data from 0x8800, 1 take data from 0x8000
-#define LCD_CONTROL_BG_TILE_MAP_DISPLAY_SELECT_BIT     3 // 0 take data from 0x9800, 1 take data from 0x9c00
+#define LCD_CONTROL_BG_AND_WINDOW_TILE_DATA_SELECT_BIT 4 // 0 = take tile data from 0x8800-0x97FF, 1 = take tile data from 0x8000-0x8FFF
+#define LCD_CONTROL_BG_TILE_MAP_INDEX_SELECT_BIT       3 // 0 = take tile index from 0x9800-0x9BFF, 1 = take tile index from 0x9c00-0x9FFF
 #define LCD_CONTROL_SPRITE_SIZE_BIT                    2 // 0 is 8x8 sprite size, 1 is 8x16 sprite size
 #define LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT          1 // 0 off, 1 on
 #define LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT     0 // 0 = window and bg off, 1 on, in CGB mode, there more to do here with priority
 
-/* LCDC Status bits */
-#define LCDC_STATUS_LYC_EQUALS_LY_COINCIDENCE_INTERRUPT_BIT 6 // 1 = Enable
-#define LCDC_STATUS_MODE_2_OAM_INTERRUPT_BIT                5 // 1 = Enable
-#define LCDC_STATUS_MODE_1_V_BLANK_INTERRUPT_BIT            4 // 1 = Enable
-#define LCDC_STATUS_MODE_0_H_BLANK_INTERRUPT_BIT            3 // 1 = Enable 
-#define LCDC_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT             2 // 0 if LYC < LY or LYC > LY, 1 if LYC = LY
-#define LCDC_STATUS_MODE_FLAG_SECOND_BIT                    1 // 00: H_Blank mode 01: V_Blank mode
-#define LCDC_STATUS_MODE_FLAG_FIRST_BIT                     0 // 10: Searching OAM mode 11: Transfer data to LCD mode
+/* LCD Status bits */
+#define LCD_STATUS_LYC_EQUALS_LY_COINCIDENCE_INTERRUPT_BIT 6 // 1 = Enable
+#define LCD_STATUS_MODE_2_OAM_INTERRUPT_BIT                5 // 1 = Enable
+#define LCD_STATUS_MODE_1_V_BLANK_INTERRUPT_BIT            4 // 1 = Enable
+#define LCD_STATUS_MODE_0_H_BLANK_INTERRUPT_BIT            3 // 1 = Enable 
+#define LCD_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT             2 // 0 if LYC < LY or LYC > LY, 1 if LYC = LY
+#define LCD_STATUS_MODE_FLAG_SECOND_BIT                    1 // 00: H_Blank mode 01: V_Blank mode
+#define LCD_STATUS_MODE_FLAG_FIRST_BIT                     0 // 10: Searching OAM mode 11: Transfer data to LCD mode
 
-/* Various mode definitions */
+/* Various definitions */
 #define MIN_H_BLANK_MODE_CYCLES 204 // Mode 0 cycles
 #define MIN_V_BLANK_MODE_CYCLES 456 // Mode 1 cycles (for 1 line)
 #define MAX_V_BLANK_MODE_CYCLES 4560 // Mode 1 overall cycles (10 lines) 
@@ -96,6 +96,19 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 #define MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES 172 // Mode 3 cycles
 #define V_BLANK_START_SCANLINE 144
 #define V_BLANK_END_SCANLINE 154 // lines 144 till 153 are for vblank mode (10 lines)
+#define BG_HEIGHT_PIXELS 256 // the background consists of 256*256 or 32*32 tiles
+#define BG_WIDTH_PIXELS 256
+#define MAX_TILES_PER_LINE 32
+#define TILE_HEIGHT_IN_PIXELS 8
+#define TILE_WIDTH_IN_PIXELS  8
+#define SIZE_OF_A_SINGLE_TILE_IN_BYTES 16
+#define SIZE_OF_A_SINGLE_LINE_IN_A_TILE_IN_BYTES 2
+#define WINDOW_TILE_MAP_ADDR_IF_BIT_IS_0 0x9800
+#define WINDOW_TILE_MAP_ADDR_IF_BIT_IS_1 0x9C00
+#define BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_0 0x8800
+#define BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_1 0x8000
+#define BG_TILE_MAP_ADDR_IF_BIT_IS_0 0x9800
+#define BG_TILE_MAP_ADDR_IF_BIT_IS_1 0x9C00
 
 const uint32_t MAX_CYCLES_BEFORE_RENDERING = 70224; // this is calcualted like so:  144 lines in modes 2, 3, 0 (144*456 cycles)
                                                     // plus 10 lines in mode 1 (10*456) = 65664 + 4560 = 70224
@@ -141,6 +154,14 @@ private:
         Transfer_Data_To_LCD = 3, // access VRAM and transfer data to LCD
     };
 
+    enum class Shade
+    {
+        Shade_00 = 0,
+        Shade_01 = 1,
+        Shade_10 = 2,
+        Shade_11 = 3,
+    };
+
     void setMode(Video_Mode i_NewMode);
     void handleHBlankMode();
     void handleVBlankMode(const uint32_t& i_Cycles);
@@ -149,9 +170,11 @@ private:
     void checkForLYAndLYCCoincidence();
     void drawCurrentScanline();
 
-    void drawBackground();
-    void drawWindow();
+    void drawBackgroundLine(byte i_Line);
+    void drawWindowLine(byte i_Line);
     void drawSprites();
+    Shade extractShadeIdFromTileLine(byte i_HighByte, byte i_LowByte, byte i_TilePixelCol);
+    Shade extractRealShadeFromPalette(byte i_Palette, Shade i_ShadeId);
 
     bool m_IsLCDEnabled;
     Video_Mode m_Mode;
@@ -163,9 +186,9 @@ private:
     byte m_ScrollX;
     byte m_LCDCYCoordinate;
     byte m_LYCompare;
-    byte m_BGPaletteData;
-    byte m_ObjectPalette0;
-    byte m_ObjectPalette1;
+    byte m_BGAndWindowPalette;
+    byte m_SpritesPalette0;
+    byte m_SpritesPalette1;
     byte m_WindowYPosition;
     byte m_WindowXPositionMinus7;
 
