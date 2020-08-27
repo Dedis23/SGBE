@@ -214,8 +214,8 @@ void MMU::writeMappedIO(word i_Address, byte i_Value)
         if (bitwise::GetBit(i_Value, 7))
         {
             /* This is to print from serial - for Blargg's cpu instructions tests - TODO remove this */
-            printf("%c", m_MappedIO[i_Address - 0xFF01]);
-            fflush(stdout);
+            //printf("%c", m_MappedIO[i_Address - 0xFF01]);
+            //fflush(stdout);
         }
     }
     else if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)

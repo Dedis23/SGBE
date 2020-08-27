@@ -22,7 +22,7 @@ void Joypad::KeyReleased(const Joypad::Buttons& i_ReleasedButton)
 /* used when the game request the joypad state */
 byte Joypad::GetJoypadState() const
 {
-
+	return m_JoypadState;
 }
 
 /* used when the game alters the joypad state */

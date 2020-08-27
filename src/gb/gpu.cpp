@@ -36,9 +36,9 @@ void GPU::Step(bool write, std::ostream& os, const uint32_t& i_Cycles)
 			//os << "m_ScrollX; " << (int)m_ScrollX << std::endl;
 			//os << "m_LCDCYCoordinate; " << std::dec << (int)m_LCDCYCoordinate << std::endl;
 			//os << "m_LYCompare; " << std::dec << (int)m_LYCompare << std::endl;
-			//os << "m_BGPaletteData; " << std::dec << (int)m_BGPaletteData << std::endl;
-			//os << "m_ObjectPalette0; " << std::dec << (int)m_ObjectPalette0 << std::endl;
-			//os << "m_ObjectPalette1; " << std::dec << (int)m_ObjectPalette1 << std::endl;
+			//os << "m_BGPaletteData; " << std::dec << (int)m_BGAndWindowPalette << std::endl;
+			//os << "m_ObjectPalette0; " << std::dec << (int)m_SpritesPalette0 << std::endl;
+			//os << "m_ObjectPalette1; " << std::dec << (int)m_SpritesPalette1 << std::endl;
 			//os << "m_WindowYPosition; " << std::dec << (int)m_WindowYPosition << std::endl;
 			//os << "m_WindowXPositionMinus7; " << std::dec << (int)m_WindowXPositionMinus7 << std::endl;
 		}

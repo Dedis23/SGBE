@@ -6368,7 +6368,6 @@ void CPU::OPCode_CB_BE()
 	m_MMU.Write(addr, val);
 }
 
-
 /* debug methods */
 
 /* registers dump into input ostream (could be stdout or a file) */
