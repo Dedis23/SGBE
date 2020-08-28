@@ -342,21 +342,17 @@ void GPU::drawCurrentScanline()
 	// check for BG/window display bit
 	if (bitwise::GetBit(LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT, m_LCDControl))
 	{
-		drawBackgroundLine(m_LCDCYCoordinate);
+		drawCurrentBackgroundLine();
 		// check for window display bit
 		if (bitwise::GetBit(LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT, m_LCDControl))
 		{
-			// draw the window only if its within the LCDY range
-			if (m_WindowYPosition <= m_LCDCYCoordinate)
-			{
-				//drawWindowLine(m_LCDCYCoordinate);
-			}
+			drawCurrentWindowLine();
 		}
 	}
 	// check for sprite display bit
 	if (bitwise::GetBit(LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT, m_LCDControl))
 	{
-		//drawSprites();
+		//drawCurrentSpritesLine();
 	}
 }
 
@@ -380,86 +376,54 @@ void GPU::checkForLYAndLYCCoincidence()
 }
 
 /* draw a single line of the background
-   the background consists of 256*256 pixels. by using the SCROLL_Y and SCROL_X registers,
+   the background consists of 256*256 pixels. by using the SCROLL_Y and SCROLL_X registers,
    the game decides from where in the 256*256 map, it should draw (this wraps around if passes the edge) */
-void GPU::drawBackgroundLine(byte i_Line)
+void GPU::drawCurrentBackgroundLine()
 {
-	word tileIndexMap = 0x0;
-	word tileDataBase = 0x0;
-	bool isSigned = false;
+	word tileIndexMapBaseAddr = 0x0;
+	word tileDataBaseAddr = 0x0;
+	bool isSignedTileDataRegion = false;
 
 	// check which background memory section is relevant
 	if (bitwise::GetBit(LCD_CONTROL_BG_TILE_MAP_INDEX_SELECT_BIT, m_LCDControl))
 	{
-		tileIndexMap = BG_TILE_MAP_ADDR_IF_BIT_IS_1;
+		tileIndexMapBaseAddr = BG_AND_WINDOW_TILE_MAP_ADDR_IF_BIT_IS_1;
 	}
 	else
 	{
-		tileIndexMap = BG_TILE_MAP_ADDR_IF_BIT_IS_0;
+		tileIndexMapBaseAddr = BG_AND_WINDOW_TILE_MAP_ADDR_IF_BIT_IS_0;
 	}	
 
 	// check which tile data is relevant
 	if (bitwise::GetBit(LCD_CONTROL_BG_AND_WINDOW_TILE_DATA_SELECT_BIT, m_LCDControl))
 	{
-		tileDataBase = BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_1;
+		tileDataBaseAddr = BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_1;
+		isSignedTileDataRegion = false;
 	}
 	else
 	{
-		tileDataBase = BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_0;
-		isSigned = true; // this memory region uses signed bytes as tile id's
+		tileDataBaseAddr = BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_0;
+		isSignedTileDataRegion = true; // this memory region uses signed bytes as tile id's
 	}
 	
-	/* calculate the pixel y position, tile row number and pixel row number within the tile
-	   all of these are the same for every X pixel because we draw now a single line */
-	uint32_t yPosToBeDrawn = (i_Line + m_ScrollY) % BG_HEIGHT_PIXELS;
-	uint32_t tileRow = (yPosToBeDrawn / TILE_HEIGHT_IN_PIXELS);
-	uint32_t tilePixelRow = (yPosToBeDrawn % TILE_HEIGHT_IN_PIXELS);
+	/* calculate the pixel y position, this is the same for every X pixel because we draw a single line */
+	uint32_t yPos = (m_LCDCYCoordinate + m_ScrollY) % BG_HEIGHT_PIXELS;
 
 	// for every pixel in the current line do the follwing
 	for (uint32_t xIndex = 0; xIndex < GAMEBOY_SCREEN_WIDTH; xIndex++)
 	{
 		// calculate the current pixel x position
-		// (wraps around if it passed the edge of the BG )
-		uint32_t xPosToBeDrawn = (xIndex + m_ScrollX) % BG_WIDTH_PIXELS;
+		// (wraps around if it passed the edge of the BG)
+		uint32_t xPos = (xIndex + m_ScrollX) % BG_WIDTH_PIXELS;
 
-		// calculate the tile number this pixel corresponds to (0-31)
-		uint32_t tileCol = (xPosToBeDrawn / TILE_WIDTH_IN_PIXELS);
+		byte highByte = 0x0;
+		byte lowByte = 0x0;
+		// read the two bytes that represent the line within the relevant tile
+		readTileLineFromMemory(xPos, yPos, tileDataBaseAddr, tileIndexMapBaseAddr, isSignedTileDataRegion, highByte, lowByte);
 
-		// calculate the pixel number itself within the tile (0-7)
-		uint32_t tilePixelCol = (xPosToBeDrawn % TILE_WIDTH_IN_PIXELS);
-
-		// calculate tile index in map
-		word tileIndexInMap = tileIndexMap + (tileRow * MAX_TILES_PER_LINE + tileCol);
+		// calculate the pixel col number within the tile (0-7)
+		uint32_t tilePixelCol = xPos % TILE_WIDTH_IN_PIXELS;
 		
-		// get the tile id from memory
-		byte tileId = m_Gameboy.GetMMU().Read(tileIndexInMap);
-
-		// calculate the tile data address 
-		// the id that we mapped should be added to the tile data address base
-		// this way we know which tile data to use for this pixel
-		// note that we need to take into account the sign in this region
-		word tileDataAddr = tileDataBase;
-		if (isSigned)
-		{
-			tileDataAddr += (static_cast<sbyte>(tileId) + 128) * SIZE_OF_A_SINGLE_TILE_IN_BYTES;
-		}
-		else
-		{
-			tileDataAddr += tileId * SIZE_OF_A_SINGLE_TILE_IN_BYTES;
-		}
-
-		// now that we have the exact tile data id in memory,
-		// we need to know which out of the 8 lines in the tile,
-		// we need to read (remember that 2 bytes = 1 line)
-		// we already caluclated the row in which the pixel is on the tile
-		// just need this number multiplied (because its 2 bytes)
-		// and read that from memory
-		word addressForTheRowInTheTile = tileDataAddr + (tilePixelRow * SIZE_OF_A_SINGLE_LINE_IN_A_TILE_IN_BYTES);
-
-		// read the two bytes of this line from memory
-		byte highByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile);
-		byte lowByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile + 1);
-
 		// extract the shade id of the pixel from the tile line bytes
 		Shade shadeId = extractShadeIdFromTileLine(highByte, lowByte, tilePixelCol);
 
@@ -467,9 +431,9 @@ void GPU::drawBackgroundLine(byte i_Line)
 		Shade realShade = extractRealShadeFromPalette(m_BGAndWindowPalette, shadeId);
 
 		// calculate the index in the frame buffer (the array of pixels to be drawn)
-		uint32_t frameBufferIndex = (i_Line * GAMEBOY_SCREEN_WIDTH) + xIndex;
+		uint32_t frameBufferIndex = (m_LCDCYCoordinate * GAMEBOY_SCREEN_WIDTH) + xIndex;
 
-		// get the real color to be drawn from the current palette based on the real shade number
+		// get the pixel RGB colors to be drawn from the current palette based on the real shade number
 		Pixel color = GAMEBOY_POCKET_PALLETE[(int)realShade];
 
 		m_FrameBuffer[frameBufferIndex] = color;
@@ -478,29 +442,133 @@ void GPU::drawBackgroundLine(byte i_Line)
 
 /* the window is behind the sprites and above the background (unless specified otherwise)
    it is generally used for UI and its a fixed panel that will generaly not scroll */
-void GPU::drawWindowLine(byte i_Line)
+void GPU::drawCurrentWindowLine()
+{
+	word tileIndexMapBaseAddr = 0x0;
+	word tileDataBaseAddr = 0x0;
+	bool isSignedTileDataRegion = false;
+
+	// check which window memory section is relevant
+	if (bitwise::GetBit(LCD_CONTROL_WINDOW_TILE_MAP_INDEX_SELECT_BIT, m_LCDControl))
+	{
+		tileIndexMapBaseAddr = BG_AND_WINDOW_TILE_MAP_ADDR_IF_BIT_IS_1;
+	}
+	else
+	{
+		tileIndexMapBaseAddr = BG_AND_WINDOW_TILE_MAP_ADDR_IF_BIT_IS_0;
+	}	
+
+	// check which tile data is relevant
+	if (bitwise::GetBit(LCD_CONTROL_BG_AND_WINDOW_TILE_DATA_SELECT_BIT, m_LCDControl))
+	{
+		tileDataBaseAddr = BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_1;
+	}
+	else
+	{
+		tileDataBaseAddr = BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_0;
+		isSignedTileDataRegion = true; // this memory region uses signed bytes as tile id's
+	}
+	
+	/* calculate the pixel y position, tile row number and pixel row number within the tile
+	   all of these are the same for every X pixel because we draw a single line */
+	uint32_t yPos = m_LCDCYCoordinate - m_WindowYPosition;
+	if (yPos > WINODW_Y_MAX_ROW || yPos > m_LCDCYCoordinate) // if were out of range, return
+		return;
+	uint32_t tileRow = (yPos / TILE_HEIGHT_IN_PIXELS);
+	uint32_t tilePixelRow = (yPos % TILE_HEIGHT_IN_PIXELS);
+
+	// for every pixel in the current line do the follwing
+	for (uint32_t xIndex = 0; xIndex < GAMEBOY_SCREEN_WIDTH; xIndex++)
+	{
+		// calculate the current pixel x position
+		uint32_t xPos = xIndex + m_WindowXPositionMinus7 - 7;
+		
+		byte highByte = 0x0;
+		byte lowByte = 0x0;
+		// read the two bytes that represent the line within the relevant tile
+		readTileLineFromMemory(xPos, yPos, tileDataBaseAddr, tileIndexMapBaseAddr, isSignedTileDataRegion, highByte, lowByte);
+
+		// calculate the pixel col number within the tile (0-7)
+		uint32_t tilePixelCol = xPos % TILE_WIDTH_IN_PIXELS;
+
+		// extract the shade id of the pixel from the tile line bytes
+		Shade shadeId = extractShadeIdFromTileLine(highByte, lowByte, tilePixelCol);
+
+		// translate the shade id of the pixel into the real shade based on the BG palette
+		Shade realShade = extractRealShadeFromPalette(m_BGAndWindowPalette, shadeId);
+
+		// calculate the index in the frame buffer (the array of pixels to be drawn)
+		uint32_t frameBufferIndex = (m_LCDCYCoordinate * GAMEBOY_SCREEN_WIDTH) + xIndex;
+
+		// get the real color to be drawn from the current palette based on the real shade number
+		Pixel color = GAMEBOY_POCKET_PALLETE[(int)realShade];
+
+		m_FrameBuffer[frameBufferIndex] = color;
+	}
+}
+
+void GPU::drawCurrentSpritesLine()
 {
 
 }
 
-void GPU::drawSprites()
+inline void GPU::readTileLineFromMemory(const uint32_t& i_XPosition, const uint32_t& i_YPosition,
+                                        word i_TileDataBaseAddr, word i_TileIndexMapBaseAddr, bool i_IsSignedDataRegion,
+                                        byte& o_HighByte, byte& o_LowByte)
 {
+	// calculate the tile number that this pixel corresponds to (0-31)
+	uint32_t tileCol = i_XPosition / TILE_WIDTH_IN_PIXELS;
+	uint32_t tileRow = (i_YPosition / TILE_HEIGHT_IN_PIXELS);
 
+	// calculate the pixel row number within the tile (0-7)
+	uint32_t tilePixelRow = (i_YPosition % TILE_HEIGHT_IN_PIXELS);
+
+	// calculate tile index in map
+	word tileIndexInMap = i_TileIndexMapBaseAddr + (tileRow * MAX_TILES_PER_LINE + tileCol);
+	
+	// get the tile id from memory
+	byte tileId = m_Gameboy.GetMMU().Read(tileIndexInMap);
+
+	// calculate the tile data address 
+	// the id that we mapped should be added to the tile data address base
+	// this way we know which tile data to use for this pixel
+	// note that we need to take into account the sign in this region
+	word tileDataAddr = i_TileDataBaseAddr;
+	if (i_IsSignedDataRegion)
+	{
+		tileDataAddr += (static_cast<sbyte>(tileId) + 128) * SIZE_OF_A_SINGLE_TILE_IN_BYTES;
+	}
+	else
+	{
+		tileDataAddr += tileId * SIZE_OF_A_SINGLE_TILE_IN_BYTES;
+	}
+
+	// now that we have the exact tile data id in memory,
+	// we need to know which out of the 8 lines in the tile,
+	// we need to read (remember that 2 bytes = 1 line)
+	// we already caluclated the row in which the pixel is on the tile
+	// just need this number multiplied (because its 2 bytes)
+	// and read that from memory
+	word addressForTheRowInTheTile = tileDataAddr + (tilePixelRow * SIZE_OF_A_SINGLE_LINE_IN_A_TILE_IN_BYTES);
+
+	// read the two bytes of this line from memory
+	o_HighByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile);
+	o_LowByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile + 1);
 }
 
 inline GPU::Shade GPU::extractShadeIdFromTileLine(byte i_HighByte, byte i_LowByte, byte i_TilePixelCol)
 {
 	// the ids are read if we put the bytes on top of each other like that:
 	// pixel 		0 1 2 3 4 5 6 7
-	// upper byte   a b c d e f g h
-	// lower byte   i j k l m n o p
+	// lower byte   a b c d e f g h
+	// upper byte   i j k l m n o p
 	// so for pixel 0 we need to extract the first two bits and it will be the id "ai"
 	// note that pixel 0 is actually bits 7 and pixel 7 is bits 0
 
-	byte upperBit = bitwise::GetBit(7 - i_TilePixelCol, i_HighByte);
-	byte lowerBit = bitwise::GetBit(7 - i_TilePixelCol, i_LowByte);
+	byte lowerBit = (int)bitwise::GetBit(7 - i_TilePixelCol, i_LowByte);
+	byte upperBit = (int)bitwise::GetBit(7 - i_TilePixelCol, i_HighByte);
 
-	byte shadeId = upperBit << 1 | lowerBit;
+	byte shadeId = (lowerBit << 1) | upperBit;
 	return Shade(shadeId);
 }
 
@@ -508,37 +576,36 @@ inline GPU::Shade GPU::extractRealShadeFromPalette(byte i_Palette, Shade i_Shade
 {
 	// every two bits in the palette represent a shade
 	// it maps like so:
-	// bits 7-6 to shade id 11
-	// bits 5-4 to shade id 10
-	// bits 3-2 to shade id 01
 	// bits 1-0 to shade id 00
+	// bits 3-2 to shade id 01
+	// bits 5-4 to shade id 10
+	// bits 7-6 to shade id 11
 	// what is written within the bits in the palette is the real shade to be drawn
 
-	byte realShadeToBeDrawn = 0x0;
-
+	byte realShadeToDraw = 0x0;
 	switch (i_ShadeId)
 	{
 		case GPU::Shade::Shade_00:
 			// extract bits 1-0 from palette
-			realShadeToBeDrawn = i_Palette & 0x03;
+			realShadeToDraw = i_Palette & 0x03;
 			break;
 		case GPU::Shade::Shade_01:
 			// extract bits 3-2 from palette
-			realShadeToBeDrawn = (i_Palette & 0x0C) >> 2;
+			realShadeToDraw = (i_Palette & 0x0C) >> 2;
 			break;
 		case GPU::Shade::Shade_10:
 			// extract bits 5-4 from palette
-			realShadeToBeDrawn = (i_Palette & 0x30) >> 4;
+			realShadeToDraw = (i_Palette & 0x30) >> 4;
 			break;
 		case GPU::Shade::Shade_11:
-			// extract bits 5-4 from palette
-			realShadeToBeDrawn = (i_Palette & 0xC0) >> 6;
+			// extract bits 7-6 from palette
+			realShadeToDraw = (i_Palette & 0xC0) >> 6;
 			break;
 		default:
 			break;
 	}
 
-	return Shade(realShadeToBeDrawn);
+	return Shade(realShadeToDraw);
 }
 
 void GPU::setMode(Video_Mode i_NewMode)

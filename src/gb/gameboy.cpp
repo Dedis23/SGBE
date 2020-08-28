@@ -49,7 +49,7 @@ void Gameboy::Step()
 	uint32_t commandNum = 1;
 	static bool write = false;
 	static bool isInBoot = false;
-	static int startFrameToCapture = 340;
+	static int startFrameToCapture = 860;
 	if (frameNum == startFrameToCapture) // m_GPU->isTimeToRecord()/*frameNum == 1*/ && write == false
 	{
 		//std::cout << "frameNum is: " << std::dec << frameNum << std::endl;
@@ -82,7 +82,7 @@ void Gameboy::Step()
 	{
 		static std::string lastComTest;
 
-		if (frameNum == 341 && commandNum == 629)
+		if (frameNum == 860  && commandNum == 6892)
 		{
 			std::cout << "STOP!" << std::endl;
 		}

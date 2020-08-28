@@ -62,8 +62,8 @@ const word GPU_SPRITES_PALETTE_1_DATA_ADDR = 0xFF49;
 /* the y position if the window, the window can be displayed above the background
    and sprites may be displayed above or behind the window
    the window becomes visible if it is enabled in the controller,
-   the Y is in 0-143 range and the X is in 0-166 range.
-   for upper left the values should be Y=0, X=7 and it will be on top on background */
+   the Y is in 0-143 range and the X is in 0-159 range. (windows x register is minus 7)
+   for upper left the values should be Y=0, X=7 and it will be on top of the background */
 const word GPU_WINDOW_Y_POSITION_ADDR = 0xFF4A;
 
 /* the x position of the window. the details written above */
@@ -107,8 +107,10 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 #define WINDOW_TILE_MAP_ADDR_IF_BIT_IS_1 0x9C00
 #define BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_0 0x8800
 #define BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_1 0x8000
-#define BG_TILE_MAP_ADDR_IF_BIT_IS_0 0x9800
-#define BG_TILE_MAP_ADDR_IF_BIT_IS_1 0x9C00
+#define BG_AND_WINDOW_TILE_MAP_ADDR_IF_BIT_IS_0 0x9800
+#define BG_AND_WINDOW_TILE_MAP_ADDR_IF_BIT_IS_1 0x9C00
+#define WINODW_Y_MAX_ROW 143
+#define WINDOW_X_MAX_COL 159
 
 const uint32_t MAX_CYCLES_BEFORE_RENDERING = 70224; // this is calcualted like so:  144 lines in modes 2, 3, 0 (144*456 cycles)
                                                     // plus 10 lines in mode 1 (10*456) = 65664 + 4560 = 70224
@@ -127,7 +129,11 @@ struct Pixel
     }
 };
 
-const Pixel GAMEBOY_POCKET_PALLETE[4] = { { 255, 255, 255 }, { 192, 192, 192 }, { 96, 96, 96 }, { 0, 0, 0 } };
+const Pixel GAMEBOY_POCKET_PALLETE[4] = { { 255, 255, 255 },
+                                          { 192, 192, 192 },
+                                          { 96, 96, 96 }, 
+                                          { 0, 0, 0 } 
+                                        };
 
 class Gameboy;
 
@@ -168,11 +174,14 @@ private:
     void handleSearchSpritesAttributesMode();
     void handleLCDTransferMode();
     void checkForLYAndLYCCoincidence();
+    
     void drawCurrentScanline();
-
-    void drawBackgroundLine(byte i_Line);
-    void drawWindowLine(byte i_Line);
-    void drawSprites();
+    void drawCurrentBackgroundLine();
+    void drawCurrentWindowLine();
+    void drawCurrentSpritesLine();
+    void readTileLineFromMemory(const uint32_t& i_XPosition, const uint32_t& i_YPosition,
+                                word i_TileDataBaseAddr, word i_TileIndexMapBaseAddr, bool i_IsSignedDataRegion,
+                                byte& o_HighByte, byte& o_LowByte);
     Shade extractShadeIdFromTileLine(byte i_HighByte, byte i_LowByte, byte i_TilePixelCol);
     Shade extractRealShadeFromPalette(byte i_Palette, Shade i_ShadeId);
 
