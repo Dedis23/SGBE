@@ -2,9 +2,7 @@
 
 GPU::GPU(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsLCDEnabled(true), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0),
 m_LCDControl(0), m_LCDStatus(0), m_ScrollY(0), m_ScrollX(0), m_LCDCYCoordinate(0), m_LYCompare(0), m_BGAndWindowPalette(0),
-m_SpritesPalette0(0), m_SpritesPalette1(0), m_WindowYPosition(0), m_WindowXPositionMinus7(0)
-{
-}
+m_SpritesPalette0(0), m_SpritesPalette1(0), m_WindowYPosition(0), m_WindowXPositionMinus7(0) {}
 
 /*
 	Taken from Pan Docs:
@@ -84,8 +82,7 @@ void GPU::Reset()
 	m_WindowXPositionMinus7 = 0;
 	m_IsLCDEnabled = true;
 	m_VideoCycles = 0;
-	// reset all pixels to white 255 in RGB
-	memset(m_FrameBuffer, 0xFF, sizeof(m_FrameBuffer));
+	memset(m_FrameBuffer, 0xFF, sizeof(m_FrameBuffer));	// reset all pixels to white 255 in RGB
 	setMode(Video_Mode::Searching_OAM);
 }
 
@@ -336,33 +333,14 @@ void GPU::handleLCDTransferMode()
 	}
 }
 
-/* draws a single scanline with background, window and sprite */
-void GPU::drawCurrentScanline()
-{
-	// check for BG/window display bit
-	if (bitwise::GetBit(LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT, m_LCDControl))
-	{
-		drawCurrentBackgroundLine();
-		// check for window display bit
-		if (bitwise::GetBit(LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT, m_LCDControl))
-		{
-			drawCurrentWindowLine();
-		}
-	}
-	// check for sprite display bit
-	if (bitwise::GetBit(LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT, m_LCDControl))
-	{
-		//drawCurrentSpritesLine();
-	}
-}
-
 void GPU::checkForLYAndLYCCoincidence()
 {
 	// compare the current Y scanline and LYC
 	if (m_LCDCYCoordinate == m_LYCompare)
 	{
-		// raise coincidence bit
+		// raise coincidence bit in the status register
 		bitwise::SetBit(LCD_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT, true, m_LCDStatus);
+		// request interrupt if the coincidence interrupt bit is raised
 		if (bitwise::GetBit(LCD_STATUS_LYC_EQUALS_LY_COINCIDENCE_INTERRUPT_BIT, m_LCDStatus))
 		{
 			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
@@ -370,15 +348,35 @@ void GPU::checkForLYAndLYCCoincidence()
 	}
 	else //  its > or <
 	{
-		// clear the coincidence bit
+		// clear the coincidence bit in the status register
 		bitwise::SetBit(LCD_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT, false, m_LCDStatus);
+	}
+}
+
+/* draws a single scanline with background, window and sprite */
+void GPU::drawCurrentScanline()
+{
+	// check for BG/window display bit
+	if (bitwise::GetBit(LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT, m_LCDControl))
+	{
+		drawCurrentLineBackground();
+		// check for window display bit
+		if (bitwise::GetBit(LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT, m_LCDControl))
+		{
+			drawCurrentLineWindow();
+		}
+	}
+	// check for sprite display bit
+	if (bitwise::GetBit(LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT, m_LCDControl))
+	{
+		drawCurrentLineSprites();
 	}
 }
 
 /* draw a single line of the background
    the background consists of 256*256 pixels. by using the SCROLL_Y and SCROLL_X registers,
    the game decides from where in the 256*256 map, it should draw (this wraps around if passes the edge) */
-void GPU::drawCurrentBackgroundLine()
+void GPU::drawCurrentLineBackground()
 {
 	word tileIndexMapBaseAddr = 0x0;
 	word tileDataBaseAddr = 0x0;
@@ -442,7 +440,7 @@ void GPU::drawCurrentBackgroundLine()
 
 /* the window is behind the sprites and above the background (unless specified otherwise)
    it is generally used for UI and its a fixed panel that will generaly not scroll */
-void GPU::drawCurrentWindowLine()
+void GPU::drawCurrentLineWindow()
 {
 	word tileIndexMapBaseAddr = 0x0;
 	word tileDataBaseAddr = 0x0;
@@ -507,21 +505,110 @@ void GPU::drawCurrentWindowLine()
 	}
 }
 
-void GPU::drawCurrentSpritesLine()
+void GPU::drawCurrentLineSprites()
 {
+	// check in which mode the sprites are: 8x8 or 8x16
+	byte spriteHeight = bitwise::GetBit(LCD_CONTROL_SPRITE_SIZE_BIT, m_LCDControl) ? 16 : 8;
 
+	for (int spriteIndex = 0; spriteIndex < NUM_OF_SPRITES_ENTRIES; spriteIndex++)
+	{
+		// calculate the current sprite index in memory
+		word spriteAddress = SPRITES_BASE_ADDR + (spriteIndex * SIZE_OF_SPRITE_DATA);
+
+		// read the current sprite data from memory
+		Sprite currSprite;
+		currSprite.PositionY = m_Gameboy.GetMMU().Read(spriteAddress);
+		currSprite.PositionX = m_Gameboy.GetMMU().Read(spriteAddress + 1);
+		currSprite.TileIndex = m_Gameboy.GetMMU().Read(spriteAddress + 2);
+		currSprite.Attributes = m_Gameboy.GetMMU().Read(spriteAddress + 3);
+
+		// adjust y and x pos to screen pos - for (0,0) (top-left) the sprite is (8,16)
+		currSprite.PositionY -= 16;
+		currSprite.PositionX -= 8;
+
+		// check if the current sprite y pos is relevant for the current scanline
+		// if the position is above the curr scanline or that the position y + size does not axis intersect with it, continue 
+		if (currSprite.PositionY > m_LCDCYCoordinate || currSprite.PositionY + spriteHeight <= m_LCDCYCoordinate)
+			continue;
+		
+		// calculate the row num within the tile (0-7 / 0-15 based on sprite size) of the current sprite that intersect with the current scanline
+		int tileRow = m_LCDCYCoordinate - currSprite.PositionY;
+
+		// handle y flip
+		if (bitwise::GetBit(SPRITE_ATTR_Y_FLIP_BIT, currSprite.Attributes))
+		{
+			// y flip bit is on - the trick is to read the sprite backwards from memory
+			// i.e: for sprite size = 8, instead of reading line 0, will read line 7, 1->6 and so on
+			tileRow -= (spriteHeight - 1);
+		}
+
+		// read the two bytes that represent the line of intersection
+		word tileDataAddr = SPRITE_TILE_DATA_BASE_ADDR + (currSprite.TileIndex * SIZE_OF_A_SINGLE_TILE_IN_BYTES);
+		word addressForTheRowInTheTile = tileDataAddr + (tileRow * SIZE_OF_A_SINGLE_LINE_IN_A_TILE_IN_BYTES);
+		byte highByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile);
+		byte lowByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile + 1);
+
+		bool xFlip = bitwise::GetBit(SPRITE_ATTR_X_FLIP_BIT, currSprite.Attributes);
+		byte palette = bitwise::GetBit(SPRITE_ATTR_PALLETE_NUMBER_FOR_NON_CGB_BIT, currSprite.Attributes) ? m_SpritesPalette1 : m_SpritesPalette0;
+		bool isSpriteOnTop = bitwise::GetBit(SPRITE_ATTR_SPRITE_TO_BG_AND_WINDOW_PRIORITY_BIT, currSprite.Attributes) ? false : true;
+		Pixel shade0RGB = GAMEBOY_POCKET_PALLETE[(int)extractRealShadeFromPalette(m_BGAndWindowPalette, Shade::Shade_00)];
+
+		// for every one of the 8 pixels in the row, do the following
+		for (int xIndex = 0; xIndex < 8; xIndex++)
+		{
+			int xPos = currSprite.PositionX + xIndex;
+
+			// continue only if the pixel is on screen
+			if (xPos < 0 || xPos >= GAMEBOY_SCREEN_WIDTH)
+				continue;
+
+			// handle x flip
+			byte colInLine = xIndex;
+			if (xFlip)
+			{
+				// x flip bit is on - read the pixel backwards
+				// i.e: instead of reading pixel 0, read pixel 7, 1->6 and so on
+				colInLine = 7 - xIndex;
+			}	
+
+			// extract the shade id of the pixel from the tile line bytes
+			Shade shadeId = extractShadeIdFromTileLine(highByte, lowByte, colInLine);
+
+			// if the sprite shade id is 0x0 then its transperent and do nothing
+			if (shadeId == Shade::Shade_00)
+				continue;
+
+			// calculate the index in the frame buffer (the array of pixels to be drawn)
+			uint32_t frameBufferIndex = (m_LCDCYCoordinate * GAMEBOY_SCREEN_WIDTH) + xPos;
+
+			// now continue only if the sprite on top flag is on or, 
+			// the current pixel in the background is white (0x0 - brightest shade)
+			// in this case, the flag is ignored and the sprite shall be displayed nontheless
+			if (isSpriteOnTop || m_FrameBuffer[frameBufferIndex] == shade0RGB)
+			{
+				// translate the shade id of the pixel into the real shade based on the current sprite palette
+				Shade realShade = extractRealShadeFromPalette(palette, shadeId);
+
+				// get the real color to be drawn from the current palette based on the real shade number
+				Pixel color = GAMEBOY_POCKET_PALLETE[(int)realShade];
+
+				m_FrameBuffer[frameBufferIndex] = color;
+			}
+		}
+	}
 }
 
+/* used for BG and window tiles drawings */
 inline void GPU::readTileLineFromMemory(const uint32_t& i_XPosition, const uint32_t& i_YPosition,
                                         word i_TileDataBaseAddr, word i_TileIndexMapBaseAddr, bool i_IsSignedDataRegion,
                                         byte& o_HighByte, byte& o_LowByte)
 {
 	// calculate the tile number that this pixel corresponds to (0-31)
 	uint32_t tileCol = i_XPosition / TILE_WIDTH_IN_PIXELS;
-	uint32_t tileRow = (i_YPosition / TILE_HEIGHT_IN_PIXELS);
+	uint32_t tileRow = i_YPosition / TILE_HEIGHT_IN_PIXELS;
 
 	// calculate the pixel row number within the tile (0-7)
-	uint32_t tilePixelRow = (i_YPosition % TILE_HEIGHT_IN_PIXELS);
+	uint32_t tilePixelRow = i_YPosition % TILE_HEIGHT_IN_PIXELS;
 
 	// calculate tile index in map
 	word tileIndexInMap = i_TileIndexMapBaseAddr + (tileRow * MAX_TILES_PER_LINE + tileCol);

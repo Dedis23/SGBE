@@ -89,13 +89,20 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 #define LCD_STATUS_MODE_FLAG_FIRST_BIT                     0 // 10: Searching OAM mode 11: Transfer data to LCD mode
 
 /* Various definitions */
-#define MIN_H_BLANK_MODE_CYCLES 204 // Mode 0 cycles
-#define MIN_V_BLANK_MODE_CYCLES 456 // Mode 1 cycles (for 1 line)
-#define MAX_V_BLANK_MODE_CYCLES 4560 // Mode 1 overall cycles (10 lines) 
-#define MIN_SEARCHING_OAM_MODE_CYCLES 80 // Mode 2 cycles
-#define MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES 172 // Mode 3 cycles
+
+/* mode and cycles releated */
+#define MIN_H_BLANK_MODE_CYCLES              204   // Mode 0 cycles
+#define MIN_V_BLANK_MODE_CYCLES              456   // Mode 1 cycles (for 1 line)
+#define MAX_V_BLANK_MODE_CYCLES              4560  // Mode 1 overall cycles (10 lines) 
+#define MIN_SEARCHING_OAM_MODE_CYCLES        80    // Mode 2 cycles
+#define MIN_TRANSFER_DATA_TO_LCD_MODE_CYCLES 172   // Mode 3 cycles
+#define MAX_CYCLES_BEFORE_RENDERING          70224 // this is calcualted like so:  144 lines in modes 2, 3, 0 (144*456 cycles)
+                                                   // plus 10 lines in mode 1 (10*456) = 65664 + 4560 = 70224
+                                                   // 456 is the number of cycles that it takes to draw single line (mode 2 + mode3 + mode0)
 #define V_BLANK_START_SCANLINE 144
 #define V_BLANK_END_SCANLINE 154 // lines 144 till 153 are for vblank mode (10 lines)
+
+/* background, window and sprites releated (tiles, pixels) */
 #define BG_HEIGHT_PIXELS 256 // the background consists of 256*256 or 32*32 tiles
 #define BG_WIDTH_PIXELS 256
 #define MAX_TILES_PER_LINE 32
@@ -112,9 +119,30 @@ const word GPU_WINDOW_X_POSITION_MINUS_7_ADDR = 0xFF4B;
 #define WINODW_Y_MAX_ROW 143
 #define WINDOW_X_MAX_COL 159
 
-const uint32_t MAX_CYCLES_BEFORE_RENDERING = 70224; // this is calcualted like so:  144 lines in modes 2, 3, 0 (144*456 cycles)
-                                                    // plus 10 lines in mode 1 (10*456) = 65664 + 4560 = 70224
-                                                    // 456 is the number of cycles that it takes to draw single line (mode 2 + mode3 + mode0)
+/* sprites releated */
+struct Sprite
+{
+    byte PositionY; // for y = 0, the PositionY is 16 in memory
+    byte PositionX; // for x = 0, the PositionX is 8 in memory
+    byte TileIndex;
+    byte Attributes;
+};
+#define SPRITE_ATTR_SPRITE_TO_BG_AND_WINDOW_PRIORITY_BIT 7 // 0 = sprite is above BG and window, 1 = the sprite is behind the background and window, 
+                                                           // unless the color of them is white (brightest in palette) 
+                                                           // and then the sprite is rendered still on top of them
+#define SPRITE_ATTR_Y_FLIP_BIT                           6 // 0 = normal, 1 = vertically mirrored
+#define SPRITE_ATTR_X_FLIP_BIT                           5 // 0 = normal, 1 = horizontally mirrored
+#define SPRITE_ATTR_PALLETE_NUMBER_FOR_NON_CGB_BIT       4 // 0 = use sprite pallete #0, 1 = use sprite pallete #1 
+#define SPRITE_ATTR_TILE_VRAM_BANK_BIT                   3 // 0 = bank 0, 1 = bank 1 - Note this is for CGB only.
+#define SPRITE_ATTR_PALLETE_NUMBER_FOR_CGB_THIRD_BIT     2 // *
+#define SPRITE_ATTR_PALLETE_NUMBER_FOR_CGB_SECOND_BIT    1 // bits 2-0 are for palette number 0-7. thse are used in CGB mode only.
+#define SPRITE_ATTR_PALLETE_NUMBER_FOR_CGB_FIRST_BIT     0 // *
+#define SPRITE_TILE_DATA_BASE_ADDR 0x8000
+#define SPRITES_BASE_ADDR 0xFE00 // (start of OAM)
+#define NUM_OF_SPRITES_ENTRIES 40
+#define SIZE_OF_SPRITE_DATA 4
+
+/* pixel releated */
 struct Pixel
 {
     byte Red;
@@ -129,7 +157,8 @@ struct Pixel
     }
 };
 
-const Pixel GAMEBOY_POCKET_PALLETE[4] = { { 255, 255, 255 },
+const Pixel GAMEBOY_POCKET_PALLETE[4] = { 
+                                          { 255, 255, 255 },
                                           { 192, 192, 192 },
                                           { 96, 96, 96 }, 
                                           { 0, 0, 0 } 
@@ -162,10 +191,10 @@ private:
 
     enum class Shade
     {
-        Shade_00 = 0,
+        Shade_00 = 0, // Brightest
         Shade_01 = 1,
         Shade_10 = 2,
-        Shade_11 = 3,
+        Shade_11 = 3, // Darkest
     };
 
     void setMode(Video_Mode i_NewMode);
@@ -174,11 +203,11 @@ private:
     void handleSearchSpritesAttributesMode();
     void handleLCDTransferMode();
     void checkForLYAndLYCCoincidence();
-    
+
     void drawCurrentScanline();
-    void drawCurrentBackgroundLine();
-    void drawCurrentWindowLine();
-    void drawCurrentSpritesLine();
+    void drawCurrentLineBackground();
+    void drawCurrentLineWindow();
+    void drawCurrentLineSprites();
     void readTileLineFromMemory(const uint32_t& i_XPosition, const uint32_t& i_YPosition,
                                 word i_TileDataBaseAddr, word i_TileIndexMapBaseAddr, bool i_IsSignedDataRegion,
                                 byte& o_HighByte, byte& o_LowByte);
