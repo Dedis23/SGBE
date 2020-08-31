@@ -172,19 +172,19 @@ void CPU::RequestInterrupt(InterruptType i_InterruptType)
 	switch (i_InterruptType)
 	{
 	case CPU::InterruptType::VBlank:
-		bitwise::SetBit(0, true, interruptRequest);
+		bitwise::SetBit(0, interruptRequest);
 		break;
 	case CPU::InterruptType::LCD:
-		bitwise::SetBit(1, true, interruptRequest);
+		bitwise::SetBit(1, interruptRequest);
 		break;
 	case CPU::InterruptType::Timer:
-		bitwise::SetBit(2, true, interruptRequest);
+		bitwise::SetBit(2, interruptRequest);
 		break;
 	case CPU::InterruptType::Serial:
-		bitwise::SetBit(3, true, interruptRequest);
+		bitwise::SetBit(3, interruptRequest);
 		break;
 	case CPU::InterruptType::Joypad:
-		bitwise::SetBit(4, true, interruptRequest);
+		bitwise::SetBit(4, interruptRequest);
 		break;
 	}
 	m_MMU.Write(INTERRUPT_REQUREST_ADDR, interruptRequest);
@@ -212,30 +212,30 @@ void CPU::HandleInterrupts(uint32_t& o_Cycles)
 			// save current PC into stack
 			PUSH(PC.GetValue());
 			// set PC to the interrupt routine based on priority and clear the request bit from request flag
-			if (bitwise::GetBit(0, activeInterrupts))
+			if (bitwise::IsBitSet(0, activeInterrupts))
 			{
 				PC.SetValue(VBLANK_INTERRUPT_ROUTINE_ADDR);
-				bitwise::SetBit(0, false, interruptRequest);
+				bitwise::ClearBit(0, interruptRequest);
 			}
-			else if (bitwise::GetBit(1, activeInterrupts))
+			else if (bitwise::IsBitSet(1, activeInterrupts))
 			{
 				PC.SetValue(LCD_INTERRUPT_ROUTINE_ADDR);
-				bitwise::SetBit(1, false, interruptRequest);
+				bitwise::ClearBit(1, interruptRequest);
 			}
-			else if (bitwise::GetBit(2, activeInterrupts))
+			else if (bitwise::IsBitSet(2, activeInterrupts))
 			{
 				PC.SetValue(TIMER_INTERRUPT_ROUTINE_ADDR);
-				bitwise::SetBit(2, false, interruptRequest);
+				bitwise::ClearBit(2, interruptRequest);
 			}
-			else if (bitwise::GetBit(3, activeInterrupts))
+			else if (bitwise::IsBitSet(3, activeInterrupts))
 			{
 				PC.SetValue(SERIAL_INTERRUPT_ROUTINE_ADDR);
-				bitwise::SetBit(3, false, interruptRequest);
+				bitwise::ClearBit(3, interruptRequest);
 			}
-			else if (bitwise::GetBit(4, activeInterrupts))
+			else if (bitwise::IsBitSet(4, activeInterrupts))
 			{
 				PC.SetValue(JOYPAD_INTERRUPT_ROUTINE_ADDR);
-				bitwise::SetBit(4, false, interruptRequest);
+				bitwise::ClearBit(4, interruptRequest);
 			}
 
 			m_MMU.Write(INTERRUPT_REQUREST_ADDR, interruptRequest);
@@ -3001,7 +3001,7 @@ inline void CPU::RLC_n(ByteRegister& i_DestRegister)
 inline void CPU::RLC_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
-	bitwise::GetBit(7, val) ? F.SetC(true) : F.SetC(false);
+	bitwise::IsBitSet(7, val) ? F.SetC(true) : F.SetC(false);
 
 	val = (val << 1) | F.GetC(); // rotate left and add bit 7 to bit 0
 	m_MMU.Write(i_SrcMemory, val);
@@ -3043,7 +3043,7 @@ inline void CPU::RL_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	// save bit 7 from n
-	bool bit7 = bitwise::GetBit(7, val);
+	bool bit7 = bitwise::IsBitSet(7, val);
 
 	val = (val << 1) | F.GetC(); // rotate left and add carry to bit 0
 	m_MMU.Write(i_SrcMemory, val);
@@ -3083,7 +3083,7 @@ inline void CPU::RRC_n(ByteRegister& i_DestRegister)
 inline void CPU::RRC_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
-	bitwise::GetBit(0, val) ? F.SetC(true) : F.SetC(false);
+	bitwise::IsBitSet(0, val) ? F.SetC(true) : F.SetC(false);
 
 	val = (val >> 1) | (F.GetC() << 7); // rotate right and add bit 0 to bit 7
 	m_MMU.Write(i_SrcMemory, val);
@@ -3125,7 +3125,7 @@ inline void CPU::RR_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 	// save bit 0 from n
-	bool bit0 = bitwise::GetBit(0, val);
+	bool bit0 = bitwise::IsBitSet(0, val);
 
 	val = (val >> 1) | (F.GetC() << 7); // rotate left and add carry to bit 7
 	m_MMU.Write(i_SrcMemory, val);
@@ -3166,7 +3166,7 @@ inline void CPU::SLA_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
 
-	F.SetC(bitwise::GetBit(7, val)); // set carry to be bit 7
+	F.SetC(bitwise::IsBitSet(7, val)); // set carry to be bit 7
 	val = val << 1; // shift n left (LSB will be 0)
 	m_MMU.Write(i_SrcMemory, val);
 
@@ -3207,9 +3207,9 @@ inline void CPU::SRA_n(ByteRegister& i_DestRegister)
 inline void CPU::SRA_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
-	bool bit7 = bitwise::GetBit(7, val);
+	bool bit7 = bitwise::IsBitSet(7, val);
 
-	F.SetC(bitwise::GetBit(0, val)); // set carry to be bit 0
+	F.SetC(bitwise::IsBitSet(0, val)); // set carry to be bit 0
 	val = val >> 1; // shift n right, MSB is 0 now
 	if (bit7) // if MSB was set, restore it
 	{
@@ -3248,7 +3248,7 @@ inline void CPU::SRL_n(ByteRegister& i_DestRegister)
 inline void CPU::SRL_n(word& i_SrcMemory)
 {
 	byte val = m_MMU.Read(i_SrcMemory);
-	F.SetC(bitwise::GetBit(0, val)); // set carry to be bit 0
+	F.SetC(bitwise::IsBitSet(0, val)); // set carry to be bit 0
 	val = val >> 1; // shift n right, MSB is 0 now
 	m_MMU.Write(i_SrcMemory, val);
 
@@ -3270,7 +3270,7 @@ inline void CPU::SRL_n(word& i_SrcMemory)
 */
 inline void CPU::BIT_b_r(byte i_BitNumber, byte i_Value)
 {
-	bool res = !bitwise::GetBit(i_BitNumber, i_Value);
+	bool res = !bitwise::IsBitSet(i_BitNumber, i_Value);
 	
 	F.SetZ(res);
 	F.SetN(false);
@@ -3286,7 +3286,7 @@ inline void CPU::BIT_b_r(byte i_BitNumber, byte i_Value)
 */
 inline void CPU::SET_b_r(byte i_BitNumber, byte& o_Value)
 {
-	bitwise::SetBit(i_BitNumber, true, o_Value);
+	bitwise::SetBit(i_BitNumber, o_Value);
 }
 
 /*
@@ -3298,7 +3298,7 @@ inline void CPU::SET_b_r(byte i_BitNumber, byte& o_Value)
 */
 inline void CPU::RES_b_r(byte i_BitNumber, byte& o_Value)
 {
-	bitwise::SetBit(i_BitNumber, false, o_Value);
+	bitwise::ClearBit(i_BitNumber, o_Value);
 }
 
 void CPU::OPCode_06()

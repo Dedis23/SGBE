@@ -18,7 +18,7 @@ bool SDLWrapper::Initialize(const string& i_WindowTitle, int i_WindowWidth, int 
 
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	m_Window = SDL_CreateWindow(m_WindowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_WindowWidth, m_WindowHeight, SDL_WINDOW_SHOWN);
+	m_Window = SDL_CreateWindow(m_WindowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_WindowWidth * 4, m_WindowHeight * 4, SDL_WINDOW_SHOWN);
 	LOG_CRITICAL(m_Window == NULL, return false, "Failed to create SDL window");
 
 	m_Renderer = SDL_CreateRenderer(m_Window, -1, 0);

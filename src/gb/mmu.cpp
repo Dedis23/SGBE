@@ -211,7 +211,7 @@ void MMU::writeMappedIO(word i_Address, byte i_Value)
     }
     else if (i_Address == SERIAL_TRANSFER_CONTROL_ADDR)
     {
-        if (bitwise::GetBit(i_Value, 7))
+        if (bitwise::IsBitSet(i_Value, 7))
         {
             /* This is to print from serial - for Blargg's cpu instructions tests - TODO remove this */
             //printf("%c", m_MappedIO[i_Address - 0xFF01]);

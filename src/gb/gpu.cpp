@@ -246,7 +246,7 @@ void GPU::handleHBlankMode()
 			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::VBlank);
 
 			// check for mode 1 interrupt bit
-			if (bitwise::GetBit(LCD_STATUS_MODE_1_V_BLANK_INTERRUPT_BIT, m_LCDStatus))
+			if (bitwise::IsBitSet(LCD_STATUS_MODE_1_V_BLANK_INTERRUPT_BIT, m_LCDStatus))
 			{
 				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 			}
@@ -257,7 +257,7 @@ void GPU::handleHBlankMode()
 		else // move again to OAM search (mode 2) to create the next scanline
 		{
 			// check for mode 2 interrupt bit
-			if (bitwise::GetBit(LCD_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
+			if (bitwise::IsBitSet(LCD_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
 			{
 				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 			}
@@ -290,7 +290,7 @@ void GPU::handleVBlankMode(const uint32_t& i_Cycles)
 		checkForLYAndLYCCoincidence();
 	
 		// check for mode 2 interrupt bit
-		if (bitwise::GetBit(LCD_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
+		if (bitwise::IsBitSet(LCD_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
 		{
 			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 		}
@@ -323,7 +323,7 @@ void GPU::handleLCDTransferMode()
 		drawCurrentScanline();
 
 		// check for mode 0 (H Blank) interrupt bit
-		if (bitwise::GetBit(LCD_STATUS_MODE_0_H_BLANK_INTERRUPT_BIT, m_LCDStatus))
+		if (bitwise::IsBitSet(LCD_STATUS_MODE_0_H_BLANK_INTERRUPT_BIT, m_LCDStatus))
 		{
 			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 		}
@@ -339,9 +339,9 @@ void GPU::checkForLYAndLYCCoincidence()
 	if (m_LCDCYCoordinate == m_LYCompare)
 	{
 		// raise coincidence bit in the status register
-		bitwise::SetBit(LCD_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT, true, m_LCDStatus);
+		bitwise::SetBit(LCD_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT, m_LCDStatus);
 		// request interrupt if the coincidence interrupt bit is raised
-		if (bitwise::GetBit(LCD_STATUS_LYC_EQUALS_LY_COINCIDENCE_INTERRUPT_BIT, m_LCDStatus))
+		if (bitwise::IsBitSet(LCD_STATUS_LYC_EQUALS_LY_COINCIDENCE_INTERRUPT_BIT, m_LCDStatus))
 		{
 			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 		}
@@ -349,7 +349,7 @@ void GPU::checkForLYAndLYCCoincidence()
 	else //  its > or <
 	{
 		// clear the coincidence bit in the status register
-		bitwise::SetBit(LCD_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT, false, m_LCDStatus);
+		bitwise::ClearBit(LCD_STATUS_LYC_LY_COINCIDENCE_FLAG_BIT, m_LCDStatus);
 	}
 }
 
@@ -357,17 +357,17 @@ void GPU::checkForLYAndLYCCoincidence()
 void GPU::drawCurrentScanline()
 {
 	// check for BG/window display bit
-	if (bitwise::GetBit(LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT, m_LCDControl))
+	if (bitwise::IsBitSet(LCD_CONTROL_BG_WINDOW_DISPLAY_PRIORITY_BIT, m_LCDControl))
 	{
 		drawCurrentLineBackground();
 		// check for window display bit
-		if (bitwise::GetBit(LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT, m_LCDControl))
+		if (bitwise::IsBitSet(LCD_CONTROL_WINDOW_DISPLAY_ENABLE_BIT, m_LCDControl))
 		{
 			drawCurrentLineWindow();
 		}
 	}
 	// check for sprite display bit
-	if (bitwise::GetBit(LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT, m_LCDControl))
+	if (bitwise::IsBitSet(LCD_CONTROL_SPRITE_DISPLAY_ENABLE_BIT, m_LCDControl))
 	{
 		drawCurrentLineSprites();
 	}
@@ -383,7 +383,7 @@ void GPU::drawCurrentLineBackground()
 	bool isSignedTileDataRegion = false;
 
 	// check which background memory section is relevant
-	if (bitwise::GetBit(LCD_CONTROL_BG_TILE_MAP_INDEX_SELECT_BIT, m_LCDControl))
+	if (bitwise::IsBitSet(LCD_CONTROL_BG_TILE_MAP_INDEX_SELECT_BIT, m_LCDControl))
 	{
 		tileIndexMapBaseAddr = BG_AND_WINDOW_TILE_MAP_ADDR_IF_BIT_IS_1;
 	}
@@ -393,7 +393,7 @@ void GPU::drawCurrentLineBackground()
 	}	
 
 	// check which tile data is relevant
-	if (bitwise::GetBit(LCD_CONTROL_BG_AND_WINDOW_TILE_DATA_SELECT_BIT, m_LCDControl))
+	if (bitwise::IsBitSet(LCD_CONTROL_BG_AND_WINDOW_TILE_DATA_SELECT_BIT, m_LCDControl))
 	{
 		tileDataBaseAddr = BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_1;
 		isSignedTileDataRegion = false;
@@ -447,7 +447,7 @@ void GPU::drawCurrentLineWindow()
 	bool isSignedTileDataRegion = false;
 
 	// check which window memory section is relevant
-	if (bitwise::GetBit(LCD_CONTROL_WINDOW_TILE_MAP_INDEX_SELECT_BIT, m_LCDControl))
+	if (bitwise::IsBitSet(LCD_CONTROL_WINDOW_TILE_MAP_INDEX_SELECT_BIT, m_LCDControl))
 	{
 		tileIndexMapBaseAddr = BG_AND_WINDOW_TILE_MAP_ADDR_IF_BIT_IS_1;
 	}
@@ -457,7 +457,7 @@ void GPU::drawCurrentLineWindow()
 	}	
 
 	// check which tile data is relevant
-	if (bitwise::GetBit(LCD_CONTROL_BG_AND_WINDOW_TILE_DATA_SELECT_BIT, m_LCDControl))
+	if (bitwise::IsBitSet(LCD_CONTROL_BG_AND_WINDOW_TILE_DATA_SELECT_BIT, m_LCDControl))
 	{
 		tileDataBaseAddr = BG_AND_WINDOW_TILE_DATA_ADDR_IF_BIT_IS_1;
 	}
@@ -508,7 +508,7 @@ void GPU::drawCurrentLineWindow()
 void GPU::drawCurrentLineSprites()
 {
 	// check in which mode the sprites are: 8x8 or 8x16
-	byte spriteHeight = bitwise::GetBit(LCD_CONTROL_SPRITE_SIZE_BIT, m_LCDControl) ? 16 : 8;
+	byte spriteHeight = bitwise::IsBitSet(LCD_CONTROL_SPRITE_SIZE_BIT, m_LCDControl) ? 16 : 8;
 
 	for (int spriteIndex = 0; spriteIndex < NUM_OF_SPRITES_ENTRIES; spriteIndex++)
 	{
@@ -535,7 +535,7 @@ void GPU::drawCurrentLineSprites()
 		int tileRow = m_LCDCYCoordinate - currSprite.PositionY;
 
 		// handle y flip
-		if (bitwise::GetBit(SPRITE_ATTR_Y_FLIP_BIT, currSprite.Attributes))
+		if (bitwise::IsBitSet(SPRITE_ATTR_Y_FLIP_BIT, currSprite.Attributes))
 		{
 			// y flip bit is on - the trick is to read the sprite backwards from memory
 			// i.e: for sprite size = 8, instead of reading line 0, will read line 7, 1->6 and so on
@@ -548,9 +548,9 @@ void GPU::drawCurrentLineSprites()
 		byte highByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile);
 		byte lowByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile + 1);
 
-		bool xFlip = bitwise::GetBit(SPRITE_ATTR_X_FLIP_BIT, currSprite.Attributes);
-		byte palette = bitwise::GetBit(SPRITE_ATTR_PALLETE_NUMBER_FOR_NON_CGB_BIT, currSprite.Attributes) ? m_SpritesPalette1 : m_SpritesPalette0;
-		bool isSpriteOnTop = bitwise::GetBit(SPRITE_ATTR_SPRITE_TO_BG_AND_WINDOW_PRIORITY_BIT, currSprite.Attributes) ? false : true;
+		bool xFlip = bitwise::IsBitSet(SPRITE_ATTR_X_FLIP_BIT, currSprite.Attributes);
+		byte palette = bitwise::IsBitSet(SPRITE_ATTR_PALLETE_NUMBER_FOR_NON_CGB_BIT, currSprite.Attributes) ? m_SpritesPalette1 : m_SpritesPalette0;
+		bool isSpriteOnTop = bitwise::IsBitSet(SPRITE_ATTR_SPRITE_TO_BG_AND_WINDOW_PRIORITY_BIT, currSprite.Attributes) ? false : true;
 		Pixel shade0RGB = GAMEBOY_POCKET_PALLETE[(int)extractRealShadeFromPalette(m_BGAndWindowPalette, Shade::Shade_00)];
 
 		// for every one of the 8 pixels in the row, do the following
@@ -574,7 +574,7 @@ void GPU::drawCurrentLineSprites()
 			// extract the shade id of the pixel from the tile line bytes
 			Shade shadeId = extractShadeIdFromTileLine(highByte, lowByte, colInLine);
 
-			// if the sprite shade id is 0x0 then its transperent and do nothing
+			// if the sprite shade id is 0x0 then its transperent, do nothing
 			if (shadeId == Shade::Shade_00)
 				continue;
 
@@ -652,8 +652,8 @@ inline GPU::Shade GPU::extractShadeIdFromTileLine(byte i_HighByte, byte i_LowByt
 	// so for pixel 0 we need to extract the first two bits and it will be the id "ai"
 	// note that pixel 0 is actually bits 7 and pixel 7 is bits 0
 
-	byte lowerBit = (int)bitwise::GetBit(7 - i_TilePixelCol, i_LowByte);
-	byte upperBit = (int)bitwise::GetBit(7 - i_TilePixelCol, i_HighByte);
+	byte lowerBit = (int)bitwise::IsBitSet(7 - i_TilePixelCol, i_LowByte);
+	byte upperBit = (int)bitwise::IsBitSet(7 - i_TilePixelCol, i_HighByte);
 
 	byte shadeId = (lowerBit << 1) | upperBit;
 	return Shade(shadeId);
@@ -702,26 +702,26 @@ void GPU::setMode(Video_Mode i_NewMode)
 	{
 	case GPU::Video_Mode::H_Blank:
 		// mode 0
-		bitwise::SetBit(LCD_STATUS_MODE_FLAG_FIRST_BIT, false, m_LCDStatus);
-		bitwise::SetBit(LCD_STATUS_MODE_FLAG_SECOND_BIT, false, m_LCDStatus);
+		bitwise::ClearBit(LCD_STATUS_MODE_FLAG_FIRST_BIT, m_LCDStatus);
+		bitwise::ClearBit(LCD_STATUS_MODE_FLAG_SECOND_BIT, m_LCDStatus);
 		m_Mode = Video_Mode::H_Blank;
 		break;
 	case GPU::Video_Mode::V_Blank:
 		// mode 1
-		bitwise::SetBit(LCD_STATUS_MODE_FLAG_FIRST_BIT, true, m_LCDStatus);
-		bitwise::SetBit(LCD_STATUS_MODE_FLAG_SECOND_BIT, false, m_LCDStatus);
+		bitwise::SetBit(LCD_STATUS_MODE_FLAG_FIRST_BIT, m_LCDStatus);
+		bitwise::ClearBit(LCD_STATUS_MODE_FLAG_SECOND_BIT, m_LCDStatus);
 		m_Mode = Video_Mode::V_Blank;
 		break;
 	case GPU::Video_Mode::Searching_OAM:
 		// mode 2
-		bitwise::SetBit(LCD_STATUS_MODE_FLAG_FIRST_BIT, false, m_LCDStatus);
-		bitwise::SetBit(LCD_STATUS_MODE_FLAG_SECOND_BIT, true, m_LCDStatus);
+		bitwise::ClearBit(LCD_STATUS_MODE_FLAG_FIRST_BIT, m_LCDStatus);
+		bitwise::SetBit(LCD_STATUS_MODE_FLAG_SECOND_BIT, m_LCDStatus);
 		m_Mode = Video_Mode::Searching_OAM;
 		break;
 	case GPU::Video_Mode::Transfer_Data_To_LCD:
 		// mode 3
-		bitwise::SetBit(LCD_STATUS_MODE_FLAG_FIRST_BIT, true, m_LCDStatus);
-		bitwise::SetBit(LCD_STATUS_MODE_FLAG_SECOND_BIT, true, m_LCDStatus);
+		bitwise::SetBit(LCD_STATUS_MODE_FLAG_FIRST_BIT, m_LCDStatus);
+		bitwise::SetBit(LCD_STATUS_MODE_FLAG_SECOND_BIT, m_LCDStatus);
 		m_Mode = Video_Mode::Transfer_Data_To_LCD;
 		break;
 	}

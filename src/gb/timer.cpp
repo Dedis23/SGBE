@@ -117,7 +117,7 @@ void Timer::SetRegister(word i_Address, byte i_Value)
 		break;
 	case TIMER_CONTROL_ADDR:
 		{
-			m_IsEnabled = bitwise::GetBit(TIMER_CONTROL_ENABLE_BIT, i_Value) ? true : false; // read bit 2 for enable/disable
+			m_IsEnabled = bitwise::IsBitSet(TIMER_CONTROL_ENABLE_BIT, i_Value) ? true : false; // read bit 2 for enable/disable
 			m_CurrentFrequency = (Timer::TimerFrequencies)(i_Value & 0x3); // get bits 0 and 1 for freq type
 			return;
 		}
