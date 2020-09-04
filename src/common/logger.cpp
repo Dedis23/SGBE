@@ -161,7 +161,7 @@ string Logger::getCurrentTime()
 	std::time_t now_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());;
 	char buffer[20];
 	tm t;
-	//localtime_s(&t, &now_time);
+	localtime_r(&now_time, &t);
 	strftime(buffer, 20, "%Y-%m-%d %H:%M:%S", &t);
 	return buffer;
 }
