@@ -341,3 +341,6 @@ healthchecksdb
 
 # ignore build folder
 build/
+
+# ignore vscode settings
+.vscode/
