@@ -5,9 +5,9 @@
  ************************************************/
 
 /* Most of the information were take from:							 *
- * gameboy cpu manual pdf:											 *
+ * gameboy CPU Manual pdf:											 *
  * http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf					 *
- * Gameboy CPU Manual pdf:											 *
+ * Gameboy Programming Manual pdf:									 *
  * http://index-of.es/Varios-2/Game%20Boy%20Programming%20Manual.pdf */
 
 #pragma once

@@ -22,6 +22,7 @@ class MMU;
 class GPU;
 class Timer;
 class Joypad;
+enum class GBButtons;
 struct Pixel;
 
 class Gameboy
@@ -34,7 +35,9 @@ public:
 
 	bool Initialize();
 	bool IsCartridgeLoadedSuccessfully();
-	void Step();
+	void Step(); // step a single frame
+	void KeyPressed(const GBButtons& i_PressedButton) const;
+	void KeyReleased(const GBButtons& i_ReleasedButton) const;
 	CPU& GetCPU();
 	MMU& GetMMU();
 	GPU& GetGPU();

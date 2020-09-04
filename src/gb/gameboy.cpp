@@ -126,6 +126,16 @@ void Gameboy::Step()
 	}
 }
 
+void Gameboy::KeyPressed(const GBButtons& i_PressedButton) const
+{
+	m_Joypad->KeyPressed(i_PressedButton);
+}
+
+void Gameboy::KeyReleased(const GBButtons& i_ReleasedButton) const
+{
+	m_Joypad->KeyReleased(i_ReleasedButton);
+}
+
 CPU& Gameboy::GetCPU()
 {
 	return *m_CPU;

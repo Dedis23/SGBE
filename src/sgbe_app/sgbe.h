@@ -26,6 +26,7 @@ private:
     bool loadDefaultSettings();
     bool loadArguments(int argc, char* argv[]);
     bool loadROM(const string& i_RomFilePath);
+    void exitSGBE();
 
 
 private: // CLI Options

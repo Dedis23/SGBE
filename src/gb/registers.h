@@ -80,7 +80,7 @@ private:
 };
 
 /*
-	The GB CPU has one flag register and it uses its 4 high bits:
+	The GB CPU has one flag register, it uses its high nibble:
 	7 6 5 4 3 2 1 0
 	Z N H C 0 0 0 0
 	Zero Flag (Z): This bit is set when the result of a math operation is zero or two values match when using the CP instruction.

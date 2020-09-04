@@ -69,10 +69,50 @@ void SGBE::Run()
 			// TODO - move this into the SDLWrapper
 			while (SDL_PollEvent(&event))
 			{
-				if (event.type == SDL_QUIT ||
-					event.key.keysym.sym == SDLK_ESCAPE)
+				if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
 				{
-					exit(EXIT_SUCCESS);
+					GBButtons button = GBButtons::None;
+					switch (event.key.keysym.sym)
+					{
+						case SDLK_x:
+								button = GBButtons::A;
+							break;
+						case SDLK_z:
+								button = GBButtons::B;
+							break;
+						case SDLK_RETURN:
+								button = GBButtons::Start;
+							break;
+						case SDLK_RSHIFT:
+								button = GBButtons::Select;
+							break;
+						case SDLK_RIGHT:
+								button = GBButtons::Right;
+							break;
+						case SDLK_LEFT:
+								button = GBButtons::Left;
+							break;
+						case SDLK_UP:
+								button = GBButtons::Up;
+							break;
+						case SDLK_DOWN:
+								button = GBButtons::Down;
+							break;
+					}
+
+					if (event.type == SDL_KEYDOWN)
+					{
+						m_Gameboy->KeyPressed(button);
+					}
+					else
+					{
+						m_Gameboy->KeyReleased(button);
+					}
+				}
+
+				if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					exitSGBE();
 				}
 			}
 
@@ -157,4 +197,10 @@ void SGBE::cliLogFileNameOption(const string& i_LogFileName)
 
 	LOGGER_SET_FILE_NAME(i_LogFileName);
 	LOG_INFO(true, NOP, "Log file name set to" << i_LogFileName);
+}
+
+void SGBE::exitSGBE()
+{
+	// TODO, add save before exit
+	exit(EXIT_SUCCESS);
 }
