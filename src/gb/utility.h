@@ -1,8 +1,8 @@
-/********************************************************
- *			Created by: Dedi Sidi, 2020				    *
- *														* 
- *			Utility functions and definitions           *
- ********************************************************/
+/************************************************
+*		Created by: Dedi Sidi, 2020				*
+*												*
+*		Utility functions and definitions		*
+*************************************************/
 
 #pragma once
 #include <iostream>
