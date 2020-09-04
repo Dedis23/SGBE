@@ -24,7 +24,7 @@ const word TIMER_CONTROL_ADDR = 0xFF07; // holds the freq mode and  whether if t
 #define TIMER_CONTROL_MODE_FLAG_SECOND_BIT   1 // 00: 4096Hz 01: 262144Hz 
 #define TIMER_CONTROL_MODE_FLAG_FIRST_BIT    0 // 10: 65536Hz 11: 16384Hz
 
-class Gameboy;
+class GBInternals;
 
 class Timer
 {
@@ -40,7 +40,7 @@ public:
     static const uint32_t CyclesArr[];
 
 public:
-    Timer(Gameboy& i_Gameboy);
+    Timer(GBInternals& i_GBInternals);
 	virtual ~Timer() = default;
     Timer(const Timer&) = delete;
     Timer& operator=(const Timer&) = delete;
@@ -61,6 +61,6 @@ private:
     byte m_TimerModulo;
     byte m_TimerControl;
 
-    /* gameboy ref */
-    Gameboy& m_Gameboy;
+	/* gameboy components ref */
+	GBInternals& m_GBInternals;
 };

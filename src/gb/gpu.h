@@ -164,12 +164,12 @@ const Pixel GAMEBOY_POCKET_PALLETE[4] = {
                                           { 0, 0, 0 } 
                                         };
 
-class Gameboy;
+class GBInternals;
 
 class GPU
 {
 public:
-    GPU(Gameboy& i_Gameboy);
+    GPU(GBInternals& i_GBInternals);
 	virtual ~GPU() = default;
     GPU(const GPU&) = delete;
     GPU& operator=(const GPU&) = delete;
@@ -230,6 +230,6 @@ private:
     byte m_WindowYPosition;
     byte m_WindowXPositionMinus7;
 
-    /* gameboy ref */
-    Gameboy& m_Gameboy;
+	/* gameboy components ref */
+	GBInternals& m_GBInternals;
 };

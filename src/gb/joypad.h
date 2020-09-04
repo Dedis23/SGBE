@@ -42,11 +42,12 @@ enum class GBButtons
     None,
 };
 
+class GBInternals;
+
 class Joypad
 {
-
 public:
-    Joypad(Gameboy& i_Gameboy);
+    Joypad(GBInternals& i_GBInternals);
 	virtual ~Joypad() = default;
     Joypad(const Joypad&) = delete;
     Joypad& operator=(const Joypad&) = delete;
@@ -62,6 +63,6 @@ private:
     bool m_DirectionSelector;
     bool m_ButtonSelector;
 
-    /* gameboy ref */
-    Gameboy& m_Gameboy;
+	/* gameboy components ref */
+	GBInternals& m_GBInternals;
 };

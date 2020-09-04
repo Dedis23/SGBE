@@ -1,7 +1,7 @@
 #include "gameboy.h"
 
-Gameboy::Gameboy(vector<byte>& i_ROMData, function<void(const Pixel* i_FrameBuffer)> i_RenderFuncPtr) : m_ROMData(i_ROMData), m_MMU(nullptr), m_CPU(nullptr),
-m_Timer(nullptr), m_GPU(nullptr), m_CartridgeHeader(nullptr), m_Cartridge(nullptr), m_RenderScreen(i_RenderFuncPtr) {}
+Gameboy::Gameboy(vector<byte>& i_ROMData, function<void(const Pixel* i_FrameBuffer)> i_RenderFuncPtr) : m_ROMData(i_ROMData), m_CartridgeHeader(nullptr), m_Cartridge(nullptr),
+m_MMU(nullptr), m_CPU(nullptr), m_GPU(nullptr), m_Timer(nullptr), m_Joypad(nullptr), m_RenderScreen(i_RenderFuncPtr) {}
 
 Gameboy::~Gameboy()
 {
@@ -10,6 +10,8 @@ Gameboy::~Gameboy()
 	delete m_MMU;
 	delete m_CPU;
 	delete m_GPU;
+	delete m_Timer;
+	delete m_Joypad;
 }
 
 bool Gameboy::Initialize()
@@ -19,20 +21,25 @@ bool Gameboy::Initialize()
 	res = initializeCartridge();
 	LOG_CRITICAL(res == false, return false, "Failed to initialzie cartridge");
 
-	m_MMU = new MMU(*this, *m_Cartridge);
+	m_MMU = new MMU(m_GBInternals, *m_Cartridge);
 	LOG_ERROR(m_MMU == nullptr, return false, "Failed to initialize the MMU");
+	m_GBInternals.AttachMMU(m_MMU);
 
-	m_CPU = new CPU(*this, *m_MMU);
+	m_CPU = new CPU(m_GBInternals, *m_MMU);
 	LOG_ERROR(m_CPU == nullptr, return false, "Failed to initialize the CPU");
+	m_GBInternals.AttachCPU(m_CPU);
 
-	m_GPU = new GPU(*this);
+	m_GPU = new GPU(m_GBInternals);
 	LOG_ERROR(m_GPU == nullptr, return false, "Failed to initalize the GPU");
+	m_GBInternals.AttachGPU(m_GPU);
 
-	m_Timer = new Timer(*this);
+	m_Timer = new Timer(m_GBInternals);
 	LOG_ERROR(m_Timer == nullptr, return false, "Failed to initialize the Timer");
+	m_GBInternals.AttachTimer(m_Timer);
 
-	m_Joypad = new Joypad(*this);
+	m_Joypad = new Joypad(m_GBInternals);
 	LOG_ERROR(m_Joypad == nullptr, return false, "Failed to initalize the Joypad");
+	m_GBInternals.AttachJoypad(m_Joypad);
 
 	return true;
 }
@@ -136,31 +143,6 @@ void Gameboy::KeyReleased(const GBButtons& i_ReleasedButton) const
 	m_Joypad->KeyReleased(i_ReleasedButton);
 }
 
-CPU& Gameboy::GetCPU()
-{
-	return *m_CPU;
-}
-
-MMU& Gameboy::GetMMU()
-{
-	return *m_MMU;
-}
-
-GPU& Gameboy::GetGPU()
-{
-	return *m_GPU;
-}
-
-Timer& Gameboy::GetTimer()
-{
-	return *m_Timer;
-}
-
-Joypad& Gameboy::GetJoypad()
-{
-	return *m_Joypad;
-}
-
 bool Gameboy::initializeCartridge()
 {
 	bool res = false;
@@ -179,7 +161,7 @@ bool Gameboy::initializeCartridge()
 	LOG_INFO(true, NOP, "Additional RAM size: " << m_CartridgeHeader->GetRAMSizeAsString());
 
 	m_Cartridge = CartridgeFactory::CreateCartridge(m_ROMData, *m_CartridgeHeader);
-	LOG_ERROR(m_Cartridge == nullptr, NOP, "Cartridge type " << m_CartridgeHeader->GetCartridgeTypeAsString() << " is unsupported");
+	LOG_ERROR(m_Cartridge == nullptr, NOP, "Cartridge type " << m_CartridgeHeader->GetCartridgeTypeAsString() << " is unsupported!");
 
 	return true;
 }

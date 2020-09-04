@@ -29,7 +29,7 @@ const word JOYPAD_INTERRUPT_ROUTINE_ADDR = 0x60;
 
 const uint32_t CPU_CLOCK_SPEED = 4194304; // 4 * 2^20
 
-class Gameboy;
+class GBInternals;
 class MMU;
 
 class CPU
@@ -45,7 +45,7 @@ public:
 	};
 
 public:
-	CPU(Gameboy& i_Gameboy, MMU& i_MMU);
+	CPU(GBInternals& i_GBInternals, MMU& i_MMU);
 	virtual ~CPU() = default;
 	CPU(const CPU&) = delete;
 	CPU& operator=(const CPU&) = delete;
@@ -84,8 +84,8 @@ private:
 	/* components */
 	MMU& m_MMU;
 
-	/* gameboy ref */
-	Gameboy& m_Gameboy;
+	/* gameboy components ref */
+	GBInternals& m_GBInternals;
 
 private:
 	/* OPCode maps */

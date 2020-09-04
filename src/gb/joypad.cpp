@@ -1,6 +1,6 @@
 ﻿#include "joypad.h"
 
-Joypad::Joypad(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_KeysState(0xFF), m_DirectionSelector(false), m_ButtonSelector(false) {}
+Joypad::Joypad(GBInternals& i_GBInternals) : m_GBInternals(i_GBInternals), m_KeysState(0xFF), m_DirectionSelector(false), m_ButtonSelector(false) {}
 
 void Joypad::Reset()
 {
@@ -49,7 +49,7 @@ void Joypad::KeyPressed(const GBButtons& i_PressedButton)
 	// request an interrupt (but only if the key wasn't already pressed)
 	if (requestInterrupt && !isKeyPreviouslyPressed)
 	{
-		m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::Joypad);
+		m_GBInternals.GetCPU().RequestInterrupt(CPU::InterruptType::Joypad);
 	}
 }
 

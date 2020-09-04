@@ -1,6 +1,6 @@
 ﻿#include "mmu.h"
 
-MMU::MMU(Gameboy& i_Gameboy, Cartridge& i_Cartridge) : m_Gameboy(i_Gameboy), m_Cartridge(i_Cartridge) {}
+MMU::MMU(GBInternals& i_GBInternals, Cartridge& i_Cartridge) : m_GBInternals(i_GBInternals), m_Cartridge(i_Cartridge) {}
 
 byte MMU::Read(word i_Address) const
 {
@@ -171,7 +171,7 @@ byte MMU::readMappedIO(word i_Address) const
 {
     if (i_Address == JOYPAD_ADDR)
     {
-        m_Gameboy.GetJoypad().GetJoypadState();
+        m_GBInternals.GetJoypad().GetJoypadState();
     }
     else if (i_Address == SERIAL_TRANSFER_DATA_ADDR)
     {
@@ -184,11 +184,11 @@ byte MMU::readMappedIO(word i_Address) const
     }
     else if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
     {
-        return m_Gameboy.GetTimer().GetRegister(i_Address);
+        return m_GBInternals.GetTimer().GetRegister(i_Address);
     }
     else if (i_Address >= GPU_LCD_CONTROL_ADDR && i_Address <= GPU_WINDOW_X_POSITION_MINUS_7_ADDR)
     {
-        return m_Gameboy.GetGPU().GetRegister(i_Address);
+        return m_GBInternals.GetGPU().GetRegister(i_Address);
     }
     else
     {
@@ -203,7 +203,7 @@ void MMU::writeMappedIO(word i_Address, byte i_Value)
 {
     if (i_Address == JOYPAD_ADDR)
     {
-        m_Gameboy.GetJoypad().SetJoypadState(i_Value);
+        m_GBInternals.GetJoypad().SetJoypadState(i_Value);
     }
     if (i_Address == SERIAL_TRANSFER_DATA_ADDR)
     {
@@ -220,11 +220,11 @@ void MMU::writeMappedIO(word i_Address, byte i_Value)
     }
     else if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
     {
-        m_Gameboy.GetTimer().SetRegister(i_Address, i_Value);
+        m_GBInternals.GetTimer().SetRegister(i_Address, i_Value);
     }
     else if (i_Address >= GPU_LCD_CONTROL_ADDR && i_Address <= GPU_WINDOW_X_POSITION_MINUS_7_ADDR)
     {
-        m_Gameboy.GetGPU().SetRegister(i_Address, i_Value);
+        m_GBInternals.GetGPU().SetRegister(i_Address, i_Value);
     }
     else
     {

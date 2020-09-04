@@ -51,7 +51,8 @@ bool SGBE::Initialize(int argc, char* argv[])
 	res = m_Gameboy->Initialize();
 	LOG_CRITICAL(res == false, return false, "Failed to initialize the interpreter");
 
-	LOG_INFO(true, NOP, "SGBE initialized successfully." << endl);
+	res = m_Gameboy->IsCartridgeLoadedSuccessfully();
+	LOG_INFO(res == true, NOP, "SGBE initialized successfully." << endl);
 
 	return true;
 }

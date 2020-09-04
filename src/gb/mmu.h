@@ -60,10 +60,12 @@ const word OAM_SIZE = (0xFEFF - 0xFE00 + 1); // including the unusable section
 const word MAPPED_IO_SIZE = (0xFF7F - 0xFF00 + 1);
 const word ZERO_PAGE_SIZE = (0xFFFF - 0xFF80 + 1);
 
+class GBInternals;
+
 class MMU
 {
 public:
-    MMU(Gameboy& i_Gameboy, Cartridge& i_Cartridge);
+    MMU(GBInternals& i_GBInternals, Cartridge& i_Cartridge);
 	virtual ~MMU() = default;
     MMU(const MMU&) = delete;
     MMU& operator=(const MMU&) = delete;
@@ -78,12 +80,11 @@ private:
 	bool isBootstrapDone() const;
 
 private:
-	/* gameboy ref */
-	Gameboy& m_Gameboy;
+	/* gameboy components ref */
+	GBInternals& m_GBInternals;
 
 	/* memory modules */
     Cartridge& m_Cartridge;
-
 	vector<byte> m_VRAM = vector<byte>(VRAM_SIZE, 0);
 	vector<byte> m_RAM = vector<byte>(RAM_SIZE, 0); // including the shadow ram
 	vector<byte> m_OAM = vector<byte>(OAM_SIZE, 0); // including the unusable section

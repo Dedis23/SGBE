@@ -1,6 +1,6 @@
 ﻿#include "gpu.h"
 
-GPU::GPU(Gameboy& i_Gameboy) : m_Gameboy(i_Gameboy), m_IsLCDEnabled(true), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0),
+GPU::GPU(GBInternals& i_GBInternals) : m_GBInternals(i_GBInternals), m_IsLCDEnabled(true), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0),
 m_LCDControl(0), m_LCDStatus(0), m_ScrollY(0), m_ScrollX(0), m_LCDCYCoordinate(0), m_LYCompare(0), m_BGAndWindowPalette(0),
 m_SpritesPalette0(0), m_SpritesPalette1(0), m_WindowYPosition(0), m_WindowXPositionMinus7(0) {}
 
@@ -195,7 +195,7 @@ void GPU::SetRegister(word i_Address, byte i_Value)
 		break;
 	case GPU_DMA_TRANSFER_AND_START_ADDR:
 		{
-			m_Gameboy.GetMMU().DMATransfer(i_Value);
+			m_GBInternals.GetMMU().DMATransfer(i_Value);
 		}
 		break;
 	case GPU_BG_AND_WINDOW_PALETTE_DATA_ADDR:
@@ -243,12 +243,12 @@ void GPU::handleHBlankMode()
 		if (m_LCDCYCoordinate == V_BLANK_START_SCANLINE)
 		{
 			// request vblank interrupt
-			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::VBlank);
+			m_GBInternals.GetCPU().RequestInterrupt(CPU::InterruptType::VBlank);
 
 			// check for mode 1 interrupt bit
 			if (bitwise::IsBitSet(LCD_STATUS_MODE_1_V_BLANK_INTERRUPT_BIT, m_LCDStatus))
 			{
-				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+				m_GBInternals.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 			}
 
 			// move to mode 1
@@ -259,7 +259,7 @@ void GPU::handleHBlankMode()
 			// check for mode 2 interrupt bit
 			if (bitwise::IsBitSet(LCD_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
 			{
-				m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+				m_GBInternals.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 			}
 
 			// move to mode 2
@@ -292,7 +292,7 @@ void GPU::handleVBlankMode(const uint32_t& i_Cycles)
 		// check for mode 2 interrupt bit
 		if (bitwise::IsBitSet(LCD_STATUS_MODE_2_OAM_INTERRUPT_BIT, m_LCDStatus))
 		{
-			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+			m_GBInternals.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 		}
 	
 		// move to mode 2
@@ -325,7 +325,7 @@ void GPU::handleLCDTransferMode()
 		// check for mode 0 (H Blank) interrupt bit
 		if (bitwise::IsBitSet(LCD_STATUS_MODE_0_H_BLANK_INTERRUPT_BIT, m_LCDStatus))
 		{
-			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+			m_GBInternals.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 		}
 
 		// move to mode 0 (H Blank)
@@ -343,7 +343,7 @@ void GPU::checkForLYAndLYCCoincidence()
 		// request interrupt if the coincidence interrupt bit is raised
 		if (bitwise::IsBitSet(LCD_STATUS_LYC_EQUALS_LY_COINCIDENCE_INTERRUPT_BIT, m_LCDStatus))
 		{
-			m_Gameboy.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
+			m_GBInternals.GetCPU().RequestInterrupt(CPU::InterruptType::LCD);
 		}
 	}
 	else //  its > or <
@@ -517,10 +517,10 @@ void GPU::drawCurrentLineSprites()
 
 		// read the current sprite data from memory
 		Sprite currSprite;
-		currSprite.PositionY = m_Gameboy.GetMMU().Read(spriteAddress);
-		currSprite.PositionX = m_Gameboy.GetMMU().Read(spriteAddress + 1);
-		currSprite.TileIndex = m_Gameboy.GetMMU().Read(spriteAddress + 2);
-		currSprite.Attributes = m_Gameboy.GetMMU().Read(spriteAddress + 3);
+		currSprite.PositionY = m_GBInternals.GetMMU().Read(spriteAddress);
+		currSprite.PositionX = m_GBInternals.GetMMU().Read(spriteAddress + 1);
+		currSprite.TileIndex = m_GBInternals.GetMMU().Read(spriteAddress + 2);
+		currSprite.Attributes = m_GBInternals.GetMMU().Read(spriteAddress + 3);
 
 		// adjust y and x pos to screen pos - for (0,0) (top-left) the sprite is (8,16)
 		currSprite.PositionY -= 16;
@@ -545,8 +545,8 @@ void GPU::drawCurrentLineSprites()
 		// read the two bytes that represent the line of intersection
 		word tileDataAddr = SPRITE_TILE_DATA_BASE_ADDR + (currSprite.TileIndex * SIZE_OF_A_SINGLE_TILE_IN_BYTES);
 		word addressForTheRowInTheTile = tileDataAddr + (tileRow * SIZE_OF_A_SINGLE_LINE_IN_A_TILE_IN_BYTES);
-		byte highByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile);
-		byte lowByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile + 1);
+		byte highByte = m_GBInternals.GetMMU().Read(addressForTheRowInTheTile);
+		byte lowByte = m_GBInternals.GetMMU().Read(addressForTheRowInTheTile + 1);
 
 		bool xFlip = bitwise::IsBitSet(SPRITE_ATTR_X_FLIP_BIT, currSprite.Attributes);
 		byte palette = bitwise::IsBitSet(SPRITE_ATTR_PALLETE_NUMBER_FOR_NON_CGB_BIT, currSprite.Attributes) ? m_SpritesPalette1 : m_SpritesPalette0;
@@ -614,7 +614,7 @@ inline void GPU::readTileLineFromMemory(const uint32_t& i_XPosition, const uint3
 	word tileIndexInMap = i_TileIndexMapBaseAddr + (tileRow * MAX_TILES_PER_LINE + tileCol);
 	
 	// get the tile id from memory
-	byte tileId = m_Gameboy.GetMMU().Read(tileIndexInMap);
+	byte tileId = m_GBInternals.GetMMU().Read(tileIndexInMap);
 
 	// calculate the tile data address 
 	// the id that we mapped should be added to the tile data address base
@@ -639,8 +639,8 @@ inline void GPU::readTileLineFromMemory(const uint32_t& i_XPosition, const uint3
 	word addressForTheRowInTheTile = tileDataAddr + (tilePixelRow * SIZE_OF_A_SINGLE_LINE_IN_A_TILE_IN_BYTES);
 
 	// read the two bytes of this line from memory
-	o_HighByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile);
-	o_LowByte = m_Gameboy.GetMMU().Read(addressForTheRowInTheTile + 1);
+	o_HighByte = m_GBInternals.GetMMU().Read(addressForTheRowInTheTile);
+	o_LowByte = m_GBInternals.GetMMU().Read(addressForTheRowInTheTile + 1);
 }
 
 inline GPU::Shade GPU::extractShadeIdFromTileLine(byte i_HighByte, byte i_LowByte, byte i_TilePixelCol)
