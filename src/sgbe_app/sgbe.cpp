@@ -6,13 +6,8 @@ SGBE::SGBE() : m_SDLWrapper(nullptr), m_Gameboy(nullptr) {}
 
 SGBE::~SGBE()
 {
-	// delete interpreter
 	delete m_Gameboy;
-	m_Gameboy = nullptr;
-
-	// delete SDL wrapper
 	delete m_SDLWrapper;
-	m_SDLWrapper = nullptr;
 	
 	// clean logger instance
 	Logger::ResetInstance();
@@ -52,7 +47,7 @@ bool SGBE::Initialize(int argc, char* argv[])
 	LOG_CRITICAL(res == false, return false, "Failed to initialize the interpreter");
 
 	res = m_Gameboy->IsCartridgeLoadedSuccessfully();
-	LOG_INFO(res == true, NOP, "SGBE initialized successfully." << endl);
+	LOG_INFO(res == true, NOP, "SGBE initialized successfully.");
 
 	return true;
 }
@@ -70,44 +65,68 @@ void SGBE::Run()
 			// TODO - move this into the SDLWrapper
 			while (SDL_PollEvent(&event))
 			{
-				if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+				if (event.type == SDL_KEYDOWN)
 				{
-					GBButtons button = GBButtons::None;
 					switch (event.key.keysym.sym)
 					{
 						case SDLK_x:
-								button = GBButtons::A;
+							m_Gameboy->KeyPressed(GBButtons::A);
 							break;
 						case SDLK_z:
-								button = GBButtons::B;
+							m_Gameboy->KeyPressed(GBButtons::B);
 							break;
 						case SDLK_RETURN:
-								button = GBButtons::Start;
+							m_Gameboy->KeyPressed(GBButtons::Start);
 							break;
 						case SDLK_RSHIFT:
-								button = GBButtons::Select;
+							m_Gameboy->KeyPressed(GBButtons::Select);
 							break;
 						case SDLK_RIGHT:
-								button = GBButtons::Right;
+							m_Gameboy->KeyPressed(GBButtons::Right);
 							break;
 						case SDLK_LEFT:
-								button = GBButtons::Left;
+							m_Gameboy->KeyPressed(GBButtons::Left);
 							break;
 						case SDLK_UP:
-								button = GBButtons::Up;
+							m_Gameboy->KeyPressed(GBButtons::Up);
 							break;
 						case SDLK_DOWN:
-								button = GBButtons::Down;
+							m_Gameboy->KeyPressed(GBButtons::Down);
+							break;
+						case SDLK_F1:
+							m_Gameboy->ChangeToNextPalette();
 							break;
 					}
+				}
 
-					if (event.type == SDL_KEYDOWN)
+				if (event.type == SDL_KEYUP)
+				{
+					switch (event.key.keysym.sym)
 					{
-						m_Gameboy->KeyPressed(button);
-					}
-					else
-					{
-						m_Gameboy->KeyReleased(button);
+						case SDLK_x:
+							m_Gameboy->KeyReleased(GBButtons::A);
+							break;
+						case SDLK_z:
+							m_Gameboy->KeyReleased(GBButtons::B);
+							break;
+						case SDLK_RETURN:
+							m_Gameboy->KeyReleased(GBButtons::Start);
+							break;
+						case SDLK_RSHIFT:
+							m_Gameboy->KeyReleased(GBButtons::Select);
+							break;
+						case SDLK_RIGHT:
+							m_Gameboy->KeyReleased(GBButtons::Right);
+							break;
+						case SDLK_LEFT:
+							m_Gameboy->KeyReleased(GBButtons::Left);
+							break;
+						case SDLK_UP:
+							m_Gameboy->KeyReleased(GBButtons::Up);
+							break;
+						case SDLK_DOWN:
+							m_Gameboy->KeyReleased(GBButtons::Down);
+							break;
 					}
 				}
 
@@ -158,8 +177,6 @@ bool SGBE::loadArguments(int argc, char* argv[])
 
 bool SGBE::loadROM(const string& i_RomFileName)
 {
-	bool res = false;
-
 	// read file
 	std::ifstream romFile(i_RomFileName, std::ios::binary);
 	LOG_ERROR(!romFile.is_open() || !romFile.good(), return false, "Failed to read the file: " << i_RomFileName);

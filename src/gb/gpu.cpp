@@ -2,7 +2,10 @@
 
 GPU::GPU(GBInternals& i_GBInternals) : m_GBInternals(i_GBInternals), m_IsLCDEnabled(true), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0),
 m_LCDControl(0), m_LCDStatus(0), m_ScrollY(0), m_ScrollX(0), m_LCDCYCoordinate(0), m_LYCompare(0), m_BGAndWindowPalette(0),
-m_SpritesPalette0(0), m_SpritesPalette1(0), m_WindowYPosition(0), m_WindowXPositionMinus7(0) {}
+m_SpritesPalette0(0), m_SpritesPalette1(0), m_WindowYPosition(0), m_WindowXPositionMinus7(0)
+{
+	ChangePalette(Palette::Pocket_Pallete);
+}
 
 /*
 	Taken from Pan Docs:
@@ -55,7 +58,7 @@ void GPU::Step(bool write, std::ostream& os, const uint32_t& i_Cycles)
 			handleHBlankMode();
 			break;
 		case GPU::Video_Mode::V_Blank:
-			handleVBlankMode(i_Cycles);
+			handleVBlankMode();
 			break;
 		case GPU::Video_Mode::Searching_OAM:
 			handleSearchSpritesAttributesMode();
@@ -269,7 +272,7 @@ void GPU::handleHBlankMode()
 }
 
 /* mode 1 handler */
-void GPU::handleVBlankMode(const uint32_t& i_Cycles)
+void GPU::handleVBlankMode()
 {
 	if (m_VideoCycles >= MIN_V_BLANK_MODE_CYCLES)
 	{
@@ -432,7 +435,7 @@ void GPU::drawCurrentLineBackground()
 		uint32_t frameBufferIndex = (m_LCDCYCoordinate * GAMEBOY_SCREEN_WIDTH) + xIndex;
 
 		// get the pixel RGB colors to be drawn from the current palette based on the real shade number
-		Pixel color = GAMEBOY_POCKET_PALLETE[(int)realShade];
+		Pixel color = m_PalettePtr[(int)realShade];
 
 		m_FrameBuffer[frameBufferIndex] = color;
 	}
@@ -472,8 +475,6 @@ void GPU::drawCurrentLineWindow()
 	uint32_t yPos = m_LCDCYCoordinate - m_WindowYPosition;
 	if (yPos > WINODW_Y_MAX_ROW || yPos > m_LCDCYCoordinate) // if were out of range, return
 		return;
-	uint32_t tileRow = (yPos / TILE_HEIGHT_IN_PIXELS);
-	uint32_t tilePixelRow = (yPos % TILE_HEIGHT_IN_PIXELS);
 
 	// for every pixel in the current line do the follwing
 	for (uint32_t xIndex = 0; xIndex < GAMEBOY_SCREEN_WIDTH; xIndex++)
@@ -499,7 +500,7 @@ void GPU::drawCurrentLineWindow()
 		uint32_t frameBufferIndex = (m_LCDCYCoordinate * GAMEBOY_SCREEN_WIDTH) + xIndex;
 
 		// get the real color to be drawn from the current palette based on the real shade number
-		Pixel color = GAMEBOY_POCKET_PALLETE[(int)realShade];
+		Pixel color = m_PalettePtr[(int)realShade];
 
 		m_FrameBuffer[frameBufferIndex] = color;
 	}
@@ -551,7 +552,7 @@ void GPU::drawCurrentLineSprites()
 		bool xFlip = bitwise::IsBitSet(SPRITE_ATTR_X_FLIP_BIT, currSprite.Attributes);
 		byte palette = bitwise::IsBitSet(SPRITE_ATTR_PALLETE_NUMBER_FOR_NON_CGB_BIT, currSprite.Attributes) ? m_SpritesPalette1 : m_SpritesPalette0;
 		bool isSpriteOnTop = bitwise::IsBitSet(SPRITE_ATTR_SPRITE_TO_BG_AND_WINDOW_PRIORITY_BIT, currSprite.Attributes) ? false : true;
-		Pixel shade0RGB = GAMEBOY_POCKET_PALLETE[(int)extractRealShadeFromPalette(m_BGAndWindowPalette, Shade::Shade_00)];
+		Pixel shade0RGB = m_PalettePtr[(int)extractRealShadeFromPalette(m_BGAndWindowPalette, Shade::Shade_00)];
 
 		// for every one of the 8 pixels in the row, do the following
 		for (int xIndex = 0; xIndex < 8; xIndex++)
@@ -590,7 +591,7 @@ void GPU::drawCurrentLineSprites()
 				Shade realShade = extractRealShadeFromPalette(palette, shadeId);
 
 				// get the real color to be drawn from the current palette based on the real shade number
-				Pixel color = GAMEBOY_POCKET_PALLETE[(int)realShade];
+				Pixel color = m_PalettePtr[(int)realShade];
 
 				m_FrameBuffer[frameBufferIndex] = color;
 			}
@@ -725,4 +726,27 @@ void GPU::setMode(Video_Mode i_NewMode)
 		m_Mode = Video_Mode::Transfer_Data_To_LCD;
 		break;
 	}
+}
+
+void GPU::ChangePalette(const Palette& i_Palette)
+{
+	switch (i_Palette)
+	{
+		case Palette::Pocket_Pallete:
+			m_CurrPalette = Palette::Pocket_Pallete;
+			break;
+        case Palette::Original_Pallete:
+			m_CurrPalette = Palette::Original_Pallete;
+			break;
+        case Palette::Autmn_Pallete:
+			m_CurrPalette = Palette::Autmn_Pallete;
+			break;
+	}
+	m_PalettePtr = Palettes[(int)i_Palette];
+}
+
+void GPU::ChangeToNextPalette()
+{
+	m_CurrPalette = Palette(((int)m_CurrPalette + 1) % NUM_OF_PALETTES);
+	ChangePalette(m_CurrPalette);
 }

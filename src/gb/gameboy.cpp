@@ -143,6 +143,16 @@ void Gameboy::KeyReleased(const GBButtons& i_ReleasedButton) const
 	m_Joypad->KeyReleased(i_ReleasedButton);
 }
 
+void Gameboy::ChangePalette(const Palette& i_Palette)
+{
+	m_GPU->ChangePalette(i_Palette);
+}
+
+void Gameboy::ChangeToNextPalette()
+{
+	m_GPU->ChangeToNextPalette();
+}
+
 bool Gameboy::initializeCartridge()
 {
 	bool res = false;

@@ -4,7 +4,7 @@
  *			The CPU of the gameboy				*
  ************************************************/
 
-/* Most of the information were take from:							 *
+/* Most of the info was taken from:									 *
  * gameboy CPU Manual pdf:											 *
  * http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf					 *
  * Gameboy Programming Manual pdf:									 *

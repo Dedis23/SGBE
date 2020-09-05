@@ -10,8 +10,8 @@
 #include <vector>
 #include "cartridge_header.h"
 
-/* most of the info were taken from: * 
- *    https://gbdev.io/pandocs/      */
+/* Most of the info was taken from:     * 
+ *    https://gbdev.io/pandocs/         */
 
 const word ROM_BANK_SIZE = 0x4000; // 16KB
 const word RAM_BANK_SIZE = 0x2000; // 8KB

@@ -9,7 +9,7 @@
 #include "utility.h"
 #include <cstring>
 
-/*  Most of the information were take from:                  *
+/*  Most of the info was taken from:                         *
  *  Pan Docs:                                                *
  *  https://gbdev.io/pandocs/#video-display                  *
  *  The Ultimate Game Boy Talk (33c3)                        *
@@ -157,12 +157,22 @@ struct Pixel
     }
 };
 
-const Pixel GAMEBOY_POCKET_PALLETE[4] = { 
-                                          { 255, 255, 255 },
-                                          { 192, 192, 192 },
-                                          { 96, 96, 96 }, 
-                                          { 0, 0, 0 } 
-                                        };
+/* palettes */
+enum class Palette
+{
+    Pocket_Pallete, /* Gameboy pocket palette (Grey Shades) */
+    Original_Pallete, /* Original Gameboy palette (Green Shades) */
+    Autmn_Pallete /* Autmn palette (custom) */
+};
+
+#define NUM_OF_PALETTES 3
+#define NUM_OF_SHADES_IN_PALETTE 4
+const Pixel Palettes[NUM_OF_PALETTES][NUM_OF_SHADES_IN_PALETTE] = 
+                                                            { 
+                                                                { { 255, 255, 255 }, { 192, 192, 192 }, { 96, 96, 96 }, { 0, 0, 0 } }, /* GB Pocket */
+                                                                { { 155, 188, 15 }, { 139, 172, 15 }, { 49, 98, 48 }, { 15, 56, 15 } }, /* Original GB */
+                                                                { { 255, 246, 211 }, { 249, 168, 117 }, { 235, 107, 111 }, { 124, 63, 88 } } /* Autmn */
+                                                            };
 
 class GBInternals;
 
@@ -179,6 +189,8 @@ public:
     const Pixel* GetFrameBuffer() const;
     byte GetRegister(word i_Address) const;
     void SetRegister(word i_Address, byte i_Value);
+    void ChangePalette(const Palette& i_Palette);
+    void ChangeToNextPalette();
 
 private:
     enum class Video_Mode
@@ -199,7 +211,7 @@ private:
 
     void setMode(Video_Mode i_NewMode);
     void handleHBlankMode();
-    void handleVBlankMode(const uint32_t& i_Cycles);
+    void handleVBlankMode();
     void handleSearchSpritesAttributesMode();
     void handleLCDTransferMode();
     void checkForLYAndLYCCoincidence();
@@ -218,6 +230,8 @@ private:
     Video_Mode m_Mode;
     uint32_t m_VideoCycles;
     Pixel m_FrameBuffer[GAMEBOY_SCREEN_WIDTH * GAMEBOY_SCREEN_HEIGHT];
+    Pixel* m_PalettePtr;
+    Palette m_CurrPalette;
     byte m_LCDControl;
     byte m_LCDStatus;
     byte m_ScrollY;

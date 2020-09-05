@@ -23,6 +23,7 @@ class GPU;
 class Timer;
 class Joypad;
 enum class GBButtons;
+enum class Palette;
 struct Pixel;
 
 /* this class holds a reference to all the internal parts of the gameboy 
@@ -70,6 +71,8 @@ public:
 	void Step(); // step a single frame
 	void KeyPressed(const GBButtons& i_PressedButton) const;
 	void KeyReleased(const GBButtons& i_ReleasedButton) const;
+	void ChangePalette(const Palette& i_Palette);
+	void ChangeToNextPalette();
 
 private:
 	bool initializeCartridge();
