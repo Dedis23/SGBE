@@ -200,7 +200,14 @@ bool SGBE::loadROM(const string& i_RomFileName)
 
 void SGBE::cliRomOption(const string& i_RomFileName)
 {
-	s_ROMFileName = i_RomFileName;
+	if (i_RomFileName.size() <= 0)
+	{
+		LOG_ERROR(true, return, "Rom file name is empty");
+	}
+	else
+	{
+		s_ROMFileName = i_RomFileName;	
+	}	
 }
 
 void SGBE::cliSilentOption()

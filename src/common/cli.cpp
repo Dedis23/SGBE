@@ -2,6 +2,12 @@
 
 CLI::CLI(const string& i_OptionDelimiter) : m_OptionDelimiter(i_OptionDelimiter) {}
 
+
+void CLI::AddNoOptionNoArg(NoOptionFunctionSingleArg i_Function)
+{
+	m_NoOptionFunctionSingleArg = i_Function;
+}
+
 void CLI::AddOption(const string& i_Option, OptionFunctionNoArg i_Function)
 {
 	m_NoArgsOptionsMap.insert(std::make_pair(i_Option, i_Function));
@@ -23,7 +29,6 @@ void CLI::LoadArgs(int argc, char* argv[])
 	vector<vector<string>> optionsArguments;
 	string currStr;
 	int currOption = -1;
-	size_t pos = 0;
 
 	if (argc < 2)
 	{
@@ -54,7 +59,7 @@ void CLI::LoadArgs(int argc, char* argv[])
 	unordered_map<string, OptionFunctionNoArg>::const_iterator itrNoArgMap;
 	unordered_map<string, OptionFunctionSingleArg>::const_iterator itrSingleArgMap;
 	unordered_map<string, OptionFunctionMultipleArgs>::const_iterator itrMultipleArgsMap;
-	for (int i = 0; i < options.size(); i++)
+	for (size_t i = 0; i < options.size(); i++)
 	{
 		itrNoArgMap = m_NoArgsOptionsMap.find(options[i]);
 		if (itrNoArgMap != m_NoArgsOptionsMap.end())
@@ -65,7 +70,10 @@ void CLI::LoadArgs(int argc, char* argv[])
 		itrSingleArgMap = m_SingleArgOptionsMap.find(options[i]);
 		if (itrSingleArgMap != m_SingleArgOptionsMap.end())
 		{
-			itrSingleArgMap->second(optionsArguments[i][0]);
+			if (optionsArguments[i].size() != 0)
+			{
+				itrSingleArgMap->second(optionsArguments[i][0]);
+			}
 			continue;
 		}
 		itrMultipleArgsMap = m_MultipleArgsOptionsMap.find(options[i]);
