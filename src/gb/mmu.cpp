@@ -1,6 +1,6 @@
 ﻿#include "mmu.h"
 
-MMU::MMU(GBInternals& i_GBInternals, Cartridge& i_Cartridge) : m_GBInternals(i_GBInternals), m_Cartridge(i_Cartridge) {}
+MMU::MMU(GBInternals& i_GBInternals, Cartridge& i_Cartridge) : m_Cartridge(i_Cartridge), m_GBInternals(i_GBInternals) {}
 
 byte MMU::Read(word i_Address) const
 {
@@ -8,7 +8,7 @@ byte MMU::Read(word i_Address) const
     /* Cartridge ROM banks and Bootstrap */
     if (i_Address >= 0x0000 && i_Address <= 0x7FFF)
     {
-        if (i_Address >= 0x00 && i_Address <= 0xFF && m_MappedIO[BOOTSTRAP_DONE_ADDR - 0xFF00] != 0x1)
+        if (i_Address >= 0x00 && i_Address <= 0xFF && !isBootstrapDone())
         {
             return s_Bootstrap[i_Address];
         }
@@ -171,30 +171,32 @@ byte MMU::readMappedIO(word i_Address) const
 {
     if (i_Address == JOYPAD_ADDR)
     {
-        m_GBInternals.GetJoypad().GetJoypadState();
+        return m_GBInternals.GetJoypad().GetJoypadState();
     }
-    else if (i_Address == SERIAL_TRANSFER_DATA_ADDR)
+
+    if (i_Address == SERIAL_TRANSFER_DATA_ADDR)
     {
         return m_MappedIO[i_Address - 0xFF00];
     }
-    else if (i_Address == SERIAL_TRANSFER_CONTROL_ADDR)
+
+    if (i_Address == SERIAL_TRANSFER_CONTROL_ADDR)
     {
         LOG_ERROR(true, NOP, "Attempting to read to the serial transfer control");
         return 0xFF;
     }
-    else if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
+
+    if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
     {
         return m_GBInternals.GetTimer().GetRegister(i_Address);
     }
-    else if (i_Address >= GPU_LCD_CONTROL_ADDR && i_Address <= GPU_WINDOW_X_POSITION_MINUS_7_ADDR)
+
+    if (i_Address >= GPU_LCD_CONTROL_ADDR && i_Address <= GPU_WINDOW_X_POSITION_MINUS_7_ADDR)
     {
         return m_GBInternals.GetGPU().GetRegister(i_Address);
     }
-    else
-    {
-        // any other mapped i/o
-        return m_MappedIO[i_Address - 0xFF00];
-    }
+
+    // any other mapped i/o
+    return m_MappedIO[i_Address - 0xFF00];
 }
 
 /* write to memory modules from other componenets will sometimes invoke specific methods of the modules
@@ -205,11 +207,13 @@ void MMU::writeMappedIO(word i_Address, byte i_Value)
     {
         m_GBInternals.GetJoypad().SetJoypadState(i_Value);
     }
+
     if (i_Address == SERIAL_TRANSFER_DATA_ADDR)
     {
         m_MappedIO[i_Address - 0xFF00] = i_Value;
     }
-    else if (i_Address == SERIAL_TRANSFER_CONTROL_ADDR)
+    
+    if (i_Address == SERIAL_TRANSFER_CONTROL_ADDR)
     {
         if (bitwise::IsBitSet(i_Value, 7))
         {
@@ -218,19 +222,20 @@ void MMU::writeMappedIO(word i_Address, byte i_Value)
             //fflush(stdout);
         }
     }
-    else if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
+
+    if (i_Address >= TIMER_DIVIDER_ADDR && i_Address <= TIMER_CONTROL_ADDR)
     {
         m_GBInternals.GetTimer().SetRegister(i_Address, i_Value);
     }
-    else if (i_Address >= GPU_LCD_CONTROL_ADDR && i_Address <= GPU_WINDOW_X_POSITION_MINUS_7_ADDR)
+
+    if (i_Address >= GPU_LCD_CONTROL_ADDR && i_Address <= GPU_WINDOW_X_POSITION_MINUS_7_ADDR)
     {
         m_GBInternals.GetGPU().SetRegister(i_Address, i_Value);
     }
-    else
-    {
-        // any other mapped i/o
-        m_MappedIO[i_Address - 0xFF00] = i_Value;
-    }
+
+    // any other mapped i/o
+    m_MappedIO[i_Address - 0xFF00] = i_Value;
+    
 }
 
 bool MMU::isBootstrapDone() const

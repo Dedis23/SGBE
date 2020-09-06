@@ -3,12 +3,17 @@
 const uint32_t Timer::CyclesArr[] = { 1024, 16, 64, 256 };
 
 // Note - the divider freq is 16384Hz and cannot be set otherwise
-Timer::Timer(GBInternals& i_GBInternals) : m_GBInternals(i_GBInternals), m_IsEnabled(true), 
+Timer::Timer(GBInternals& i_GBInternals) :
+m_IsEnabled(true),
+m_CurrentFrequency(TimerFrequencies::_4096Hz),
 m_TimerCounterCycles(0),
 m_DividerCycles(0),
-m_CurrentFrequency(TimerFrequencies::_4096Hz),
 m_DividerCyclesUntillTick(CyclesArr[(int)TimerFrequencies::_16384Hz]),
-m_DividerCounter(0), m_TimerCounter(0), m_TimerModulo(0), m_TimerControl(4) {}
+m_DividerCounter(0), 
+m_TimerCounter(0),
+m_TimerModulo(0), 
+m_TimerControl(4),
+m_GBInternals(i_GBInternals) {}
 
 void Timer::Step(const uint32_t& i_Cycles)
 {

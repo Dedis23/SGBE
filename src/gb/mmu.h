@@ -42,7 +42,7 @@
 #include <string>
 #include <vector>
 #include "gameboy.h"
-#include "cartridge.h"
+#include "cartridge/cartridge.h"
 #include "utility.h"
 #include "timer.h"
 
@@ -80,9 +80,6 @@ private:
 	bool isBootstrapDone() const;
 
 private:
-	/* gameboy components ref */
-	GBInternals& m_GBInternals;
-
 	/* memory modules */
     Cartridge& m_Cartridge;
 	vector<byte> m_VRAM = vector<byte>(VRAM_SIZE, 0);
@@ -91,4 +88,7 @@ private:
 	vector<byte> m_MappedIO = vector<byte>(MAPPED_IO_SIZE, 0);
 	vector<byte> m_ZeroPageRAM = vector<byte>(ZERO_PAGE_SIZE, 0);
 	static const vector<byte> s_Bootstrap;
+
+	/* gameboy components ref */
+	GBInternals& m_GBInternals;
 };

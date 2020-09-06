@@ -1,6 +1,6 @@
 #include "cartridge.h"
 
-Cartridge::Cartridge(vector<byte>& i_ROMData, const CartridgeHeader& i_CartridgeHeader) : m_ROMData(i_ROMData), m_CartridgeHeader(i_CartridgeHeader) {}
+Cartridge::Cartridge(vector<byte>& i_ROMData, const CartridgeHeader& i_CartridgeHeader) : m_CartridgeHeader(i_CartridgeHeader), m_ROMData(i_ROMData) {}
 
 NoMBC::NoMBC(vector<byte>& i_ROMData, const CartridgeHeader& i_CartridgeHeader) : Cartridge(i_ROMData, i_CartridgeHeader) {}
 
@@ -25,7 +25,7 @@ void NoMBC::Write(word i_Address, byte i_Value)
 }
 
 MBC1::MBC1(vector<byte>& i_ROMData, const CartridgeHeader& i_CartridgeHeader) : Cartridge(i_ROMData, i_CartridgeHeader), m_IsRAMEnabled(false),
-m_Mode(Banking_Mode::Rom_Banks_Only), m_RomBankNumber(1), m_RamBankNumber(0), m_HigherROMBankNumBits(0)
+m_Mode(Banking_Mode::Rom_Banks_Only), m_RomBankNumber(1), m_HigherROMBankNumBits(0), m_RamBankNumber(0)
 {
     // m_RomBankNumber is set to 1 by default because 0 rom bank is the base bank that every cartridge has, the switchables is from 1 and above
 }
@@ -194,22 +194,4 @@ inline void MBC1::setMode(byte i_Value)
         LOG_ERROR(true, NOP, "Unknown value: 0x" << std::hex << i_Value << " tried to be written in MBC1 mode");
         break;
     }
-}
-
-// currently the emulator supports types NoMBC (aka no additional ROM / RAM) as well as MBC1
-Cartridge* CartridgeFactory::CreateCartridge(vector<byte>& i_ROMData, const CartridgeHeader& i_CartridgeHeader)
-{
-    Cartridge* cartridge = nullptr;
-
-	switch (i_CartridgeHeader.GetCartridgeType())
-	{
-    case CartridgeHeader::CartridgeType_E::NoMBC:
-        cartridge = new NoMBC(i_ROMData, i_CartridgeHeader);
-        break;
-    case CartridgeHeader::CartridgeType_E::MBC1:
-        cartridge = new MBC1(i_ROMData, i_CartridgeHeader);
-        break;
-	}
-
-    return cartridge;
 }

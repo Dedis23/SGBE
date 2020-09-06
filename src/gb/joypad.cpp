@@ -1,6 +1,6 @@
 ﻿#include "joypad.h"
 
-Joypad::Joypad(GBInternals& i_GBInternals) : m_GBInternals(i_GBInternals), m_KeysState(0xFF), m_DirectionSelector(false), m_ButtonSelector(false) {}
+Joypad::Joypad(GBInternals& i_GBInternals) : m_KeysState(0xFF), m_DirectionSelector(false), m_ButtonSelector(false), m_GBInternals(i_GBInternals) {}
 
 void Joypad::Reset()
 {

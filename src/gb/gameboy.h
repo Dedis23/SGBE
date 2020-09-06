@@ -8,8 +8,8 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "cartridge/cartridge_factory.h"
 #include "cpu.h"
-#include "cartridge.h"
 #include "mmu.h"
 #include "gpu.h"
 #include "timer.h"
@@ -78,6 +78,13 @@ private:
 	bool initializeCartridge();
 
 private:
+	// user input cartridge data
+	vector<byte>& m_ROMData;
+	// host specific methods
+	function<void(const Pixel* i_FrameBuffer)> m_RenderScreen;
+	// cartridge
+	CartridgeHeader* m_CartridgeHeader;
+	Cartridge* m_Cartridge;
 	// internal parts
 	MMU* m_MMU;
 	CPU* m_CPU;
@@ -85,10 +92,4 @@ private:
 	Timer* m_Timer;
 	Joypad* m_Joypad;
 	GBInternals m_GBInternals;
-	// user input cartridge data
-	vector<byte>& m_ROMData;
-	CartridgeHeader* m_CartridgeHeader;
-	Cartridge* m_Cartridge;
-	// host specific methods
-	function<void(const Pixel* i_FrameBuffer)> m_RenderScreen;
 };

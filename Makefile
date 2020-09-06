@@ -1,5 +1,5 @@
 CXX      := -g++
-CXXFLAGS := -pedantic-errors -Wall -Wextra -g -std=c++11 -fpermissive
+CXXFLAGS := -pedantic-errors -Wall -g -std=c++11 -fpermissive -Wno-sign-compare -Wno-switch
 LDFLAGS  := -L/usr/lib -lstdc++ -lm `sdl2-config --libs`
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
@@ -8,6 +8,7 @@ TARGET   := SGBE
 INCLUDE  := -I /usr/include/SDL2
 SRC      :=                      \
    $(wildcard src/common/*.cpp) \
+   $(wildcard src/gb/cartridge/*.cpp) \
    $(wildcard src/gb/*.cpp) \
    $(wildcard src/sgbe_app/*.cpp) \
 

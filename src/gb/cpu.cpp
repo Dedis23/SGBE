@@ -1,7 +1,12 @@
 #include "cpu.h"
 
-CPU::CPU(GBInternals& i_GBInternals, MMU& i_MMU) : m_GBInternals(i_GBInternals), m_MMU(i_MMU),
-AF(A, F), BC(B, C), DE(D, E), HL(H, L), m_IME(false), m_HALT(false), m_IsConditionalJumpTaken(false)
+CPU::CPU(GBInternals& i_GBInternals, MMU& i_MMU) :
+AF(A, F), BC(B, C), DE(D, E), HL(H, L),
+m_IME(false), 
+m_HALT(false), 
+m_IsConditionalJumpTaken(false), 
+m_MMU(i_MMU),
+m_GBInternals(i_GBInternals)
 {
 	initOPCodes();
 	initExtendedOPCodes();

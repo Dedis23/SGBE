@@ -1,7 +1,7 @@
 #include "gameboy.h"
 
-Gameboy::Gameboy(vector<byte>& i_ROMData, function<void(const Pixel* i_FrameBuffer)> i_RenderFuncPtr) : m_ROMData(i_ROMData), m_CartridgeHeader(nullptr), m_Cartridge(nullptr),
-m_MMU(nullptr), m_CPU(nullptr), m_GPU(nullptr), m_Timer(nullptr), m_Joypad(nullptr), m_RenderScreen(i_RenderFuncPtr) {}
+Gameboy::Gameboy(vector<byte>& i_ROMData, function<void(const Pixel* i_FrameBuffer)> i_RenderFuncPtr) : m_ROMData(i_ROMData),  m_RenderScreen(i_RenderFuncPtr), m_CartridgeHeader(nullptr), m_Cartridge(nullptr),
+m_MMU(nullptr), m_CPU(nullptr), m_GPU(nullptr), m_Timer(nullptr), m_Joypad(nullptr) {}
 
 Gameboy::~Gameboy()
 {
@@ -55,7 +55,6 @@ void Gameboy::Step()
 	static int frameNum = 1;
 	uint32_t commandNum = 1;
 	static bool write = false;
-	static bool isInBoot = false;
 	static int startFrameToCapture = 860;
 	if (frameNum == startFrameToCapture) // m_GPU->isTimeToRecord()/*frameNum == 1*/ && write == false
 	{
@@ -156,6 +155,9 @@ void Gameboy::ChangeToNextPalette()
 bool Gameboy::initializeCartridge()
 {
 	bool res = false;
+
+	// before we create the cartridge, we first need to create a cartridge header class that holds metadata about the cartridge
+	// once we have the cartridge metadata, we will know which cartridge type and request it from the factory
 
 	m_CartridgeHeader = new CartridgeHeader(m_ROMData);
 	LOG_ERROR(m_CartridgeHeader == nullptr, return false, "Failed to read the cartridge header");

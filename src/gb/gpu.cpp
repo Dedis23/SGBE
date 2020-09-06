@@ -1,8 +1,8 @@
 ﻿#include "gpu.h"
 
-GPU::GPU(GBInternals& i_GBInternals) : m_GBInternals(i_GBInternals), m_IsLCDEnabled(true), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0),
+GPU::GPU(GBInternals& i_GBInternals) : m_IsLCDEnabled(true), m_Mode(Video_Mode::Searching_OAM), m_VideoCycles(0),
 m_LCDControl(0), m_LCDStatus(0), m_ScrollY(0), m_ScrollX(0), m_LCDCYCoordinate(0), m_LYCompare(0), m_BGAndWindowPalette(0),
-m_SpritesPalette0(0), m_SpritesPalette1(0), m_WindowYPosition(0), m_WindowXPositionMinus7(0)
+m_SpritesPalette0(0), m_SpritesPalette1(0), m_WindowYPosition(0), m_WindowXPositionMinus7(0), m_GBInternals(i_GBInternals)
 {
 	ChangePalette(Palette::Pocket_Pallete);
 }

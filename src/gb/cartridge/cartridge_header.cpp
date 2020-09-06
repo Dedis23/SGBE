@@ -4,9 +4,10 @@ CartridgeHeader::CartridgeHeader(const vector<byte>& i_ROMData) :
 	m_ROMData(i_ROMData),
 	m_CartridgeType(CartridgeType_E::UnknownCartridgeType),
 	m_ROMSizeE(ROMSize_E::UnknownROMSize),
-	m_RAMSizeE(RAMSize_E::UnknownRAMSize),
 	m_NumOfSwitchableRomBanks(0),
-	m_NumOfSwitchableRamBanks(0)
+	m_RAMSizeE(RAMSize_E::UnknownRAMSize),
+	m_NumOfSwitchableRamBanks(0),
+	m_Version(0)
 {
 	readTitle();
 	readCartridgeType();
