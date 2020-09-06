@@ -9,6 +9,7 @@
 #include "sdl_wrapper.h"
 #include "../common/cli.h"
 #include "../gb/gameboy.h"
+#include <thread>
 #include <chrono>
 
 class SGBE
@@ -26,6 +27,7 @@ private:
     bool loadDefaultSettings();
     bool loadArguments(int argc, char* argv[]);
     bool loadROM(const string& i_RomFilePath);
+    void handleInput();
     void exitSGBE();
 
 
@@ -36,6 +38,7 @@ private: // CLI Options
 
 private:
     static string s_ROMFileName;
+    bool m_ShouldExist;
     vector<byte> m_ROMData;
     SDLWrapper* m_SDLWrapper;
     Gameboy* m_Gameboy;

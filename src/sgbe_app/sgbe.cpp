@@ -2,7 +2,7 @@
 
 string SGBE::s_ROMFileName = "";
 
-SGBE::SGBE() : m_SDLWrapper(nullptr), m_Gameboy(nullptr) {}
+SGBE::SGBE() : m_ShouldExist(false), m_SDLWrapper(nullptr), m_Gameboy(nullptr) {}
 
 SGBE::~SGBE()
 {
@@ -54,104 +54,30 @@ bool SGBE::Initialize(int argc, char* argv[])
 
 void SGBE::Run()
 {
-	chrono::time_point<chrono::high_resolution_clock> testStart, testEnd; // delete this later
-	testStart = chrono::high_resolution_clock::now();
-	chrono::time_point<chrono::high_resolution_clock> startFrameTime, endFrameTime, elapsedFrameTime;
-	if (m_Gameboy->IsCartridgeLoadedSuccessfully())
+	chrono::time_point<chrono::high_resolution_clock> singleFrameStartTime, singleFrameEndTime;
+	double timeForASingleFrame = 1000 / TARGET_FPS; // time for a single frame in miliseconds
+	chrono::duration<double, milli> elapsedSingleFrameTime;
+
+	// main loop
+	while (!m_ShouldExist)
 	{
-		SDL_Event event;
-		while (true) // change this with SDL quit check i.e press X or click ESC
+		// handle input
+		handleInput();
+
+		 // step a single frame
+		singleFrameStartTime = chrono::high_resolution_clock::now();
+		m_Gameboy->Step();
+		singleFrameEndTime = chrono::high_resolution_clock::now();
+		elapsedSingleFrameTime = chrono::duration_cast<chrono::duration<double, milli>> (singleFrameEndTime - singleFrameStartTime);
+		
+		// frame throttle - do a thread sleep if the frame took less time than expected
+		if (elapsedSingleFrameTime.count() < timeForASingleFrame)
 		{
-			// TODO - move this into the SDLWrapper
-			while (SDL_PollEvent(&event))
-			{
-				if (event.type == SDL_KEYDOWN)
-				{
-					switch (event.key.keysym.sym)
-					{
-						case SDLK_x:
-							m_Gameboy->KeyPressed(GBButtons::A);
-							break;
-						case SDLK_z:
-							m_Gameboy->KeyPressed(GBButtons::B);
-							break;
-						case SDLK_RETURN:
-							m_Gameboy->KeyPressed(GBButtons::Start);
-							break;
-						case SDLK_RSHIFT:
-							m_Gameboy->KeyPressed(GBButtons::Select);
-							break;
-						case SDLK_RIGHT:
-							m_Gameboy->KeyPressed(GBButtons::Right);
-							break;
-						case SDLK_LEFT:
-							m_Gameboy->KeyPressed(GBButtons::Left);
-							break;
-						case SDLK_UP:
-							m_Gameboy->KeyPressed(GBButtons::Up);
-							break;
-						case SDLK_DOWN:
-							m_Gameboy->KeyPressed(GBButtons::Down);
-							break;
-						case SDLK_F1:
-							m_Gameboy->ChangeToNextPalette();
-							break;
-					}
-				}
-
-				if (event.type == SDL_KEYUP)
-				{
-					switch (event.key.keysym.sym)
-					{
-						case SDLK_x:
-							m_Gameboy->KeyReleased(GBButtons::A);
-							break;
-						case SDLK_z:
-							m_Gameboy->KeyReleased(GBButtons::B);
-							break;
-						case SDLK_RETURN:
-							m_Gameboy->KeyReleased(GBButtons::Start);
-							break;
-						case SDLK_RSHIFT:
-							m_Gameboy->KeyReleased(GBButtons::Select);
-							break;
-						case SDLK_RIGHT:
-							m_Gameboy->KeyReleased(GBButtons::Right);
-							break;
-						case SDLK_LEFT:
-							m_Gameboy->KeyReleased(GBButtons::Left);
-							break;
-						case SDLK_UP:
-							m_Gameboy->KeyReleased(GBButtons::Up);
-							break;
-						case SDLK_DOWN:
-							m_Gameboy->KeyReleased(GBButtons::Down);
-							break;
-					}
-				}
-
-				if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
-				{
-					exitSGBE();
-				}
-			}
-
-			startFrameTime = chrono::high_resolution_clock::now();
-			// main loop here
-			m_Gameboy->Step(); // step a single frame
-			endFrameTime = chrono::high_resolution_clock::now();
-			static int test = 1;
-			test++;
-			if (test > 60)
-			{
-				testEnd = chrono::high_resolution_clock::now();
-				auto testElapsed = chrono::duration_cast<chrono::duration<float, milli>> (testEnd - testStart);
-				//cout << "Overall 60 frames took: " << testElapsed.count() << " milliseconds" << endl;
-				test %= 60;
-				testStart = chrono::high_resolution_clock::now();
-			}
+			this_thread::sleep_for(chrono::duration<double, milli>(timeForASingleFrame - elapsedSingleFrameTime.count()));
 		}
 	}
+	
+	exitSGBE();
 }
 
 bool SGBE::loadDefaultSettings()
@@ -222,6 +148,83 @@ void SGBE::cliLogFileNameOption(const string& i_LogFileName)
 
 	LOGGER_SET_FILE_NAME(i_LogFileName);
 	LOG_INFO(true, NOP, "Log file name set to" << i_LogFileName);
+}
+
+void SGBE::handleInput()
+{
+	SDL_Event event;
+	while (SDL_PollEvent(&event))
+	{
+		if (event.type == SDL_KEYDOWN)
+		{
+			switch (event.key.keysym.sym)
+			{
+				case SDLK_x:
+					m_Gameboy->KeyPressed(GBButtons::A);
+					break;
+				case SDLK_z:
+					m_Gameboy->KeyPressed(GBButtons::B);
+					break;
+				case SDLK_RETURN:
+					m_Gameboy->KeyPressed(GBButtons::Start);
+					break;
+				case SDLK_RSHIFT:
+					m_Gameboy->KeyPressed(GBButtons::Select);
+					break;
+				case SDLK_RIGHT:
+					m_Gameboy->KeyPressed(GBButtons::Right);
+					break;
+				case SDLK_LEFT:
+					m_Gameboy->KeyPressed(GBButtons::Left);
+					break;
+				case SDLK_UP:
+					m_Gameboy->KeyPressed(GBButtons::Up);
+					break;
+				case SDLK_DOWN:
+					m_Gameboy->KeyPressed(GBButtons::Down);
+					break;
+				case SDLK_F1:
+					m_Gameboy->ChangeToNextPalette();
+					break;
+			}
+		}
+
+		if (event.type == SDL_KEYUP)
+		{
+			switch (event.key.keysym.sym)
+			{
+				case SDLK_x:
+					m_Gameboy->KeyReleased(GBButtons::A);
+					break;
+				case SDLK_z:
+					m_Gameboy->KeyReleased(GBButtons::B);
+					break;
+				case SDLK_RETURN:
+					m_Gameboy->KeyReleased(GBButtons::Start);
+					break;
+				case SDLK_RSHIFT:
+					m_Gameboy->KeyReleased(GBButtons::Select);
+					break;
+				case SDLK_RIGHT:
+					m_Gameboy->KeyReleased(GBButtons::Right);
+					break;
+				case SDLK_LEFT:
+					m_Gameboy->KeyReleased(GBButtons::Left);
+					break;
+				case SDLK_UP:
+					m_Gameboy->KeyReleased(GBButtons::Up);
+					break;
+				case SDLK_DOWN:
+					m_Gameboy->KeyReleased(GBButtons::Down);
+					break;
+			}
+		}
+		
+		if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
+		{
+			m_ShouldExist = true;
+		}
+	}
 }
 
 void SGBE::exitSGBE()

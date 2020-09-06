@@ -184,7 +184,7 @@ public:
     GPU(const GPU&) = delete;
     GPU& operator=(const GPU&) = delete;
 
-    void Step(bool write, std::ostream& os, const uint32_t& i_Cycles); // TODO remove this ostream from here, (its for debug)
+    void Step(const uint32_t& i_Cycles);
     void Reset();
     const Pixel* GetFrameBuffer() const;
     byte GetRegister(word i_Address) const;

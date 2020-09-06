@@ -20,7 +20,7 @@ m_SpritesPalette0(0), m_SpritesPalette1(0), m_WindowYPosition(0), m_WindowXPosit
 	then mode 1 (VBlank) happens for the next 10 lines 144-153
 	all of this happens per frame and in total it takes 70224 cycles
 */
-void GPU::Step(bool write, std::ostream& os, const uint32_t& i_Cycles)
+void GPU::Step(const uint32_t& i_Cycles)
 {
 	// synchronization explained:
 	// in order to synchronize between the CPU and GPU in the emulation,
@@ -28,30 +28,8 @@ void GPU::Step(bool write, std::ostream& os, const uint32_t& i_Cycles)
 	// only once the cpu have made enough (the minimum) cycles that correspond to the current mode, then we actualy do the mode operation
 	if (m_IsLCDEnabled)
 	{
-		if (write) // TODO remove this part (just for debug)
-		{
-			//os << "GPU Registers dump:" << std::endl;
-			//os << "m_LCDControl; " << std::dec << (int)m_LCDControl << std::endl;
-			//os << "m_LCDStatus; " << std::dec << (int)m_LCDStatus << std::endl;
-			//os << "m_ScrollY; " << std::dec << (int)m_ScrollY << std::endl;
-			//os << "m_ScrollX; " << (int)m_ScrollX << std::endl;
-			//os << "m_LCDCYCoordinate; " << std::dec << (int)m_LCDCYCoordinate << std::endl;
-			//os << "m_LYCompare; " << std::dec << (int)m_LYCompare << std::endl;
-			//os << "m_BGPaletteData; " << std::dec << (int)m_BGAndWindowPalette << std::endl;
-			//os << "m_ObjectPalette0; " << std::dec << (int)m_SpritesPalette0 << std::endl;
-			//os << "m_ObjectPalette1; " << std::dec << (int)m_SpritesPalette1 << std::endl;
-			//os << "m_WindowYPosition; " << std::dec << (int)m_WindowYPosition << std::endl;
-			//os << "m_WindowXPositionMinus7; " << std::dec << (int)m_WindowXPositionMinus7 << std::endl;
-		}
-		if (write)
-		{
-			//os << "video cycles before: " << std::dec << (int)m_VideoCycles << std::endl;
-		}
 		m_VideoCycles += i_Cycles;
-		if (write)
-		{
-			//os << "video cycles after: " << std::dec << (int)m_VideoCycles << std::endl;
-		}
+
 		switch (m_Mode)
 		{
 		case GPU::Video_Mode::H_Blank:

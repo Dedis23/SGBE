@@ -217,7 +217,7 @@ void MMU::writeMappedIO(word i_Address, byte i_Value)
     {
         if (bitwise::IsBitSet(i_Value, 7))
         {
-            /* This is to print from serial - for Blargg's cpu instructions tests - TODO remove this */
+            /* This is to print from serial - for Blargg's tests - TODO remove this */
             //printf("%c", m_MappedIO[i_Address - 0xFF01]);
             //fflush(stdout);
         }

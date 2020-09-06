@@ -49,87 +49,23 @@ bool Gameboy::IsCartridgeLoadedSuccessfully()
 	return m_Cartridge == nullptr ? false : true;
 }
 
-/* This is the main emulation loop */
+/* step a single frame in the Gameboy */
 void Gameboy::Step()
 {
-	static int frameNum = 1;
-	uint32_t commandNum = 1;
-	static bool write = false;
-	static int startFrameToCapture = 860;
-	if (frameNum == startFrameToCapture) // m_GPU->isTimeToRecord()/*frameNum == 1*/ && write == false
-	{
-		//std::cout << "frameNum is: " << std::dec << frameNum << std::endl;
-		//std::cout << "frameNum is: " << std::hex << frameNum << std::endl;
-		//write = true;
-	}
-	std::ofstream testFile;
-	if (frameNum == 1)
-	{
-		testFile = std::ofstream("checkFrameCycles_SGBE.txt", std::ios_base::trunc);
-	}
-	else
-	{
-		testFile = std::ofstream("checkFrameCycles_SGBE.txt", std::ios_base::app);
-	}	
-	if (write)
-	{
-		if (!testFile.is_open())
-		{
-			//exit(1);
-			std::cout << "should exit here" << std::endl;
-		}
-	}
-	else
-	{
-		testFile.close();
-	}
 	uint32_t currentFrameCycles = 0;
+
+	// let the cpu run and do enough cycles before rendering the frame
 	while (currentFrameCycles < MAX_CYCLES_BEFORE_RENDERING)
 	{
-		static std::string lastComTest;
-
-		if (frameNum == 860  && commandNum == 6892)
-		{
-			std::cout << "STOP!" << std::endl;
-		}
-
 		uint32_t cyclesCurrentOperation = 0;
-		std::string last_command = m_CPU->Step(cyclesCurrentOperation);
-		lastComTest = last_command;
+		m_CPU->Step(cyclesCurrentOperation);
 		m_Timer->Step(cyclesCurrentOperation);
-		m_GPU->Step(write, testFile, cyclesCurrentOperation);
+		m_GPU->Step(cyclesCurrentOperation);
 		m_CPU->HandleInterrupts(cyclesCurrentOperation);
 		currentFrameCycles += cyclesCurrentOperation;
-		if (write)
-		{
-			testFile << "Frame number: " << std::dec << frameNum << std::endl
-			<< "Command number: " << std::dec << commandNum++ << " - " << last_command
-			<< " took: " << std::dec << cyclesCurrentOperation << std::endl
-			<< "Overall cycles: " << std::dec << currentFrameCycles << std::endl;
-			if (write)
-			{
-				m_CPU->dumpRegisters(testFile);
-			}
-		}
-		else
-		{
-			commandNum++;
-		}
 	}
+	// render
 	m_RenderScreen(m_GPU->GetFrameBuffer());
-	if (write)
-	{
-		std::cout << "done writing full frame number: " << frameNum++ << " to the file" << std::endl;
-		if (frameNum >= startFrameToCapture + 5)
-		{ 
-			testFile.close();
-			exit(1);
-		}
-	}
-	else
-	{
-		frameNum++;
-	}
 }
 
 void Gameboy::KeyPressed(const GBButtons& i_PressedButton) const

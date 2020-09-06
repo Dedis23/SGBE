@@ -12,110 +12,34 @@ m_GBInternals(i_GBInternals)
 	initExtendedOPCodes();
 }
 
-string CPU::Step(uint32_t& o_Cycles)
+void CPU::Step(uint32_t& o_Cycles)
 {
-	static bool isOkToPrint = false;
-	//static bool lastPCCorrect = false;
-	////cout << "PC: 0x" << std::hex << PC.GetValue() << endl;
-	//if (PC.GetValue() == 0xC4DD)
-	//{
-	//	lastPCCorrect = true;
-	//}
-	//if (false /*PC.GetValue() == 0xC503 && A.GetValue() == 0x01*/) // done till C501
-	//{
-	//	isOkToPrint = true;
-	//	cout << "STOP" << endl;
-	//	dumpRegisters();
-	//}
 	if (m_HALT)
 	{
 		o_Cycles += 4;
-		return m_OPCodesNames[0x76];
+		return;
 	}
+
 	// read next instruction opcode
 	byte OPCode = readNextByte();
 
-	//if (m_MMU.Read(BOOTSTRAP_DONE_ADDR) != 0x01)
-	//{
-	//	// set memory
-	//
-	//	// gpu init
-	//	m_MMU.Write(GPU_LCD_CONTROL_ADDR, 0x91);
-	//	m_MMU.Write(GPU_LCDC_STATUS_ADDR, 0x81);
-	//	m_MMU.Write(GPU_SCROLL_Y_ADDR, 0x00);
-	//	m_MMU.Write(GPU_SCROLL_X_ADDR, 0x00);
-	//	m_MMU.Write(GPU_LCDC_Y_COORDINATE_ADDR, 0x90);
-	//	m_MMU.Write(GPU_LY_COMPARE_ADDR, 0x00);
-	//	m_MMU.Write(GPU_DMA_TRANSFER_AND_START_ADDR, 0x00);
-	//	m_MMU.Write(GPU_BG_PALETTE_DATA_ADDR, 0xFC);
-	//	m_MMU.Write(GPU_OBJECT_PALETTE_0_DATA_ADDR, 0x00);
-	//	m_MMU.Write(GPU_OBJECT_PALETTE_1_DATA_ADDR, 0x00);
-	//	m_MMU.Write(GPU_WINDOW_Y_POSITION_ADDR, 0x00);
-	//	m_MMU.Write(GPU_WINDOW_X_POSITION_MINUS_7_ADDR, 0x00);
-	//
-	//	// various stuff
-	//	m_MMU.Write(0xFF70, 0xF8);
-	//	m_MMU.Write(0xFF4F, 0xFE);
-	//	m_MMU.Write(0xFF4D, 0x7E);
-	//	m_MMU.Write(0xFF00, 0xCF);
-	//	m_MMU.Write(0xFF01, 0x00);
-	//	m_MMU.Write(0xFF02, 0x7C);
-	//	m_MMU.Write(0xFF04, 0x1E);
-	//	m_MMU.Write(0xFF05, 0x00);
-	//	m_MMU.Write(0xFF06, 0x00);
-	//	m_MMU.Write(0xFF07, 0xF8);
-	//	m_MMU.Write(0xFF0F, 0xE1);
-	//	m_MMU.Write(0xFFFF, 0x00);
-	//
-	//	m_MMU.Write(BOOTSTRAP_DONE_ADDR, 0x01);
-	//
-	//	// set registers
-	//	PC.SetValue(0x100);
-	//	SP.SetValue(0xFFFE);
-	//	//if (m_bCGB)
-	//	//	AF.SetValue(0x11B0);
-	//	//else
-	//		AF.SetValue(0x1180);
-	//	BC.SetValue(0x0000);
-	//	DE.SetValue(0xFF56);
-	//	HL.SetValue(0x000D);
-	//	return;
-	//}
-
-	//cout << "PC is: " << PC.GetValue() << endl;
-	//cout << "SP is: " << SP.GetValue() << endl;
-	//AF.SetValue(4096);
-	//cout << "AF is: " << AF.GetValue() << endl;
-	////PUSH(AF.GetValue());
-	//OPCode_F5();
-	//AF.SetValue(9);
-	//cout << "AF is: " << AF.GetValue() << endl;
-	//OPCode_F1();
-	//cout << "AF is: " << AF.GetValue() << endl;
-	//cout << "PC is: " << PC.GetValue() << endl;
-	//cout << "SP is: " << SP.GetValue() << endl;
-
-	// get opcode data from the opcode data map or the CB opcode data map
-	//OPCodeData OPCodeData;
+	// check if its an extended OPCode (0xCB)
 	if (OPCode == 0xCB)
 	{
+		// read CB OPCode
 		byte cbOPCode = readNextByte();
-		//OPCodeData = m_CBTestArr[OPCode];
-		//OPCodeData = m_CB_OPCodeDataMap[cbOPCode];
-		LOG_INFO(isOkToPrint, NOP, "Executing OPCode: " << std::hex << (int)OPCode << " " << m_ExtendedOPCodesNames[OPCode] << " in address 0x" << std::hex << PC.GetValue() - 1);
+		
+		// execute
 		(this->*m_ExtendedOPCodes[cbOPCode])();
+
 		// calculate cycles
 		o_Cycles += m_ExtendedOPCodesCycles[cbOPCode];
-		return m_ExtendedOPCodesNames[cbOPCode];
 	}
-	else
-	{
-		LOG_INFO(isOkToPrint, NOP, "Executing OPCode: " << std::hex << (int)OPCode << " " << m_OPCodesNames[OPCode] << " in address 0x" << std::hex << PC.GetValue() - 1);
+	else // regular OPCode
+	{	
+		// execute
 		(this->*m_OPCodes[OPCode])();
-		//if (isOkToPrint) dumpRegisters();
-		//OPCodeData = m_TestArr[OPCode];
-		//OPCodeData = m_OPCodeDataMap[OPCode];
-		//(this->*m_OPCodes[OPCode])();
+
 		// calculate cycles
 		if (m_IsConditionalJumpTaken)
 		{
@@ -125,29 +49,7 @@ string CPU::Step(uint32_t& o_Cycles)
 		{
 			o_Cycles += m_OPCodesCycles[OPCode];
 		}
-		return m_OPCodesNames[OPCode];
 	}
-
-	// execute
-	//LOG_INFO(true, NOP, "Executing OPCode: " << std::hex << (int)OPCode << " " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
-
-	//(this->*OPCodeData.Operation)();
-	// this is for debug only, to be removed
-	//if (PC.GetValue() - 1 >= 0x95 && PC.GetValue() - 1 <= 0xA7)
-	//{
-	//	//LOG_INFO(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
-	//	(this->*OPCodeData.Operation)();
-	//	//dumpRegisters();
-	//	//cout << endl;
-	//}
-	//else
-	//{
-	//	(this->*OPCodeData.Operation)();
-	//	//(true, NOP, "Executing " << OPCodeData.Name << " in address 0x" << std::hex << PC.GetValue() - 1);
-	//}
-
-
-
 }
 
 void CPU::Reset()
@@ -172,6 +74,7 @@ void CPU::RequestInterrupt(InterruptType i_InterruptType)
 {
 	// get out of halt
 	m_HALT = false;
+	
 	// set in memory the requested interrupt
 	byte interruptRequest = m_MMU.Read(INTERRUPT_REQUREST_ADDR);
 	switch (i_InterruptType)

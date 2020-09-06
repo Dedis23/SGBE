@@ -50,7 +50,7 @@ public:
 	CPU(const CPU&) = delete;
 	CPU& operator=(const CPU&) = delete;
 
-	string Step(uint32_t& o_Cycles); // TODO alter this to return void again (was for debug)
+	void Step(uint32_t& o_Cycles);
 	void Reset();
 	void RequestInterrupt(InterruptType i_InterruptType);
 	void HandleInterrupts(uint32_t& o_Cycles);
@@ -776,7 +776,7 @@ private:
 	void OPCode_CB_BD();
 	void OPCode_CB_BE();
 
-public: // TODO change this back to private
+private:
 	/* debug methods */
 	void dumpRegisters(std::ostream& i_OStream);
 };

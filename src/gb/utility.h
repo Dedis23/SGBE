@@ -12,7 +12,7 @@ typedef uint8_t byte;
 typedef int8_t sbyte;
 typedef uint16_t word;
 
-const float TARGET_FRAME_RATE = 59.72f; // original gameboy vsync
+const float TARGET_FPS = 60;
 const uint32_t GAMEBOY_SCREEN_WIDTH = 160;
 const uint32_t GAMEBOY_SCREEN_HEIGHT = 144;
 
