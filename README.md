@@ -68,6 +68,6 @@ Change palettes: <kbd>F1</kbd>
 * [GameBoy CPU Manual](http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf) - most of the cpu instructions taken from here
 * [GameBoy Programming Manual](http://index-of.es/Varios-2/Game%20Boy%20Programming%20Manual.pdf) - correct cpu instructions timings taken from here
 * [Codeslinger](http://www.codeslinger.co.uk/pages/projects/gameboy.html) - blog that explains alot about how to emulate the gameboy
-* [Pandocs](http://bgb.bircd.org/pandocs.htm) - for info related to MMU, GPU, MBC cartridges
+* [Pandocs](http://bgb.bircd.org/pandocs.htm) - helped with info related to MMU, GPU and MBC cartridges
 * [BGB emulator](http://bgb.bircd.org/) - helped alot with debugging
 * [Blargg's Test ROMs](https://github.com/retrio/gb-test-roms) - test roms
