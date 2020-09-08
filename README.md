@@ -1,7 +1,7 @@
 # SGBE
 Nintendo Gameboy emulator written in C++ (11).  
 The project was mainly done for educational reasons, to increase my knowledge over C++, software design and computer architecture.  
-Also for fun and nostaligic factors, as the gameboy was my first gaming console from my childhood.  
+Also for fun and nostalgic factors, as the gameboy was my first gaming console from my childhood.  
 This project does not aim for total emulation accuracy and features, I'm leaning more towards clean code and good software design.  
 SGBE is dependent on SDL2 library that handles the window, graphics, sound and input.
 
